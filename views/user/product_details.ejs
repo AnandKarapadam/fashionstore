@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title><%= product.name %> | Fashion Store</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .zoom-image {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+      cursor: zoom-in;
+    }
+    .zoom-image:hover {
+      transform: scale(1.2);
+    }
+    .star {
+      color: gold;
+    }
+    .breadcrumb a {
+      text-decoration: none;
+      color: #0d6efd;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container mt-4">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Home</a></li>
+      <li class="breadcrumb-item"><a href="/products">Products</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><%= product.name %></li>
+    </ol>
+  </nav>
+
+  <div class="row">
+    <!-- Product Image -->
+    <div class="col-md-6">
+      <img src="<%= product.image %>" alt="<%= product.name %>" class="zoom-image img-fluid border rounded shadow">
+    </div>
+
+    <!-- Product Info -->
+    <div class="col-md-6">
+      <h3><%= product.name %></h3>
+
+      <!-- Ratings -->
+      <div class="mb-2">
+        <% const stars = Math.floor(product.averageRating || 0); %>
+        <% for (let i = 0; i < 5; i++) { %>
+          <span class="star"><%= i < stars ? '★' : '☆' %></span>
+        <% } %>
+        <span class="text-muted">(<%= product.reviews.length %> reviews)</span>
+      </div>
+
+      <!-- Price + Discount -->
+      <h4>
+        ₹<%= product.price %>
+        <% if (product.discount) { %>
+          <span class="text-danger ms-2">( <%= product.discount %>% OFF )</span>
+        <% } %>
+      </h4>
+
+      <!-- Stock -->
+      <% if (product.stock > 0) { %>
+        <p class="text-success">In Stock: <%= product.stock %> items</p>
+        <button class="btn btn-primary">Add to Cart</button>
+      <% } else { %>
+        <p class="text-danger">Out of Stock</p>
+        <button class="btn btn-secondary" disabled>Sold Out</button>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Reviews -->
+  <div class="mt-5">
+    <h5>Customer Reviews</h5>
+    <% if (product.reviews.length === 0) { %>
+      <p class="text-muted">No reviews yet.</p>
+    <% } else { %>
+      <ul class="list-group">
+        <% product.reviews.forEach(review => { %>
+          <li class="list-group-item">
+            <strong><%= review.user?.username || 'User' %>:</strong>
+            <div class="text-warning">
+              <% for (let i = 0; i < 5; i++) { %>
+                <span><%= i < review.rating ? '★' : '☆' %></span>
+              <% } %>
+            </div>
+            <p><%= review.comment %></p>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </div>
+</div>
+
+</body>
+</html>

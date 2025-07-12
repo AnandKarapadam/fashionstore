@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login | Fashion Store</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
+  <style>
+    body {
+      background: #f8f9fa;
+    }
+    .card {
+      border: none;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .google-btn {
+      border: 1px solid #ccc;
+      background: white;
+      color: #444;
+    }
+    .google-btn:hover {
+      background: #f1f1f1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="col-md-5">
+      <div class="card p-4">
+        <h3 class="text-center mb-4">Welcome Back</h3>
+
+        <form method="POST" action="/login">
+          <div class="mb-3">
+            <label for="email" class="form-label">Email address</label>
+            <input type="email" class="form-control" name="email" id="email" required />
+          </div>
+
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" name="password" id="password" required />
+          </div>
+
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary">Login</button>
+          </div>
+        </form>
+        <div class="text-center mt-3">
+          <small><a href="/signup">Forgot password?</a></small>
+        </div>
+
+        <div class="text-center my-3">
+          <small class="text-muted">OR</small>
+        </div>
+
+        <div class="d-grid">
+          <a href="/auth/google" class="btn google-btn">
+            <i class="bi bi-google me-2"></i> Continue with Google
+          </a>
+        </div>
+
+        <div class="text-center mt-3">
+          <small>Don't have an account? <a href="/signup">Sign Up</a></small>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
