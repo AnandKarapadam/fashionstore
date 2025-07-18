@@ -1,0 +1,25 @@
+<%- include("../partials/admin/header.ejs") %> 
+
+ <div class="admin-login-container d-flex align-items-center justify-content-center vh-100">
+    <div class="card shadow-lg p-4 admin-login-box">
+      <h3 class="text-center mb-4 text-primary">Admin Login</h3>
+      <form action="/admin/login" method="POST">
+        <% if (message) { %>
+          <div class="alert alert-danger py-1 text-center"><%= message %></div>
+        <% } %>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" name="email" class="form-control" placeholder="admin@example.com" required />
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" placeholder="Enter password" required />
+        </div>
+        <div class="d-grid">
+          <button class="btn btn-primary" type="submit">Login</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<%- include("../partials/admin/footer.ejs") %>

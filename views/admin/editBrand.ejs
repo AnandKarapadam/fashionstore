@@ -1,0 +1,36 @@
+<%- include("../partials/admin/header") %>
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Edit Brand</h5>
+        </div>
+        <div class="card-body">
+          <form action="/admin/brand/edit/<%= brand._id %>" method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+              <label class="form-label">Brand Name</label>
+              <input type="text" class="form-control" name="name" value="<%= brand.brandName %>" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Current Logo</label><br>
+              <% if (brand.brandImage) { %>
+                <img src="/uploads/re-image/<%= brand.brandImage %>" alt="Brand Logo" style="height: 80px;" class="mb-2">
+              <% } else { %>
+                <p>No logo uploaded</p>
+              <% } %>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Change Logo (optional)</label>
+              <input type="file" class="form-control" name="logo" accept="image/*">
+            </div>
+            <button type="submit" class="btn btn-success w-100">Update Brand</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include("../partials/admin/footer") %>

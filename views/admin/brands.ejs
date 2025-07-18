@@ -1,0 +1,166 @@
+<%- include("../partials/admin/header.ejs") %>
+    <%- include("../partials/admin/sidebar.ejs") %>
+
+
+        <div class="container-fluid mt-4">
+            <div class="mb-4">
+                <h3 class="fw-bold text-dark">Brand Management Dashboard</h3>
+            </div>
+
+            <div class="row">
+                <!-- Left: Add Brand -->
+                <div class="col-md-3">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-primary text-white">Add Brand</div>
+                        <div class="card-body">
+                            <form action="/admin/addBrand" method="POST" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label class="form-label">Brand Name</label>
+                                    <input type="text" class="form-control" name="name" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Logo</label>
+                                    <input type="file" class="form-control" name="logo" accept="image/*" />
+                                </div>
+                                <button type="submit" class="btn btn-success w-100">Add Brand</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Table and Search -->
+                <div class="col-md-9">
+                    <form method="GET" class="d-flex justify-content-end mb-3">
+                        <input type="text" name="search" value="<%= search %>" placeholder="Search..."
+                            class="form-control me-2" style="max-width: 300px;">
+                        <button class="btn btn-outline-primary">Search</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="clearSearch()">Clear</button>
+                    </form>
+
+                    <div class="table-responsive shadow-sm">
+                        <table class="table table-bordered table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Logo</th>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (brands.length> 0) { %>
+                                    <% brands.reverse().forEach(brand=> { %>
+                                        <tr>
+                                            <td>
+                                                <% if (brand.brandImage) { %>
+                                                    <img src="/uploads/re-image/<%= brand.brandImage %>" alt="Logo"
+                                                        style="width: 60px; height: 40px;">
+                                                    <% } else { %>
+                                                        N/A
+                                                        <% } %>
+                                            </td>
+                                            <td>
+                                                <%= brand.brandName %>
+                                            </td>
+                                            <td>
+                                                <%= brand.isBlocked ? "Blocked" : "UnBlocked" %>
+                                            </td>
+                                            <td>
+                                                <form action="/admin/brand/toggle-status/<%= brand._id %>" method="POST"
+                                                    class="d-inline">
+                                                    <button
+                                                        class="btn btn-sm <%= brand.isListed ? 'btn-warning' : 'btn-success' %>">
+                                                        <%= brand.isBlocked ? "UnBlock" : "Block" %>
+                                                    </button>
+                                                </form>
+                                                <a href="/admin/brand/edit/<%= brand._id %>"
+                                                    class="btn btn-sm btn-primary">Edit</a>
+                                                <form action="/admin/brand/delete/<%= brand._id %>" method="POST"
+                                                    class="d-inline" onsubmit="return confirmDelete(event)">
+                                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+                                            <% } else { %>
+                                                <tr>
+                                                    <td colspan="4" class="text-center">No brands found</td>
+                                                </tr>
+                                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container mt-3" id="paginationSection">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mb-4" style="margin-right: -250px;">
+                    <!-- Previous Button -->
+                    <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+                        <a class="page-link" href="?page=<%= currentPage - 1 %>&search=<%= search %>"
+                            aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+
+                    <!-- Page Numbers -->
+                    <% for(let i=1; i <=totalPages; i++) { %>
+                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %>&search=<%= search %>">
+                                <%= i %>
+                            </a>
+                        </li>
+                        <% } %>
+
+                            <!-- Next Button -->
+                            <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+                                <a class="page-link" href="?page=<%= currentPage + 1 %>&search=<%= search %>"
+                                    aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </li>
+                </ul>
+            </nav>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            function clearSearch() {
+                document.querySelector('input[name="search"]').value = '';
+                document.getElementById('searchForm').submit();
+                window.location.href = "/admin/brands";
+            }
+            const toggleButton = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+
+            toggleButton.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                content.classList.toggle('expanded');
+
+            });
+
+            function confirmDelete(event) {
+                event.preventDefault();
+
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "This brand will be permently deleted!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#6c757d",
+                    confirmButtonText: "Yes, delete it"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        event.target.submit();
+                    }
+                })
+
+            }
+        </script>
+
+        <%- include("../partials/admin/footer.ejs") %>

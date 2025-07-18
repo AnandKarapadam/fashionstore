@@ -1,0 +1,121 @@
+<%- include('../partials/admin/header') %>
+    <%- include('../partials/admin/sidebar') %>
+
+        <div class="container mt-4">
+            <h3 class="mb-4">User Management</h3>
+
+            <!-- Search Bar -->
+            <form class="d-flex align-items-center gap-2 mb-4" action="/admin/users" method="get" id="searchForm">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control border-primary"
+                        placeholder="Search by name or email..." value="<%= search || '' %>" />
+                    <button class="btn btn-primary" type="submit">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                    <button class="btn btn-outline-secondary" type="button" onclick="clearSearch()">
+                        <i class="bi bi-x-circle"></i> Clear
+                    </button>
+                </div>
+            </form>
+
+            <!-- Users Table -->
+            <div class="table-responsive shadow-sm rounded">
+                <table class="table table-striped align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if(users.length===0){ %>
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No users found.</td>
+                            </tr>
+                            <% } %>
+                                <% users.forEach(user=> { %>
+                                    <tr>
+                                        <td>
+                                            <%= user.name %>
+                                        </td>
+                                        <td>
+                                            <%= user.email %>
+                                        </td>
+                                        <td>
+                                            <%= user.phone || '-' %>
+                                        </td>
+                                        <td>
+                                            <span class="badge <%= user.isBlocked ? 'bg-danger' : 'bg-success' %>">
+                                                <%= user.isBlocked ? 'Blocked' : 'Active' %>
+                                            </span>
+                                        </td>
+                                        <td class="d-flex gap-2">
+                                            <% if (!user.isBlocked) { %>
+                                                <a href="/admin/block-customer?id=<%= user._id %>"
+                                                    class="btn btn-danger btn-sm"
+                                                    style="width: 80px; text-decoration: none;">Block</a>
+                                                <% } else { %>
+                                                    <a href="/admin/unblock-customer?id=<%= user._id %>"
+                                                        class="btn btn-success btn-sm"
+                                                        style="width: 80px; text-decoration: none;">Unblock</a>
+                                                    <% } %>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <div class="container mt-3">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mb-4" style="margin-right: 200px;">
+                    <!-- Previous Button -->
+                    <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+                        <a class="page-link" href="?page=<%= currentPage - 1 %>&search=<%= search %>"
+                            aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+
+                    <!-- Page Numbers -->
+                    <% for(let i=1; i <=totalPages; i++) { %>
+                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %>&search=<%= search %>">
+                                <%= i %>
+                            </a>
+                        </li>
+                        <% } %>
+
+                            <!-- Next Button -->
+                            <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+                                <a class="page-link" href="?page=<%= currentPage + 1 %>&search=<%= search %>"
+                                    aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </li>
+                </ul>
+            </nav>
+        </div>
+
+        <script>
+            function clearSearch() {
+                document.querySelector('input[name="search"]').value = '';
+                document.getElementById('searchForm').submit();
+            }
+            const toggleButton = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+
+            toggleButton.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                content.classList.toggle('expanded');
+            });
+        </script>
+        <%- include("../partials/admin/footer.ejs") %>

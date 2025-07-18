@@ -53,27 +53,24 @@
 
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">Fashion Store</a>
-      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex flex-row gap-3">
-        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-        <% if(typeof user !=="undefined" ) {%>
-          <li class="nav-item dropdown">
-            <button class="nav-link dropdown-toggle bg-transparent border-0" id="userDropdown" data-bs-toggle="dropdown"
-              aria-expanded="false">
-             <%= user.name.split(' ')[0] %>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-              <li><a class="dropdown-item" href="/profile">Profile</a></li>
-              <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
-            </ul>
-          </li>
-          <% } %>
-            <li class="nav-item"><a class="nav-link" href="/cart">Wishlist</a></li>
-            <li class="nav-item"><a class="nav-link" href="/cart">Cart</a></li>
-      </ul>
-    </div>
-  </nav>
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Fashion Store</a>
+    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex flex-row gap-3">
+      <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+
+      
+        <li class="nav-item">
+          <a class="btn btn-outline-light" href="/login">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-light text-dark" href="/signup">Sign Up</a>
+        </li>
+      
+
+    </ul>
+  </div>
+</nav>
+
 
   <!-- Search Bar -->
   <div class="container mt-3">
