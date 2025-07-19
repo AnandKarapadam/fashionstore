@@ -170,16 +170,7 @@ let loadOtp = async (req,res)=>{
         res.status(500).send("server error");
     }
 }
-let loadForgetpage = async (req,res)=>{
-    try {
 
-        return res.render("user/forgot-password");
-        
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).send("server error");
-    }
-}
 
 let loadProductdetails = async(req,res)=>{
     try {
@@ -290,7 +281,6 @@ module.exports = {
     loadLogin,
     loadSignup,
     loadOtp,
-    loadForgetpage,
     loadProductdetails,
     loadPageNotFound,
     signup,

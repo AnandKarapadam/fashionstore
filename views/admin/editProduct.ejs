@@ -1,0 +1,229 @@
+<%- include("../partials/admin/header.ejs") %>
+<%- include("../partials/admin/sidebar.ejs") %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edit Product</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+  <style>
+    .modal-dialog.modal-xl {
+                    max-width: 70vw;
+                    width: 75vw;
+                    height: 80vh;
+                }
+
+                .modal-content {
+                    height: 100%;
+                }
+
+                .modal-body {
+                    padding: 1rem;
+                    padding-left: 20%;
+                    max-height: 75vh;
+                    overflow: auto;
+                    
+                }
+
+                #cropper-image {
+                    display: block;
+                    object-fit: contain;
+                    max-width: 100%;
+                    max-height: 70vh;
+                    margin: 0 auto;
+                }
+  </style>
+</head>
+<body>
+
+  <div class="container mt-3 mb-4">
+    <h2 class="text-center fw-normal">Edit Product</h2>
+  </div>
+
+  <div class="container border border-1 shadow-sm border-dark p-5 rounded-4">
+    <form action="/admin/products/edit/<%= product._id %>" method="POST" enctype="multipart/form-data">
+      <div class="row">
+        <label for="nameinput" class="fw-semibold col-12 mb-2">Name</label>
+        <input class="form-control border border-secondary border-1 rounded-3 col-12 mb-3" type="text" id="nameinput" name="name" value="<%= product.productName %>">
+      </div>
+
+      <div class="row mb-3">
+        <label class="mb-2 fw-semibold col-12" for="description">Description</label>
+        <textarea class="col-6 border border-secondary border-1 rounded-3 mb-3 p-2" rows="4" name="description" id="description"><%= product.description %></textarea>
+      </div>
+
+      <div class="row gap-3 mb-3">
+        <div class="row col-4">
+          <label class="col-12 fw-semibold mb-2" for="brands">Brand</label>
+          <select class="col-12 form-select border border-1 border-secondary rounded-3 mb-3" id="brands" name="brand">
+            <% brands.forEach((brand) => { %>
+              <option value="<%= brand.brandName %>" <%= brand.brandName === product.brand ? 'selected' : '' %>><%= brand.brandName %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div class="row col-4">
+          <label class="col-12 fw-semibold mb-2" for="category">Category</label>
+          <select class="col-12 form-select border border-1 border-secondary rounded-3 mb-3" id="category" name="category">
+            <% categories.forEach((category) => { %>
+              <option value="<%= category.name %>" <%= category.name === product.category ? 'selected' : '' %>><%= category.name %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div class="row col-4">
+          <label class="col-12 fw-semibold mb-2" for="color">Color</label>
+          <input class="form-control border border-1 border-secondary rounded-3 mb-3" name="color" type="text" value="<%= product.color %>" id="color">
+        </div>
+      </div>
+
+      <div class="row gap-3 mb-4">
+        <div class="row col-4">
+          <label class="col-12 mb-2 fw-semibold" for="actualprice">Actual Price</label>
+          <input class="col-12 border border-1 border-secondary rounded-3 mb-3 p-2" name="actualPrice" type="number" value="<%= product.regularPrice %>" placeholder="₹">
+        </div>
+        <div class="row col-4">
+          <label class="col-12 mb-2 fw-semibold" for="discountprice">Discount Price</label>
+          <input class="col-12 border border-1 border-secondary rounded-3 mb-3 p-2" name="discountPrice" type="number" value="<%= product.salePrice %>" placeholder="₹">
+        </div>
+        <div class="row col-3">
+          <label class="col-12 mb-2 fw-semibold" for="quantity">Quantity</label>
+          <input class="col-12 border border-1 border-secondary rounded-3 mb-3 p-2" name="quantity" type="number" value="<%= product.quantity %>" placeholder="Quantity">
+        </div>
+      </div>
+
+      <div class="row gap-3 mt-3">
+        <% for(let i = 0; i < 4; i++) { %>
+          <div class="row mb-3 col-12 col-sm-6">
+            <label class="form-label fw-semibold mb-2 col-12">Image <%= i + 1 %></label>
+            <input class="crop-image-input form-control col-12 border border-1 border-secondary rounded-3 mb-3" name="images" type="file">
+            <div class="image-preview">
+              <% if (product.productImage[i]) { %>
+               <img src="/uploads/product-images/<%= product.productImage[i] %>" class="img-thumbnail w-50" alt="Product Image <%= i + 1 %>">
+              <% } %>
+            </div>
+          </div>
+        <% } %>
+      </div>
+
+      <div class="row col-12 text-center d-flex align-items-center justify-content-center mt-4">
+        <button class="submit btn btn-dark fw-semibold w-25 shadow-sm">Save Changes</button>
+      </div>
+    </form>
+  </div>
+  <!-- Modal for cropping -->
+            <div class="modal fade" id="cropperModal" tabindex="-1" aria-labelledby="cropperModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-xl modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Crop Image</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body mt-3">
+
+                            <img id="cropper-image"  />
+
+                        </div>
+                        <div class="modal-footer">
+                            <button id="cropImageBtn" class="btn btn-dark fw-semibold">Crop & Upload</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const imageInputs = document.querySelectorAll(".crop-image-input");
+    let cropper;
+    let currentInput = null;
+    let currentPreview = null;
+    const cropperModal = new bootstrap.Modal(document.getElementById("cropperModal"));
+
+    imageInputs.forEach((input) => {
+      console.log("Binding input:", input); // ✅ Debug
+      input.addEventListener("change", openCropperModal);
+    });
+
+    function openCropperModal(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      console.log("File selected:", file.name); // ✅ Should log now
+
+      currentInput = event.target;
+      currentPreview = currentInput.closest('.row').querySelector('.image-preview');
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const image = document.getElementById("cropper-image");
+        image.src = e.target.result;
+
+        image.onload = function () {
+          if (cropper) cropper.destroy();
+          cropper = new Cropper(image, {
+            aspectRatio: NaN,
+            dragMode: 'move',
+            viewMode: 0,
+            cropBoxResizable: true,
+            cropBoxMovable: true,
+            responsive: true,
+            autoCropArea: 1,
+            rotatable: true,
+            scalable: true,
+            movable: true,
+            zoomable: true,
+            minContainerWidth: 600,
+            minContainerHeight: 600,
+            minCanvasWidth: 500,
+            minCanvasHeight: 500,
+          });
+
+          setTimeout(() => {
+            console.log("Showing modal..."); // ✅ Check
+            cropperModal.show();
+          }, 100);
+        };
+      };
+
+      reader.readAsDataURL(file);
+    }
+
+    document.getElementById("cropImageBtn").addEventListener("click", function () {
+      if (!cropper || !currentInput || !currentPreview) return;
+
+      const canvas = cropper.getCroppedCanvas();
+
+      canvas.toBlob((blob) => {
+        const fileName = currentInput.files[0]?.name || "cropped.jpg";
+        const file = new File([blob], fileName, { type: blob.type });
+
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        currentInput.files = dataTransfer.files;
+
+        const previewImg = document.createElement("img");
+        previewImg.src = URL.createObjectURL(blob);
+        previewImg.style.width = "100%";
+        previewImg.style.height = "100%";
+        previewImg.style.objectFit = "cover";
+
+        currentPreview.innerHTML = "";
+        currentPreview.appendChild(previewImg);
+
+        cropperModal.hide();
+        cropper.destroy();
+        cropper = null;
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
+
+<%- include("../partials/admin/footer.ejs") %>

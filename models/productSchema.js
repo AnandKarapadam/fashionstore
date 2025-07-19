@@ -15,7 +15,7 @@ const productSchema = new mongoose.Schema({
         required:true
     },
     category:{
-        type:String,
+        type: String,
         required:true
     },
     regularPrice:{
@@ -32,7 +32,7 @@ const productSchema = new mongoose.Schema({
     },
     quantity:{
         type:Number,
-        default:true
+        default:0
     },
     color:{
         type:String,

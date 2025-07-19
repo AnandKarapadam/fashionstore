@@ -44,5 +44,12 @@ router.post("/brand/delete/:id",adminAuth,brandController.deleteBrand);
 //PRODUCT MANAGEMENT//
 router.get("/add-product",adminAuth,productController.getProductAddPage);
 router.post("/add-product",adminAuth,uploads.array("images",4),productController.addproduct);
+router.get("/products",adminAuth,productController.loadProductsPage);
+router.post("/products/remove-offer/:id",adminAuth,productController.removeOffer);
+router.post("/products/add-offer/:id",adminAuth,productController.addOffer);
+router.post("/products/toggle-status/:id",adminAuth,productController.toggleIsBlocked);
+router.post("/products/delete/:id",adminAuth,productController.productDelete);
+router.get("/products/edit/:id",adminAuth,productController.loadEditProduct);
+router.post("/products/edit/:id",adminAuth,uploads.array("images",4),productController.editProduct);
 
 module.exports = router;

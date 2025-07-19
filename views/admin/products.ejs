@@ -1,0 +1,206 @@
+<%- include("../partials/admin/header.ejs") %>
+<%- include("../partials/admin/sidebar.ejs") %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Product Management</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    .custom-table {
+      border-collapse: separate;
+      border-spacing: 0 5px;
+      width: 100%;
+    }
+
+    .custom-table thead tr th {
+      background-color: #000;
+      color: #fff;
+      font-weight: normal;
+    }
+
+    .custom-table tbody tr td {
+      background-color: #f0f0f0;
+    }
+
+    .custom-table th, .custom-table td {
+      border: none !important;
+      vertical-align: middle;
+    }
+
+    .custom-table tbody tr + tr {
+      border-top: 5px solid white;
+    }
+
+    .custom-btn {
+      padding: 2px 10px;
+      font-size: 0.8rem;
+      border-radius: 4px;
+    }
+
+    .rounded-row {
+      border-radius: 8px;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5 mb-5">
+    <div class="row d-flex align-items-center ">
+      <div class="col-md-6">
+        <h2 class="mb-0">Product Management</h2>
+      </div>
+      <div class="col-md-6 row ms-auto gap-3">
+      <form class="col-sm-10 row" method="GET" action="/admin/products">
+        <div class="col-8">
+          <input type="text" value="<%= search ?search:''%>" name="search" class="form-control form-control-sm shadow-sm" placeholder="Search...">
+        </div>
+        <div class="col-4">
+          <button type="submit"  style="width: 90px;height: 30px;" class="btn btn-dark btn-sm">Search</button>
+        </div>
+      </form>
+      <div class="col-sm-2" style="width: 90px;">
+          <a href="/admin/add-product" style="height: 30px;" class="btn btn-outline-dark btn-sm ">
+            <i class="fas fa-plus-circle"></i> New
+          </a>
+        </div>
+    </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="table-responsive">
+      <table class="table custom-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Brand</th>
+            <th>Category</th>
+            <th>Sale Price</th>
+            <th>Offer Price</th>
+            <th>Offer</th>
+            <th>Add Offer Price</th>
+            <th>Quantity</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% products.forEach(product => { %>
+            <tr class="rounded-row">
+              <td><%= product.productName %></td>
+              <td><%= product.brand ? product.brand : "N/A" %></td>
+              <td><%= product.category ? product.category    : "N/A" %></td>
+              <td>₹<%= product.regularPrice %></td> 
+              <td>₹<%= product.salePrice %></td>
+              <td><%= product.productOffer?product.productOffer+"%": "N/A" %></td>
+              <td>
+                <% if (product.productOffer) { %>
+                   <form action="/admin/products/remove-offer/<%= product._id %>" method="POST" class="d-inline">
+                     <button class="btn btn-warning btn-sm custom-btn">
+                       <i class="fas fa-tag"></i> Remove
+                     </button>
+                   </form>
+                 <% } else { %>
+                   <form action="/admin/products/add-offer/<%= product._id %>" method="POST" class="d-flex align-items-center gap-2">
+                     <input type="number" name="offerPrice" placeholder="₹" class="form-control form-control-sm" style="max-width: 80px;" required />
+                     <button class="btn btn-success btn-sm custom-btn">
+                       <i class="fas fa-plus"></i> Add
+                     </button>
+                   </form>
+                 <% } %>
+              </td>
+              <td><%= product.quantity %></td>
+              <td>
+                <%= product.isBlocked ? "Blocked":"UnBlocked" %>
+              </td>
+              <td>
+                <form action="/admin/products/toggle-status/<%= product._id %>" method="POST" class="d-inline">
+                  <button class="btn btn-sm <%= product.isBlocked ? 'btn-danger' : 'btn-dark' %> custom-btn">
+                    <i class="fas <%= product.isBlocked ? 'fa-ban' : 'fa-check' %>"></i>
+                    <%= product.isBlocked ? 'Unblock' : 'Block' %>
+                  </button>
+                </form>
+                <a href="/admin/products/edit/<%= product._id %>" class="btn btn-primary btn-sm custom-btn">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <form action="/admin/products/delete/<%= product._id %>" method="POST" class="d-inline delete-form">
+                  <button class="btn btn-danger btn-sm custom-btn">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="container mt-3" id="paginationSection">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mb-4" style="margin-right: -250px;">
+                    <!-- Previous Button -->
+                    <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+                        <a class="page-link" href="?page=<%= currentPage - 1 %>&search=<%= search %>"
+                            aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+
+                    <!-- Page Numbers -->
+                    <% for(let i=1; i <=totalPages; i++) { %>
+                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %>&search=<%= search %>">
+                                <%= i %>
+                            </a>
+                        </li>
+                        <% } %>
+
+                            <!-- Next Button -->
+                            <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+                                <a class="page-link" href="?page=<%= currentPage + 1 %>&search=<%= search %>"
+                                    aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </li>
+                </ul>
+            </nav>
+        </div>  
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    document.querySelectorAll(".delete-form").forEach((form)=>{
+        form.addEventListener("submit",function(e){
+            e.preventDefault();
+
+            Swal.fire({
+                title:"Are you sure?",
+                text:"This product will be permentently deleted!",
+                icon:"warning",
+                showCancelButton:true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result)=>{
+                 if(result.isConfirmed){
+                    form.submit();
+                 }
+            })
+        })
+    })
+  </script>
+
+</body>
+</html>
+
+<%- include("../partials/admin/footer.ejs") %>
