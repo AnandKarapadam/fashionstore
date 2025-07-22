@@ -28,7 +28,8 @@ const getBrandPage = async(req,res)=>{
         })
 
     } catch (error) {
-        res.redirect("/pageerror")
+        res.redirect("/admin/pageerror");
+        console.error("Error",error.message);
     }
 }
 

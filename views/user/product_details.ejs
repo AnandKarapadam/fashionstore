@@ -1,100 +1,439 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <title><%= product.name %> | Fashion Store</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forget Password</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <style>
-    .zoom-image {
+    .navbar-brand {
+      font-size: 40px;
+      font-family: 'Times New Roman', Times, serif;
+      color: rgb(74, 74, 74);
+    }
+
+    .explore {
+      font-size: 23px;
+      font-weight: 500;
+    }
+
+    .banner {
+      height: 400px;
       width: 100%;
-      height: auto;
-      object-fit: cover;
+    }
+
+    .scroll-container {
+      display: flex;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      gap: 1rem;
+      padding: 1rem 0;
+    }
+
+    .product-card {
+      flex: 0 0 auto;
+      width: 150px;
+    }
+
+    .scroll-buttons {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .scroll-buttons button {
+      border: none;
+      background-color: transparent;
+      font-size: 1.5rem;
+    }
+
+    .scroll-buttons button:hover {
+      color: #007bff;
+    }
+
+    /* Optional: hide scrollbar */
+    .scroll-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .scroll-container {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .navbar .dropdown:hover .dropdown-menu {
+      display: block;
+      margin-top: 0;
+    }
+
+    /* Add arrow manually */
+    .navbar .dropdown-toggle::after {
+      display: inline-block;
+      margin-left: 0.3em;
+      vertical-align: middle;
       transition: transform 0.3s ease;
-      cursor: zoom-in;
+      content: "";
+      border-top: 0.4em solid;
+      border-right: 0.4em solid transparent;
+      border-left: 0.4em solid transparent;
     }
-    .zoom-image:hover {
-      transform: scale(1.2);
+
+    /* Rotate arrow on hover */
+    .navbar .dropdown:hover .dropdown-toggle::after {
+      transform: rotate(180deg);
     }
-    .star {
-      color: gold;
+
+    .nav-link {
+      font-weight: 500;
+      font-size: 17px;
     }
-    .breadcrumb a {
-      text-decoration: none;
-      color: #0d6efd;
+
+    .nav-icon {
+      font-size: 23px;
+      font-weight: 700;
+      color: black;
+    }
+
+    .main-image {
+      width: 100%;
+      max-height: 400px;
+      object-fit: contain;
+      border: 1px solid #ddd;
+      padding: 6px;
+      background-color: #f9f9f9;
+    }
+
+    .thumb-img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border: 1px solid #ccc;
+      padding: 2px;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .thumb-img:hover {
+      border-color: #000;
+      transform: scale(1.1);
+    }
+
+    .zoom-lens {
+      position: absolute;
+      border: 2px solid #ddd;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      pointer-events: none;
+      display: none;
+      background-repeat: no-repeat;
+      background-size: 300% 300%;
+      z-index: 10;
+    }
+
+    .image-zoom-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .product-card {
+      height: 100%;
+      min-height: 300px;
+      display: flex;
+      min-width: 200px;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: center;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+
+    .product-img {
+      height: 200px;
+      min-width: 100px;
+      width: 100%;
+      object-fit: contain;
+      border-radius: 4px;
     }
   </style>
 </head>
-<body>
 
-<div class="container mt-4">
-  <!-- Breadcrumb -->
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="/">Home</a></li>
-      <li class="breadcrumb-item"><a href="/products">Products</a></li>
-      <li class="breadcrumb-item active" aria-current="page"><%= product.name %></li>
-    </ol>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white px-3 mb-4">
+    <a class="navbar-brand" href="#">RORITO</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <!-- Push everything to the right -->
+      <ul class="navbar-nav ms-auto gap-lg-5 mb-2 mb-lg-0">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/all-products">All products</a>
+        </li>
+        <% if(typeof user !=="undefined" ) {%>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              <%= user.name.split(' ')[0] %>
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="/profile">Profile</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+          </ul>
+        </li>
+        <% } %>
+        <li class="nav-item d-lg-flex gap-5 align-items-center ">
+          <a class="nav-icon" href="/cart"><i class="bi bi-cart4"></i></a>
+          <a href="/wishlist" class="nav-icon"><i class="bi bi-handbag"></i></a>
+        </li>
+        <li class="nav-item d-flex align-items-center">
+          <form action="/all-products" method="get" class="d-flex ms-lg-3 mt-2 mt-lg-0" role="search">
+            <input name="search" class="form-control border border-1 border-dark me-2 form-control-sm rounded-4" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-dark btn-sm rounded-4 " type="submit">Search</button>
+          </form>
+        </li>
+      </ul>
+    </div>
   </nav>
 
-  <div class="row">
-    <!-- Product Image -->
-    <div class="col-md-6">
-      <img src="<%= product.image %>" alt="<%= product.name %>" class="zoom-image img-fluid border rounded shadow">
-    </div>
+  <div class="container mt-4">
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="/all-products?category=<%= product.category %>"><%= product.category %></a></li>
+        <li class="breadcrumb-item active" aria-current="page"><%= product.productName %></li>
+      </ol>
+    </nav>
 
-    <!-- Product Info -->
-    <div class="col-md-6">
-      <h3><%= product.name %></h3>
-
-      <!-- Ratings -->
-      <div class="mb-2">
-        <% const stars = Math.floor(product.averageRating || 0); %>
-        <% for (let i = 0; i < 5; i++) { %>
-          <span class="star"><%= i < stars ? '★' : '☆' %></span>
-        <% } %>
-        <span class="text-muted">(<%= product.reviews.length %> reviews)</span>
-      </div>
-
-      <!-- Price + Discount -->
-      <h4>
-        ₹<%= product.price %>
-        <% if (product.discount) { %>
-          <span class="text-danger ms-2">( <%= product.discount %>% OFF )</span>
-        <% } %>
-      </h4>
-
-      <!-- Stock -->
-      <% if (product.stock > 0) { %>
-        <p class="text-success">In Stock: <%= product.stock %> items</p>
-        <button class="btn btn-primary">Add to Cart</button>
-      <% } else { %>
-        <p class="text-danger">Out of Stock</p>
-        <button class="btn btn-secondary" disabled>Sold Out</button>
-      <% } %>
-    </div>
-  </div>
-
-  <!-- Reviews -->
-  <div class="mt-5">
-    <h5>Customer Reviews</h5>
-    <% if (product.reviews.length === 0) { %>
-      <p class="text-muted">No reviews yet.</p>
-    <% } else { %>
-      <ul class="list-group">
-        <% product.reviews.forEach(review => { %>
-          <li class="list-group-item">
-            <strong><%= review.user?.username || 'User' %>:</strong>
-            <div class="text-warning">
-              <% for (let i = 0; i < 5; i++) { %>
-                <span><%= i < review.rating ? '★' : '☆' %></span>
-              <% } %>
-            </div>
-            <p><%= review.comment %></p>
-          </li>
-        <% }) %>
-      </ul>
-    <% } %>
+    <div class="row">
+      <!-- Product Images with Zoom -->
+      <div class="col-md-6">
+  <!-- Main Preview Image -->
+  <div class="main-preview bg-light mb-3 text-center position-relative">
+  <div class="image-zoom-container">
+    <img id="mainImage" src="/uploads/re-image/<%= product.productImage[0] %>" class="img-fluid main-image" />
+    <div id="lens" class="zoom-lens"></div>
   </div>
 </div>
 
+
+  <!-- Thumbnails -->
+  <div class="d-flex justify-content-center flex-wrap gap-2">
+    <% product.productImage.forEach(img => { %>
+      <img 
+        src="/uploads/re-image/<%= img %>" 
+        class="thumb-img" 
+        onclick="changeMainImage(this)"
+      />
+    <% }) %>
+  </div>
+</div>
+
+      <!-- Product Info -->
+      <div class="col-md-6">
+        <h3><%= product.productName %></h3>
+        <p><strong>Brand:</strong> <%= product.brand.toUpperCase() %></p>
+        <p>
+          <span class="fs-4 fw-bold text-danger">₹<%= product.salePrice %></span>
+          <% if (product.salePrice < product.regularPrice) { %>
+            <span class="text-muted text-decoration-line-through">₹<%= product.regularPrice %></span>
+            <span class="badge bg-success ms-2">Offer <%= product.productOffer %>%</span>
+          <% } %>
+        </p>
+
+        <!-- Ratings -->
+        <p>
+          <strong>Rating:</strong>
+          <%= product.ratings.average %> ⭐ 
+          (<%= product.ratings.count %> reviews)
+        </p>
+
+        <!-- Stock Info -->
+        <% if (product.status === "out of stock" || product.quantity === 0) { %>
+          <p class="text-danger fw-bold">Out of Stock</p>
+        <% } else { %>
+          <p class="text-success fw-bold">In Stock: <%= product.quantity %></p>
+        <% } %>
+
+        <!-- Add to Cart Button -->
+        <% if (product.quantity > 0 && product.status === "Available") { %>
+          <form action="/wishlist/add/<%= product._id %>" method="POST">
+            <button class="btn btn-danger mb-3 rounded-4 fw-semibold w-50">Add to Wishlist</button>
+          </form>
+          <form action="/cart/add/<%= product._id %>" method="POST">
+            <button class="btn btn-primary rounded-4 fw-semibold w-50">Add to Cart</button>
+          </form>
+        <% } else { %>
+          <button class="btn btn-secondary" disabled>Unavailable</button>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="row">
+
+      <!-- Description -->
+    <div class="mt-5 col-md-6">
+      <h5>Description</h5>
+      <p><%= product.description %></p>
+    </div>
+
+      <!-- Reviews Section -->
+      <div class="mt-5 col-md-6 overflow-auto"  style="max-height: 300px;">
+      <h5>Customer Reviews</h5>
+      <% if (product.ratings.reviews.length === 0) { %>
+        <p>No reviews yet.</p>
+      <% } else { %>
+        <% product.ratings.reviews.forEach(r => { %>
+          <div class="border rounded p-3 mb-2">
+            <strong><%= r.username %></strong> — 
+            <span><%= r.rating %> ⭐</span>
+            <p class="mb-0"><%= r.comment %></p>
+            <small class="text-muted"><%= r.createdAt.toDateString() %></small>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>  
+    </div>
+
+    <hr class="my-4">
+
+    <div class="container mt-5">
+
+  <!-- Left/Right Scroll Buttons -->
+  <div class="scroll-buttons mb-2">
+    <button onclick="scrollLeft()">&larr;</button>
+    <button onclick="scrollRight()">&rarr;</button>
+  </div>
+
+  <!-- Horizontal Scrollable Card Row -->
+  <div class="scroll-container d-flex justify-content-center" id="cardRow">
+    <% if (typeof relatedProducts !== "undefined"){ %>
+    <% relatedProducts.forEach(product => { %>
+            <div class="col-6 col-md-4 col-lg-3">
+              <div class="product-card shadow-sm position-relative">
+                <a href="/product-details/<%= product._id %>" class="text-decoration-none text-dark">
+                  <img class="product-img" src="/uploads/re-image/<%= product.productImage[0] %>"  alt="<%= product.productName %>">
+                  <% if (product.quantity > 0) { %>
+                   <span class="badge bg-success position-absolute top-0 end-0 m-2">Available</span>
+                  <% } else { %>
+                  <span class="badge bg-danger position-absolute top-0 end-0  m-2">Out of Stock</span>
+                  <% } %>
+                  <% if (product.productOffer && product.productOffer > 0) { %>
+                   <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2"><%= product.productOffer %>% OFF</span>
+                  <% } %>
+                  <h6 class="mt-2 text-truncate"><%= product.productName %></h6>
+                  <div class="d-flex flex-column align-items-start">
+                  <span class="fw-bold text-success fs-6">₹<%= product.salePrice %></span>
+                  <% if (product.regularPrice > product.salePrice) { %>
+                 <small class="text-muted text-decoration-line-through">₹<%= product.regularPrice %></small>
+                <% } %>
+                 </div>
+                </a>
+              </div>
+            </div>
+          <% }) %> 
+          <%}%>
+  </div>
+</div>
+
+<div class="mt-5">
+  <h5>Add Your Review</h5>
+  <form action="/product/<%= product._id %>/review" method="POST" class="mt-3">
+
+    <div class="mb-3">
+      <label for="username" class="form-label">Name</label>
+      <input type="text" name="username" id="username" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="rating" class="form-label">Rating</label>
+      <select name="rating" id="rating" class="form-select" required>
+        <option value="">Select rating</option>
+        <% for (let i = 5; i >= 1; i--) { %>
+          <option value="<%= i %>"><%= i %> Star<%= i > 1 ? ' s' : '' %>
+                </option>
+                <% } %>
+                  </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="comment" class="form-label">Comment</label>
+      <textarea name="comment" id="comment" class="form-control" rows="4" placeholder="Write your feedback..."
+        required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Post Review</button>
+    </form>
+    </div>
+
+    </div>
+
+    <%- include('../partials/user/footer.ejs') %>
+      <script>
+        const mainImage = document.getElementById("mainImage");
+        const lens = document.getElementById("lens");
+        const result = document.getElementById("zoomResult");
+
+        const zoom = 2;
+        function changeMainImage(thumb) {
+          const newSrc = thumb.src;
+          mainImage.src = newSrc;
+          lens.style.backgroundImage = `url('${newSrc}')`;
+        }
+
+
+
+        mainImage.addEventListener("mouseenter", () => {
+          lens.style.display = "block";
+          lens.style.backgroundImage = `url('${mainImage.src}')`;
+        });
+
+        mainImage.addEventListener("mouseleave", () => {
+          lens.style.display = "none";
+        });
+
+        mainImage.addEventListener("mousemove", (e) => {
+          const bounds = mainImage.getBoundingClientRect();
+          const x = e.pageX - bounds.left - window.scrollX;
+          const y = e.pageY - bounds.top - window.scrollY;
+
+          const lensSize = 100;
+          const lensX = x - lensSize / 2;
+          const lensY = y - lensSize / 2;
+
+          lens.style.left = lensX + "px";
+          lens.style.top = lensY + "px";
+          lens.style.backgroundPosition = `-${x * 2 - lensSize / 2}px -${y * 2 - lensSize / 2}px`;
+        });
+
+
+
+        const scrollContainer = document.getElementById('cardRow');
+
+        function scrollLeft() {
+          scrollContainer.scrollBy({ left: -200, behavior: 'smooth' });
+        }
+
+        function scrollRight() {
+          scrollContainer.scrollBy({ left: 200, behavior: 'smooth' });
+        }
+
+      </script>
+
 </body>
+
 </html>

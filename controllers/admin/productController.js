@@ -30,7 +30,9 @@ const addproduct = async(req,res)=>{
                 const images = [];
 
                 if(req.files && req.files.length>0){
+                    
                     for(let i=0;i<req.files.length;i++){
+                        
                         const originalImagePath = req.files[i].path;
 
                         const resizedImagePath = path.join("public","uploads","product-images",req.files[i].filename);
@@ -66,7 +68,7 @@ const addproduct = async(req,res)=>{
                 })
                 await newProduct.save();
 
-                return res.redirect("/admin/add-product");
+                return res.redirect("/admin/products");
             }
         else{
             return res.status(400).json("Product already exists");
@@ -218,7 +220,7 @@ const loadEditProduct = async(req,res)=>{
 
 
 const editProduct = async (req, res) => {
-  try {
+      try {
     const productId = req.params.id;
     const existingProduct = await Product.findById(productId);
 
@@ -226,7 +228,7 @@ const editProduct = async (req, res) => {
       return res.redirect("/admin/pageerror");
     }
 
-    
+    // Update basic fields
     existingProduct.productName = req.body.name;
     existingProduct.description = req.body.description;
     existingProduct.brand = req.body.brand;
@@ -236,33 +238,50 @@ const editProduct = async (req, res) => {
     existingProduct.salePrice = req.body.discountPrice;
     existingProduct.quantity = req.body.quantity;
 
-    
+   
+
+    // Process uploaded images
     if (req.files && req.files.length > 0) {
-      const uploadedImages = req.files.map(file => file.filename);
+      const uploadedImages = [];
+
+      for (let i = 0; i < req.files.length; i++) {
+        const file = req.files[i];
+        const tempPath = file.path; // re-image path
+        const finalPath = path.join("public", "uploads", "product-images", file.filename);
+
+        // Resize & move to product-images folder
+        await sharp(tempPath).resize({ width: 440, height: 440 }).toFile(finalPath);
 
       
+
+        uploadedImages.push(file.filename);
+      }
+
+      // Replace existing images or append if more
       uploadedImages.forEach((img, index) => {
         if (existingProduct.productImage[index]) {
+          // Delete old image
           const oldImagePath = path.join("public", "uploads", "product-images", existingProduct.productImage[index]);
           if (fs.existsSync(oldImagePath)) {
             fs.unlinkSync(oldImagePath);
           }
           existingProduct.productImage[index] = img;
         } else {
-          
           existingProduct.productImage.push(img);
         }
       });
     }
 
     await existingProduct.save();
-    res.redirect("/admin/products");
+    return res.redirect("/admin/products");
 
   } catch (error) {
     console.error("Error while editing product:", error.message);
-    res.redirect("/admin/pageerror");
+    return res.redirect("/admin/pageerror");
   }
 }
+
+
 
 
 module.exports = {
@@ -274,5 +293,5 @@ module.exports = {
     toggleIsBlocked,
     productDelete,
     loadEditProduct,
-    editProduct
+    editProduct,
 }

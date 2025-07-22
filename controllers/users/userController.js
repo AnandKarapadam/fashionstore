@@ -2,15 +2,37 @@ const User = require("../../models/userSchema")
 const nodemailer = require("nodemailer");
 const env  = require("dotenv").config();
 const bcrypt = require("bcrypt");
+const Category = require("../../models/categorySchema");
+const Product = require("../../models/productSchema");
+const Banner = require("../../models/bannerSchema");
 
 let loadHomepage = async (req,res)=>{
     try {
+        const today = new Date().toISOString();
+        const findBanner = await Banner.findOne({
+            startDate:{$lt:new Date(today)},
+            endDate:{$gt:new Date(today)}
+        })
         const userId = req.session.user;
         
         if(userId){
             const userData = await User.findOne({_id:userId});
             if(!userData.isBlocked){
-                return res.render("user/home",{search : "Anand",sort:"low to high",category:"pants",minPrice:1000,maxPrice:2000,products:["p1","p2","p3"],totalPages:3,currentPage:4,user:userData});
+                const category = await Category.find({}).lean();
+
+                      for (let cat of category) {
+                          
+                        const product = await Product.findOne({
+                          category: cat.name,
+                          status: "Available", // matching your enum value
+                          isBlocked: false
+                        }).lean();
+
+                        cat.image = product?.productImage?.[0]
+                          ? `/uploads/product-images/${product.productImage[0]}`
+                          : "/images/default-category.jpg";
+                      }
+                return res.render("user/home",{search : "Anand",sort:"low to high",category,minPrice:1000,maxPrice:2000,products:["p1","p2","p3"],totalPages:3,currentPage:4,user:userData,banner:findBanner,});
             }
             else{
                 return res.redirect("/signup");
@@ -276,6 +298,135 @@ const logout = async(req,res)=>{
         res.redirect("/pageNotFound");
     }
 }
+
+const loadAllProductsPage = async(req,res)=>{
+    try {
+        let page = parseInt(req.query.page)||1;
+        let limit = 8;
+        let skip = (page-1)*limit;
+
+
+        const {
+            search="",
+            category="",
+            sort="",
+            minPrice=0,
+            maxPrice=100000,
+        } = req.query;
+
+            let query = {
+                salePrice:{$gte:parseInt(minPrice),$lte:parseInt(maxPrice)},
+                isBlocked:false
+            }
+            if(search){
+                query.productName = {$regex:new RegExp(search,"i")}
+            }
+            if(category){
+                query.category = category;
+            }
+            
+            let sortOption = {};
+            if(sort === "priceHighLow")sortOption.salePrice=-1;
+            else if(sort === "priceLowHigh")sortOption.salePrice = 1;
+            else if(sort === "nameAsc")sortOption.productName = 1;
+            else if(sort === "nameDesc")sortOption.productName = -1;
+        
+
+            const products = await Product.find(query).sort(sortOption).skip(skip).limit(limit);
+            const categories = await Category.find({isListed:true});
+        
+
+        const matchedProducts =await Product.countDocuments(query);
+        const totalPages  = Math.ceil(matchedProducts/limit);
+
+        res.render("user/allproducts",{
+            products,
+            search,
+            category,
+            sort,
+            minPrice,
+            maxPrice,
+            currentPage:page,
+            totalPages,
+            categories
+        })
+        
+    } catch (error) {
+        console.error("Cannot render all products page",error.message);
+        res.redirect("/pageNotFound");
+
+    }
+}
+
+const getProductDetails = async (req,res)=>{
+    try {
+        const id = req.params.id;
+        
+        const product = await Product.findOne({
+            _id:id,
+            isBlocked:false,
+            status:{$ne:"Discontinued"}
+        });
+       
+        if(!product){
+            return res.redirect("/pageNotFound");
+        }
+        
+        const productCategory = product.category;
+
+        const relatedProducts = await Product.find({
+            _id:{$ne:id},
+            category:productCategory,
+            isBlocked:false
+        })
+
+        res.render("user/product_details",{product,relatedProducts})
+        
+    } catch (error) {
+        
+    }
+}
+const postReview = async(req,res)=>{
+    try {
+
+        const id = req.params.id;
+        const user = req.session.user;
+        
+        const {
+            username,
+            rating,
+            comment,
+        } = req.body;
+        if(!user){
+            return res.redirect("/login");
+        }
+      
+        const product = await Product.findById(id);
+        
+
+        product.ratings.reviews.push({
+            username,
+            rating:Number(rating),
+            comment,
+            createdAt:new Date()
+        })
+
+        product.ratings.count = product.ratings.reviews.length;
+
+        const totalRating = product.ratings.reviews.reduce((sum,review)=>sum+review.rating,0);
+        product.ratings.average = (totalRating/product.ratings.count).toFixed(1);
+        product.ratings.reviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+
+        await product.save();
+       
+        res.render("user/product_details",{product});
+        
+    } catch (error) {
+        res.redirect("/pageNotFound");
+        console.error("Error in adding Review: ",error.message);
+    }
+}
 module.exports = {
     loadHomepage,
     loadLogin,
@@ -288,5 +439,8 @@ module.exports = {
     resendOTP,
     login,
     logout,
-    loadLandingPage
+    loadLandingPage,
+    loadAllProductsPage,
+    getProductDetails,
+    postReview
 }

@@ -7,12 +7,9 @@ const categoryInfo = async(req,res)=>{
         const page = parseInt(req.query.page)||1;
         const limit = 4;
         const skip = (page-1)*limit;
-        const search = req.query.search ? req.query.search.trim() : "";
+        const search = req.query.search || "";
 
-        if (req.query.search !== undefined && !search) {
-            return res.redirect("/admin/category");
-        }
-
+        
         const query = search ? {name:{$regex:search,$options:"i"}}:{};
 
         const categoryData = await Category.find(query).sort({createdAt:-1}).skip(skip).limit(limit);
@@ -28,6 +25,7 @@ const categoryInfo = async(req,res)=>{
             currentPage:page,
             totalPages:totalMatch
         })
+    
 
 
     } catch (error) {

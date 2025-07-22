@@ -26,6 +26,7 @@ const bannerSchema = new Schema({
         type:Date,
         required:true
     }
+    
 })
 
 const Banner = mongoose.model("Banner",bannerSchema);

@@ -31,7 +31,7 @@
                 <!-- Right: Table and Search -->
                 <div class="col-md-9">
                     <form method="GET" class="d-flex justify-content-end mb-3">
-                        <input type="text" name="search" value="<%= search %>" placeholder="Search..."
+                        <input type="text" name="search" value="<%= search?search:''%>" placeholder="Search..."
                             class="form-control me-2" style="max-width: 300px;">
                         <button class="btn btn-outline-primary">Search</button>
                     </form>
@@ -132,7 +132,7 @@
                             <a class="page-link" href="?page=<%= i %>&search=<%= search %>">
                                 <%= i %>
                             </a>
-                        </li>
+                        </li>   
                         <% } %>
 
                             <!-- Next Button -->
@@ -152,25 +152,6 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
 
-            function confirmDelete(event) {
-                event.preventDefault();
-
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to recover this category!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        event.target.submit();
-                    }
-                });
-
-                return false;
-            }
             function clearSearch() {
                 document.querySelector('input[name="search"]').value = '';
                 document.getElementById('searchForm').submit();
@@ -185,13 +166,14 @@
             });
 
             function handleFormSubmit(event) {
-                event.preventDefault();
+                
                 if (!validateForm()) {
                     return;
                 }
                 const name = document.getElementsByName("name")[0].value;
                 const description = document.getElementById("descriptionId").value;
-
+                if(name && description){
+                    event.preventDefault();
                 fetch("/admin/addCategory", {
                     method: "POST",
                     headers: {
@@ -222,6 +204,7 @@
                         })
                     }
                 })
+                }
             }
 
             function validateForm() {

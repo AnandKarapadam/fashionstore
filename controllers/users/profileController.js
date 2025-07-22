@@ -45,6 +45,17 @@ const sendVerificationEmail = async (email,otp)=>{
     }
 }
 
+const securePassword = async(password)=>{
+    try {
+        
+        const passwordHash = await hash(password,10);
+        return passwordHash
+        
+    } catch (error) {
+        console.log("Cannot hash password..!");
+    }
+}
+
 const loadForgetpage = async(req,res)=>{
     try {
         
@@ -82,8 +93,87 @@ const forgetEmailValid = async(req,res)=>{
 
     }
 }
+const verifyForgotPassOtp = async(req,res)=>{
+    try {
 
+        const enteredOTP = req.body.otp;
+        console.log(req.session.userOtp);
+        console.log(req.body.otp);
+        if(String(enteredOTP) === String(req.session.userOtp)){
+             res.json({success:true,redirectUrl:"/reset-password"});
+             
+        }
+        else{
+            res.json({success:false,message:"OTP Not Matching"});
+        }
+        
+    } catch (error) {
+        res.status(500).json({success:false,message:"Error in OTP verification!"})
+        res.redirect("/pageNotFound");
+        console.error("Error",error.message);
+    }
+}
+
+const getResetPasswordPage = async(req,res)=>{
+    try {
+
+        res.render("user/resetpassword");
+        
+    } catch (error) {
+        res.redirect("/pageNotFound");
+        console.error("Error",error.message);
+    }
+}
+
+const resendOTP = async (req,res)=>{
+    try {
+        const otp = generateOtp();
+        req.session.userOtp = otp;
+        const email = req.session.email;
+        console.log("Resending otp to email:",email);
+        const emailSent = await sendVerificationEmail(email,otp);
+
+        if(emailSent){
+            console.log("Resend OTP:",otp);
+            res.status(200).json({success:true,message:"Resend OTP Successful"});
+            
+        }else{
+             res.status(500).json({success:false,message:"Cannot send OTP to this email!"});
+        }
+
+    } catch (error) {
+        console.error("Error in resend OTP",error);
+        res.redirect("/pageNotFound"); 
+    }
+}
+
+const postNewPassword = async(req,res)=>{
+    try {
+        const {passOne,passTwo} = req.body;
+        const email = req.session.email;
+
+        if(passOne === passTwo){
+            const passwordHash  = await securePassword(passOne);
+            await User.updateOne(
+                {email:email},
+                {$set:{password:passwordHash}}
+            )
+           return res.json({success:true,message:"Password Updated Successfully."})
+        }
+        else{
+             return res.json({ success: false, message: "Passwords do not match!" });
+        }
+        
+    } catch (error) {
+        console.error("Error in Reseting Password",error)
+         res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
 module.exports = {
     loadForgetpage,
-    forgetEmailValid
+    forgetEmailValid,
+    verifyForgotPassOtp,
+    getResetPasswordPage,
+    resendOTP,
+    postNewPassword
 }

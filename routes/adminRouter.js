@@ -9,6 +9,7 @@ const storage = require("../helpers/multer");
 const uploads = multer({storage:storage});
 const brandController = require("../controllers/admin/brandController");
 const productController = require("../controllers/admin/productController");
+const bannerController = require("../controllers/admin/bannerController");
 
 router.get("/pageerror",adminController.pageError);
 
@@ -51,5 +52,12 @@ router.post("/products/toggle-status/:id",adminAuth,productController.toggleIsBl
 router.post("/products/delete/:id",adminAuth,productController.productDelete);
 router.get("/products/edit/:id",adminAuth,productController.loadEditProduct);
 router.post("/products/edit/:id",adminAuth,uploads.array("images",4),productController.editProduct);
+
+//BANNER MANAGEMENT//
+router.get("/banner",adminAuth,bannerController.getBannerPage);
+router.get("/add-banner",adminAuth,bannerController.getAddBanner);
+router.post("/add-banner",adminAuth,uploads.single("image"),bannerController.addBanner);
+router.get("/deleteBanner",adminAuth,bannerController.delBanner);
+
 
 module.exports = router;

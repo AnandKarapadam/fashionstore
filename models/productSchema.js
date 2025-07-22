@@ -51,7 +51,39 @@ const productSchema = new mongoose.Schema({
         enum:["Available","out of stock","Discountinued"],
         required:true,
         default:"Available"
-    }
+    },
+  ratings: {
+    average: {
+      type: Number,
+      default: 0
+    },
+    count: {
+      type: Number,
+      default: 0
+    },
+    reviews: [
+      {
+        username: {
+          type: String,
+          required: true
+        },
+        rating: {
+          type: Number,
+          required: true,
+          min: 1,
+          max: 5
+        },
+        comment: {
+          type: String,
+          trim: true
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now
+        }
+      }
+    ]
+  }
 },{timestamps:true})
 
 

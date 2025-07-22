@@ -241,7 +241,7 @@
                     const imageInputs = document.querySelectorAll(".crop-image-input");
                     let imageSelected = false;
                     imageInputs.forEach((input) => {
-                        if (input.file.length > 0) {
+                        if (input.files.length > 0) {
                             imageSelected = true;
                         }
                     })
@@ -358,7 +358,8 @@
                     const canvas = cropper.getCroppedCanvas();
 
                     canvas.toBlob((blob) => {
-                        const fileName = currentInput.files[0]?.name || "cropped.jpg";
+                        const ext = blob.type.split("/")[1] || "jpg";
+                        const fileName = `cropped-${Date.now()}.${ext}`;
                         const file = new File([blob], fileName, { type: blob.type });
 
                         const dataTransfer = new DataTransfer();

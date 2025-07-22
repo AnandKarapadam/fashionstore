@@ -27,14 +27,21 @@ router.get("/auth/google/callback",passport.authenticate("google",{failureRedire
 
 
 
-
+router.get("/all-products",userAuth,userController.loadAllProductsPage);
 router.get("/product_details",userController.loadProductdetails);
 router.get("/pageNotFound",userController.loadPageNotFound);
 router.get("/logout",userController.logout);
+router.get("/product-details/:id",userController.getProductDetails);
+router.post("/product/:id/review",userAuth,userController.postReview);
+
 
 //Profile Management
 router.get("/forget-password",profileController.loadForgetpage);
 router.post("/forget-email-valid",profileController.forgetEmailValid);
+router.post("/verify-passForgot-otp",profileController.verifyForgotPassOtp);
+router.get("/reset-password",profileController.getResetPasswordPage);
+router.post("/resend-forgot-otp",profileController.resendOTP);
+router.post("/reset-password",profileController.postNewPassword);
 
 
 

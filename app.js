@@ -4,7 +4,8 @@ const path = require("path");
 const env = require("dotenv").config();
 const db = require("./config/db");
 const session = require("express-session");
-const passport = require("./config/passport")
+const passport = require("./config/passport");
+const MongoStore = require("connect-mongo");
 
 const userRouter = require("./routes/userRouter")
 const adminRouter = require("./routes/adminRouter");
@@ -18,6 +19,10 @@ app.use(session({
     secret:process.env.SESSION_SECRET,
     resave:false,
     saveUninitialized:true,
+    store:MongoStore.create({
+        mongoUrl:'mongodb://127.0.0.1:27017/session-storage',
+        collectionName:"sessions"
+    }),
     cookie:{
         secure:false,
         httpOnly:true,

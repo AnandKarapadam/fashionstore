@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fashion Store - All Products</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    .navbar-brand{
+      font-size: 40px;
+      font-family:'Times New Roman', Times, serif;
+      color: rgb(74, 74, 74);
+    }
+    .product-card img {
+      width: 100%;
+      height: auto;
+    }
+
+    .product-card {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 10px;
+      text-align: center;
+      height: 100%;
+    }
+
+    .pagination .active .page-link {
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+      color: white;
+    }
+
+    .navbar .dropdown:hover .dropdown-menu {
+      display: block;
+    }
+
+    .navbar .dropdown-toggle::after {
+      display: inline-block;
+      margin-left: 0.3em;
+      vertical-align: middle;
+      transition: transform 0.3s ease;
+      content: "";
+      border-top: 0.4em solid;
+      border-right: 0.4em solid transparent;
+      border-left: 0.4em solid transparent;
+    }
+
+    .navbar .dropdown:hover .dropdown-toggle::after {
+      transform: rotate(180deg);
+    }
+    .nav-link{
+      font-weight: 500;
+      font-size: 17px;
+      color: black;
+    }
+    .nav-icon{
+      font-size: 23px;
+      font-weight: 700;
+      color: black;
+    }
+    .main-nav{
+      border-bottom: 2px solid rgb(63, 61, 61);
+      border-color: #ccc;
+    }
+    .product-card {
+  height: 100%;                
+  min-height: 300px;           
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.product-card img {
+  height: 200px;                
+  width: 100%;
+  object-fit: contain;            
+  border-radius: 4px;
+}
+
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar main-nav navbar-expand-lg navbar-light bg-white px-3 mb-4">
+    <a class="navbar-brand" href="#">RORITO</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <!-- Push everything to the right -->
+      <ul class="navbar-nav ms-auto gap-lg-5 mb-2 mb-lg-0">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/all-products">All products</a>
+        </li>
+        <% if(typeof user !== "undefined") {%>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <%= user.name.split(' ')[0] %>
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="/profile">Profile</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+          </ul>
+        </li>
+        <% } %>
+        <li class="nav-item d-lg-flex gap-5 align-items-center ">
+          <a class="nav-icon" href="/cart"><i class="bi bi-cart4"></i></a>
+          <a href="/wishlist" class="nav-icon"><i class="bi bi-handbag"></i></a>
+        </li>
+        <!-- <li class="nav-item d-flex align-items-center">
+          <form action="" class="d-flex ms-lg-3 mt-2 mt-lg-0" role="search">
+            <input class="form-control border border-1 border-dark me-2 form-control-sm rounded-4" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-dark btn-sm rounded-4 " type="submit">Search</button>
+          </form>
+        </li> -->
+        <li class="d-flex align-items-center">
+          <form class="d-flex gap-2 align-items-center" method="get" action="/all-products">
+         <input type="text" name="search" class="form-control form-control-sm rounded-4 border-1 border-dark" value="<%= search %>" placeholder="Search products...">
+         
+           <input type="hidden" name="category" value="<%= category %>">
+            <input type="hidden" name="sort" value="<%= sort %>">
+           <input type="hidden" name="minPrice" value="<%= minPrice %>">
+           <input type="hidden" name="maxPrice" value="<%= maxPrice %>">
+  
+
+         <button class="btn btn-dark btn-sm rounded-4" type="submit">Search</button>
+         <% if (search) { %>
+            <a class="btn btn-danger btn-sm rounded-4 " href="/all-products">Clear</a>
+          <% } %>
+         </form>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+  
+  <div class="container mt-3">
+  <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="/">Home</a></li>
+
+  <% if (category) { %>
+    <li class="breadcrumb-item"><a href="/all-products">All Products</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><%= category.charAt(0).toUpperCase() + category.slice(1) %></li>
+  <% } else if (search) { %>
+    <li class="breadcrumb-item"><a href="/all-products">All Products</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Search: "<%= search %>"</li>
+  <% } else { %>
+    <li class="breadcrumb-item active" aria-current="page">All Products</li>
+  <% } %>
+
+    </ol>
+  </nav>
+</div>
+
+
+  <div class="container text-center">
+    <h3>All Products</h3>
+  </div>
+  
+  <!-- Main Section -->
+  <div class="container mt-4">
+    <div class="row">
+      <!-- Sidebar Filters -->
+      <div class="col-md-3">
+        <form method="get" action="/all-products"  class="d-flex flex-column gap-3">
+          <!-- Sort -->
+          <div>
+            <label class="form-label">Sort By</label>
+            <select class="form-select" name="sort" onchange="this.form.submit()">
+              <option value="">Select</option>
+              <option value="priceLowHigh" <%= sort === 'priceLowHigh' ? 'selected' : '' %>>Price: Low to High</option>
+              <option value="priceHighLow" <%= sort === 'priceHighLow' ? 'selected' : '' %>>Price: High to Low</option>
+              <option value="nameAsc" <%= sort === 'nameAsc' ? 'selected' : '' %>>Name: A to Z</option>
+              <option value="nameDesc" <%= sort === 'nameDesc' ? 'selected' : '' %>>Name: Z to A</option>
+            </select>
+          </div> 
+
+          <!-- Category -->
+          <div>
+            <label class="form-label">Category</label>
+            <select class="form-select" name="category" onchange="this.form.submit()">
+              <option value="">All</option>
+              <% categories.forEach(cat =>{%>
+                <option value="<%= cat.name%>" <%category === cat.name?"active":"" %>><%= cat.name %></option>
+              <%})%>
+            </select>
+          </div>
+
+          <!-- Price Range -->
+          <div>
+            <button type="button" class="btn btn-link p-0" onclick="togglePriceRange()">Price Range ▼</button>
+            <div id="priceRangeBox" style="display: none;">
+              <label class="mt-2">Min: ₹<span id="minVal"><%= minPrice || 0 %></span></label>
+              <input type="range" class="form-range " name="minPrice" min="0" max="10000" step="100"
+                value="<%= minPrice || 0 %>" oninput="minVal.innerText = this.value">
+
+              <label>Max: ₹<span id="maxVal"><%= maxPrice || 10000 %></span></label>
+              <input type="range" class="form-range" name="maxPrice" min="0" max="10000" step="100"
+                value="<%= maxPrice || 10000 %>" oninput="maxVal.innerText = this.value">
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-outline-primary">Apply Filters</button>
+        </form>
+      </div>
+
+      <!-- Products -->
+      <div class="col-md-9 pt-4 ps-4">
+        <div class="row g-4">
+          <% products.forEach(product => { %>
+            <div class="col-6 col-md-4 col-lg-3">
+              <div class="product-card shadow-sm position-relative">
+                <a href="/product-details/<%= product._id %>" class="text-decoration-none text-dark">
+                  <img src="/uploads/re-image/<%= product.productImage[0] %>?/uploads/re-image/<%= product.productImage[0] %>:/uploads/product-images/<%= product.productImage[0] %>"  alt="<%= product.productName %>">
+                  <% if (product.quantity > 0) { %>
+                   <span class="badge bg-success position-absolute top-0 end-0 m-2">Available</span>
+                  <% } else { %>
+                  <span class="badge bg-danger position-absolute top-0 end-0  m-2">Out of Stock</span>
+                  <% } %>
+                  <% if (product.productOffer && product.productOffer > 0) { %>
+                   <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2"><%= product.productOffer %>% OFF</span>
+                  <% } %>
+                  <h6 class="mt-2 text-truncate"><%= product.productName %></h6>
+                  <div class="d-flex flex-column align-items-start">
+                  <span class="fw-bold text-success fs-6">₹<%= product.salePrice %></span>
+                  <% if (product.regularPrice > product.salePrice) { %>
+                 <small class="text-muted text-decoration-line-through">₹<%= product.regularPrice %></small>
+                <% } %>
+                 </div>
+                </a>
+              </div>
+            </div>
+          <% }) %>  
+        </div>
+
+        <!-- Pagination -->
+        <nav class="mt-4 d-flex justify-content-center">
+          <ul class="pagination">
+            <% const queryString = (page) => {
+              return `?page=${page}`
+                + (search ? `&search=${search}` : '')
+                + (sort ? `&sort=${sort}` : '')
+                + (category ? `&category=${category}` : '')
+                + (minPrice ? `&minPrice=${minPrice}` : '')
+                + (maxPrice ? `&maxPrice=${maxPrice}` : '');
+            };
+
+            const startPage = Math.max(1, currentPage - 1);
+            const endPage = Math.min(totalPages, startPage + 2);
+            %>
+
+            <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+              <a class="page-link" href="<%= queryString(currentPage - 1) %>">&laquo;</a>
+            </li>
+
+            <% for (let i = startPage; i <= endPage; i++) { %>
+              <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                <a class="page-link" href="<%= queryString(i) %>"><%= i %></a>
+              </li>
+            <% } %>
+
+            <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+              <a class="page-link" href="<%= queryString(currentPage + 1) %>">&raquo;</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <%- include("../partials/user/footer.ejs") %>
+  
+  <script>
+    function togglePriceRange() {
+      const box = document.getElementById('priceRangeBox');
+      box.style.display = box.style.display === 'none' || box.style.display === '' ? 'block' : 'none';
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

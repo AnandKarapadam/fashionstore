@@ -1,0 +1,150 @@
+<%- include("../partials/admin/header.ejs") %>
+    <%- include("../partials/admin/sidebar.ejs") %>
+
+
+        <div class="container-fluid mt-4">
+            <div class="mb-4">
+                <h4 class="fw-bold text-dark">Banner Management Dashboard</h4>
+            </div>
+
+            <div class="row">
+                
+                <div>
+                    <form method="GET" class="d-flex justify-content-end mb-3">
+                        <input type="text" name="search" value="<%= search %>" placeholder="Search..."
+                            class="form-control me-2" style="max-width: 300px;">
+                        <button class="btn btn-outline-primary">Search</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="clearSearch()">Clear</button>
+                    </form>
+
+                    <div class="table-responsive shadow-sm">
+                        <table class="table table-bordered table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Banner Image</th>
+                                    <th>Title</th>
+                                    <th>Description</th>
+                                    <th>Active</th>
+                                    <th>Delete</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (banners.length> 0) { %>
+                                    <% banners.forEach(banner=> { %>
+                                        <tr>
+                                            <td>
+                                                <% if (banner.image) { %>
+                                                    <img src="/uploads/re-image/<%= banner.image %>" alt="Image"
+                                                        style="width: 60px; height: 40px;">
+                                                    <% } else { %>
+                                                        N/A
+                                                        <% } %>
+                                            </td>
+                                            <td>
+                                                <%= banner.title?banner.title:"" %>
+                                            </td>
+                                            <td>
+                                                <%= banner.description %>
+                                            </td>
+                                            <td>
+                                                
+
+                                                <% if(new Date(banner.startDate).getTime() < Date.now() && new Date(banner.endDate).getTime() > Date.now()){ %>
+                                                <p class="badge rounded-pill border border-success text-success">Active</p>
+                                                <% } else{%>
+                                                <p class="badge text-danger border border-danger rounded-pill ">No Active</p>
+                                                <%}%>
+                                            </td>
+                                            <td>
+                                                <a href="/admin/deleteBanner?id=<%= banner._id %>"class="text-decoration-none fs-5 text-success"><i class="bi bi-trash3-fill"></i></a>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+                                            <% } else { %>
+                                                <tr>
+                                                    <td colspan="4" class="text-center">No brands found</td>
+                                                </tr>
+                                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="container d-flex justify-content-center mt-3">
+                    <form action="/admin/add-banner">
+                        <button class="btn btn-outline-primary mx-auto">Add Banner</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="container mt-3 mx-auto" id="paginationSection">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mb-4" >
+                    <!-- Previous Button -->
+                    <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+                        <a class="page-link" href="?page=<%= currentPage - 1 %>&search=<%= search %>"
+                            aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+
+                    <!-- Page Numbers -->
+                    <% for(let i=1; i <=totalPages; i++) { %>
+                        <li class="page-item <%= i == currentPage ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %>&search=<%= search %>">
+                                <%= i %>
+                            </a>
+                        </li>
+                        <% } %>
+
+                            <!-- Next Button -->
+                            <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+                                <a class="page-link" href="?page=<%= currentPage + 1 %>&search=<%= search %>"
+                                    aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </li>
+                </ul>
+            </nav>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            function clearSearch() {
+                document.querySelector('input[name="search"]').value = '';
+                document.getElementById('searchForm').submit();
+                window.location.href = "/admin/brands";
+            }
+            const toggleButton = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+
+            toggleButton.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                content.classList.toggle('expanded');
+
+            });
+
+            function confirmDelete(event) {
+                event.preventDefault();
+
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "This brand will be permently deleted!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#6c757d",
+                    confirmButtonText: "Yes, delete it"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        event.target.submit();
+                    }
+                })
+
+            }
+        </script>
+
+        <%- include("../partials/admin/footer.ejs") %>
