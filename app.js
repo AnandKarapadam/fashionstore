@@ -44,7 +44,7 @@ app.use("/",userRouter);
 app.use("/admin",adminRouter);
 
 app.listen(process.env.PORT,(err)=>{
-    console.log("Server running..");
+    console.log("Server running port:",process.env.PORT);
 })
 
 
