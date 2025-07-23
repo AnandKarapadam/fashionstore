@@ -37,3 +37,5 @@ let couponSchema = new Schema({
 
 
 let Coupon = mongoose.model("Coupon",couponSchema);
+
+module.exports=Coupon;

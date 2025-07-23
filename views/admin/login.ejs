@@ -1,25 +1,28 @@
 <%- include("../partials/admin/header.ejs") %> 
 
- <div class="admin-login-container d-flex align-items-center justify-content-center vh-100">
-    <div class="card shadow-lg p-4 admin-login-box">
-      <h3 class="text-center mb-4 text-primary">Admin Login</h3>
-      <form action="/admin/login" method="POST">
-        <% if (message) { %>
-          <div class="alert alert-danger py-1 text-center"><%= message %></div>
-        <% } %>
-        <div class="mb-3">
-          <label for="email" class="form-label">Email</label>
-          <input type="email" name="email" class="form-control" placeholder="admin@example.com" required />
-        </div>
-        <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
-          <input type="password" name="password" class="form-control" placeholder="Enter password" required />
-        </div>
-        <div class="d-grid">
-          <button class="btn btn-primary" type="submit">Login</button>
-        </div>
-      </form>
+ <div class="container pt-4 mt-5">
+  <div class="container shadow-sm border border-1 rounded-4 w-50 p-4 mt-5" >
+  <form action="/admin/login" method="post">
+    <div class="row text-center">
+        <h3>Admin Login</h3>
+        <hr>
     </div>
+    <div class="row mb-4">
+        <label for="email" class="form-label fw-bold">Email</label>
+        <input type="text" id="email" class="form-control" name="email" placeholder="admin@example.com" required>
+    </div>
+    <div class="row mb-4">
+        <label for="password" class="form-label fw-bold">Password</label>
+        <input type="password" id="password" class="form-control" name="password" placeholder="enter password" required>
+    </div>
+    <% if (message) { %>
+          <div class="alert alert-danger py-1 text-center"><%= message %></div>
+    <% } %>
+    <div class="row d-flex justify-content-center">
+        <button type="submit" class="btn btn-dark fw-bold">Login</button>
+    </div>
+  </form>  
+  </div>
   </div>
 
 <%- include("../partials/admin/footer.ejs") %>

@@ -1,31 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Fashion Store Home</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forget Password</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <style>
-    .product-card img {
+    .navbar-brand{
+      font-size: 40px;
+      font-family:'Times New Roman', Times, serif;
+      color: rgb(74, 74, 74);
+    }
+    .explore{
+      font-size: 23px;
+      font-weight:500;
+    }
+    .banner{
+      height: 400px;
       width: 100%;
-      height: auto;
+    }
+    .scroll-container {
+      display: flex;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      gap: 1rem;
+      padding: 1rem 0;
     }
 
     .product-card {
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      padding: 10px;
-      text-align: center;
-      min-width: 200px;
+      flex: 0 0 auto;
+      width: 150px;
     }
 
-    .pagination a.active {
-      background-color: #0d6efd;
-      color: white !important;
+    .scroll-buttons {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .navbar .dropdown:hover .dropdown-menu {
+    .scroll-buttons button {
+      border: none;
+      background-color: transparent;
+      font-size: 1.5rem;
+    }
+
+    .scroll-buttons button:hover {
+      color: #007bff;
+    }
+
+    /* Optional: hide scrollbar */
+    .scroll-container::-webkit-scrollbar {
+      display: none;
+    }
+    .scroll-container {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .footer-hr {
+    border: none;
+    height: 2px;
+    background-color: black;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+  }
+  .navbar .dropdown:hover .dropdown-menu {
       display: block;
       margin-top: 0;
     }
@@ -46,167 +86,179 @@
     .navbar .dropdown:hover .dropdown-toggle::after {
       transform: rotate(180deg);
     }
+    .nav-link{
+      font-weight: 500;
+      font-size: 17px;
+    }
+    .nav-icon{
+      font-size: 23px;
+      font-weight: 700;
+      color: black;
+    }
+    
+    .pro-card{
+      height: 200px;
+    }
+    .pro-card img{
+      height: 150px;
+    }
   </style>
 </head>
-
 <body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white px-3 mb-4">
+    <a class="navbar-brand" href="#">RORITO</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Fashion Store</a>
-    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex flex-row gap-3">
-      <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-
-      
-        <li class="nav-item">
-          <a class="btn btn-outline-light" href="/login">Login</a>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <!-- Push everything to the right -->
+      <ul class="navbar-nav ms-auto gap-lg-5 mb-2 mb-lg-0">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Home</a>
         </li>
         <li class="nav-item">
-          <a class="btn btn-light text-dark" href="/signup">Sign Up</a>
+          <a class="nav-link" href="/all-products">All products</a>
         </li>
-      
-
-    </ul>
-  </div>
-</nav>
-
-
-  <!-- Search Bar -->
-  <div class="container mt-3">
-    <form class="d-flex justify-content-end gap-2" method="get" action="/">
-      <input type="text" name="search" class="form-control w-25" value="<%= search %>" placeholder="Search products...">
-      <button class="btn btn-primary" type="submit">Search</button>
-      <% if (search) { %>
-        <a class="btn btn-danger" href="/">Clear</a>
-        <% } %>
-    </form>
-  </div>
-
-  <!-- Main Content -->
-  <div class="container mt-4">
-    <div class="row">
-      <!-- Filter Sidebar -->
-      <div class="col-md-3">
-        <form method="get" action="/" class="d-flex flex-column gap-3">
-          <div>
-            <label class="form-label">Sort By</label>
-            <select class="form-select" name="sort" onchange="this.form.submit()">
-              <option value="">Select</option>
-              <option value="priceLowHigh" <%=sort==='priceLowHigh' ? 'selected' : '' %>>Price: Low to High</option>
-              <option value="priceHighLow" <%=sort==='priceHighLow' ? 'selected' : '' %>>Price: High to Low</option>
-              <option value="nameAsc" <%=sort==='nameAsc' ? 'selected' : '' %>>aA - zZ</option>
-              <option value="nameDesc" <%=sort==='nameDesc' ? 'selected' : '' %>>zZ - aA</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="form-label">Category</label>
-            <select class="form-select" name="category" onchange="this.form.submit()">
-              <option value="">All</option>
-              <option value="pants" <%=category==='pants' ? 'selected' : '' %>>Pants</option>
-              <option value="jackets" <%=category==='jackets' ? 'selected' : '' %>>Jackets</option>
-              <option value="tshirts" <%=category==='tshirts' ? 'selected' : '' %>>T-Shirts</option>
-              <option value="shirts" <%=category==='shirts' ? 'selected' : '' %>>Shirts</option>
-            </select>
-          </div>
-
-          <!-- Price Range -->
-          <div>
-            <button type="button" class="btn btn-link p-0" onclick="togglePriceRange()">Price Range ▼</button>
-            <div id="priceRangeBox" style="display: none;">
-              <label for="minRange">Min: ₹<span id="minVal">
-                  <%= minPrice || 0 %>
-                </span></label>
-              <input type="range" class="form-range" name="minPrice" id="minRange" min="0" max="10000" step="100"
-                value="<%= minPrice || 0 %>" oninput="minVal.innerText = this.value">
-
-              <label for="maxRange">Max: ₹<span id="maxVal">
-                  <%= maxPrice || 10000 %>
-                </span></label>
-              <input type="range" class="form-range" name="maxPrice" id="maxRange" min="0" max="10000" step="100"
-                value="<%= maxPrice || 10000 %>" oninput="maxVal.innerText = this.value">
-            </div>
-          </div>
-
-          <button type="submit" class="btn btn-outline-primary">Apply Filters</button>
-        </form>
-      </div>
-
-      <!-- Product Grid -->
-      <div class="col-md-9">
-        <div class="row g-4">
-          <% products.forEach(product=> { %>
-            <div class="col-6 col-md-4 col-lg-3">
-              <div class="product-card h-100">
-                <a href="/products/<%= product._id %>">
-                  <img src="<%= product.image %>" alt="<%= product.name %>">
-                  <h6 class="mt-2">
-                    <%= product.name %>
-                  </h6>
-                  <p class="text-muted">₹<%= product.price %>
-                  </p>
-                </a>
-              </div>
-            </div>
-            <% }) %>
-        </div>
-
-        <!-- Pagination -->
-        <nav aria-label="Page navigation example">
-          <ul class="pagination justify-content-center">
-
-            <% const queryString=(page)=> {
-              return `?page=${page}`
-              + (search ? `&search=${search}` : '')
-              + (sort ? `&sort=${sort}` : '')
-              + (category ? `&category=${category}` : '')
-              + (minPrice ? `&minPrice=${minPrice}` : '')
-              + (maxPrice ? `&maxPrice=${maxPrice}` : '');
-              };
-
-              const startPage = Math.max(1, currentPage - 1);
-              const endPage = Math.min(totalPages, startPage + 2);
-              %>
-
-              <!-- Previous Button -->
-              <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
-                <a class="page-link" href="<%= queryString(currentPage - 1) %>" aria-label="Previous">
-                  <span aria-hidden="true">&laquo;</span>
-                  <span class="visually-hidden">Previous</span>
-                </a>
-              </li>
-
-              <!-- Page Numbers -->
-              <% for (let i=startPage; i <=endPage; i++) { %>
-                <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-                  <a class="page-link" href="<%= queryString(i) %>">
-                    <%= i %>
-                  </a>
-                </li>
-                <% } %>
-
-                  <!-- Next Button -->
-                  <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
-                    <a class="page-link" href="<%= queryString(currentPage + 1) %>" aria-label="Next">
-                      <span aria-hidden="true">&raquo;</span>
-                      <span class="visually-hidden">Next</span>
-                    </a>
-                  </li>
-          </ul>
-        </nav>
-
-      </div>
+        
+        <li class="d-flex flex-row justify-content-center pe-3 gap-2">
+            <a href="/login" class="btn d-flex align-items-center btn-dark fw-bold h-75">Login</a>
+            <a href="/signup" class="btn d-flex align-items-center h-75 btn-outline-dark fw-bold">Signup</a>
+        </li>
+      </ul>
     </div>
+  </nav>
+
+  <div class="container-fluid mb-4">
+    <a href="/all-products"><img class="img-fluid banner" src="/uploads/re-image/<%= banner.image %>" alt=""></a>
   </div>
 
+  <div class="container text-center">
+    <h2 class="explore">EXPLORE BY CATEGORY</h2>
+  </div>
+
+  <div class="container mt-5">
+
+  <!-- Left/Right Scroll Buttons -->
+  <div class="scroll-buttons mb-2">
+    <button onclick="scrollLeft()">&larr;</button>
+    <button onclick="scrollRight()">&rarr;</button>
+  </div>
+
+  <!-- Horizontal Scrollable Card Row -->
+   
+  <div class="scroll-container d-flex justify-content-center" id="cardRow">
+    <% category.forEach(cat => { %>
+      <a href="/all-products?category=<%= cat.name %>" class="text-decoration-none text-dark">
+        <div class="card product-card">
+          <img src="<%= cat.image %>" class="card-img-top" alt="<%= cat.name %>">
+          <div class="card-body p-2">
+            <h6 class="card-title text-center mb-0"><%= cat.name %></h6>
+          </div>
+        </div>
+      </a>
+    <% }) %>
+  </div>
+</div>
+
+
+<div class="container text-center">
+    <h2 class="explore mt-5">TOP TRENDS</h2>
+  </div>
+
+  <div class="container mt-5">
+
+  <!-- Left/Right Scroll Buttons -->
+  <div class="scroll-buttons mb-2">
+    <button onclick="scrollLeft()">&larr;</button>
+    <button onclick="scrollRight()">&rarr;</button>
+  </div>
+
+  <!-- Horizontal Scrollable Card Row -->
+  <div class="scroll-container d-flex justify-content-center" id="cardRow">
+    <% products.forEach(product => { %>
+      <a href="/all-products?search=<%= product.productName %>" class="text-decoration-none text-dark">
+        <div class="card product-card pro-card">
+          <img src="/uploads/re-image/<%= product.productImage[0] %>" class="card-img-top object-fit-cover" alt="<%= product.productName %>">
+          <div class="card-body p-2">
+            <h6 class="card-title text-center mb-0"><%= product.productName %></h6>
+          </div>
+        </div>
+      </a>
+    <% }) %>
+  </div>
+</div>
+
+<footer class="mt-5 bg-white">
+  <div class="container py-4">
+
+    <!-- Top Full-Width HR -->
+    <hr class="footer-hr mb-4">
+
+    <!-- Footer Content -->
+    <div class="row text-center text-md-start">
+
+      <!-- Brand -->
+      <div class="col-12 col-md-3 mb-3">
+        <h5 class="fw-bold">RORITO</h5>
+        <p class="text-muted">Your style. Your statement.</p>
+      </div>
+
+      <!-- Info -->
+      <div class="col-12 col-md-3 mb-3">
+        <h6 class="fw-bold">Info</h6>
+        <ul class="list-unstyled">
+          <li><a href="/about" class="text-muted text-decoration-none">About Us</a></li>
+          <li><a href="/contact" class="text-muted text-decoration-none">Contact</a></li>
+          <li><a href="/faq" class="text-muted text-decoration-none">FAQ</a></li>
+        </ul>
+      </div>
+
+      <!-- Policies -->
+      <div class="col-12 col-md-3 mb-3">
+        <h6 class="fw-bold">Policies</h6>
+        <ul class="list-unstyled">
+          <li><a href="/privacy-policy" class="text-muted text-decoration-none">Privacy Policy</a></li>
+          <li><a href="/terms" class="text-muted text-decoration-none">Terms & Conditions</a></li>
+          <li><a href="/return-policy" class="text-muted text-decoration-none">Return Policy</a></li>
+        </ul>
+      </div>
+
+      <!-- Follow Us -->
+      <div class="col-12 col-md-3 mb-3">
+        <h6 class="fw-bold">Follow Us</h6>
+        <div>
+          <a href="#" class="me-3 text-dark"><i class="bi bi-facebook"></i></a>
+          <a href="#" class="me-3 text-dark"><i class="bi bi-instagram"></i></a>
+          <a href="#" class="me-3 text-dark"><i class="bi bi-twitter-x"></i></a>
+          <a href="#" class="text-dark"><i class="bi bi-youtube"></i></a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Full-Width HR -->
+    <hr class="footer-hr mt-4">
+
+    <!-- Copyright -->
+    <p class="text-center text-muted mb-0">&copy; <%= new Date().getFullYear() %> RORITO. All rights reserved.</p>
+
+  </div>
+</footer>
+
+  <!-- Bootstrap JS Bundle (includes Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    function togglePriceRange() {
-      const box = document.getElementById('priceRangeBox');
-      box.style.display = box.style.display === 'none' || box.style.display === '' ? 'block' : 'none';
+     const scrollContainer = document.getElementById('cardRow');
+
+    function scrollLeft() {
+      scrollContainer.scrollBy({ left: -200, behavior: 'smooth' });
+    }
+
+    function scrollRight() {
+      scrollContainer.scrollBy({ left: 200, behavior: 'smooth' });
     }
   </script>
-
 </body>
-
 </html>

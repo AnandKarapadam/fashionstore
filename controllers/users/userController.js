@@ -32,7 +32,8 @@ let loadHomepage = async (req,res)=>{
                           ? `/uploads/product-images/${product.productImage[0]}`
                           : "/images/default-category.jpg";
                       }
-                return res.render("user/home",{search : "Anand",sort:"low to high",category,minPrice:1000,maxPrice:2000,products:["p1","p2","p3"],totalPages:3,currentPage:4,user:userData,banner:findBanner,});
+                      const products = await Product.find().sort({quantity:1});
+                return res.render("user/home",{category,user:userData,banner:findBanner,products});
             }
             else{
                 return res.redirect("/signup");
@@ -52,7 +53,27 @@ let loadHomepage = async (req,res)=>{
 let loadLandingPage = async(req,res)=>{
     try {
         if(!req.session.user){
-            res.render("user/landingpage",{search:"",sort:"low to high",category:"pants",minPrice:1000,maxPrice:2000,products:["p1","p2","p3"],totalPages:3,currentPage:4});
+            const today = new Date().toISOString();
+            const findBanner = await Banner.findOne({
+            startDate:{$lt:new Date(today)},
+            endDate:{$gt:new Date(today)}
+        })
+        const products = await Product.find().sort({quantity:1})
+        const category = await Category.find({}).lean();
+
+                      for (let cat of category) {
+                          
+                        const product = await Product.findOne({
+                          category: cat.name,
+                          status: "Available", 
+                          isBlocked: false
+                        }).lean();
+
+                        cat.image = product?.productImage?.[0]
+                          ? `/uploads/product-images/${product.productImage[0]}`
+                          : "/images/default-category.jpg";
+                      }
+            res.render("user/landingpage",{category,banner:findBanner,products});
         }
         else{
             res.redirect("/");

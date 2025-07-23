@@ -99,7 +99,7 @@ const loadProductsPage = async(req,res)=>{
                 {brand:{$in:brandIds}}
             ]
         }
-        const productData = await Product.find(query).limit(limit).skip(skip).populate("category").populate("brand").exec();
+        const productData = await Product.find(query).limit(limit).skip(skip).sort({createdAt:-1}).populate("category").populate("brand").exec();
 
         const count = await Product.find(query).countDocuments();
 

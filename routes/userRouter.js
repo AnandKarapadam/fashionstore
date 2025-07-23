@@ -27,7 +27,7 @@ router.get("/auth/google/callback",passport.authenticate("google",{failureRedire
 
 
 
-router.get("/all-products",userAuth,userController.loadAllProductsPage);
+router.get("/all-products",userController.loadAllProductsPage);
 router.get("/product_details",userController.loadProductdetails);
 router.get("/pageNotFound",userController.loadPageNotFound);
 router.get("/logout",userController.logout);

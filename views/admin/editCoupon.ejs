@@ -1,0 +1,37 @@
+<%- include("../partials/admin/header.ejs") %>
+<%- include("../partials/admin/sidebar.ejs") %>
+
+<div class="container border border-1 shadow-sm rounded-4 p-5 w-50 ">
+<div class="card-body">
+    <div class="row mb-3 text-center">
+        <h3>Edit Coupon</h3>
+    </div>
+ <form action="/admin/coupon/edit/<%= coupon._id %>" method="POST">
+     <div class="mb-3">
+         <label class="form-label fw-bold">Coupon Name</label>
+         <input type="text" class="form-control shadow-sm" name="name" value="<%= coupon.name %>" required />
+     </div>
+     <div class="mb-3">
+         <label class="form-label fw-bold">Start Date</label>
+         <input type="date" class="form-control shadow-sm" name="startdate" value="<%= coupon.createOn.toISOString().split('T')[0] %>" required />
+     </div>
+     <div class="mb-3">
+         <label class="form-label fw-bold">End Date</label>
+         <input type="date" class="form-control shadow-sm" name="enddate" value="<%= coupon.expireOn.toISOString().split('T')[0] %>" required />
+     </div>
+     <div class="mb-3">
+         <label class="form-label fw-bold">Offer Price</label>
+         <input type="text" class="form-control shadow-sm" name="offerprice" value="<%= coupon.offerPrice %>" required />
+     </div>
+     <div class="mb-3">
+         <label class="form-label fw-bold">Minimum Price</label>
+         <input type="text" class="form-control shadow-sm" name="minimumprice" value="<%= coupon.minimumPrice %>" required />
+     </div>
+     <div class="row d-flex justify-content-center">
+     <button type="submit" class="btn btn-success w-25 shadow-sm">Edit Coupon</button>
+     </div>
+ </form> 
+</div>
+</div>
+
+<%- include("../partials/admin/footer.ejs") %>

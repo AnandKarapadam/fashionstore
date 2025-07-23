@@ -1,0 +1,206 @@
+<%- include("../partials/admin/header.ejs") %>
+<%- include("../partials/admin/sidebar.ejs") %>
+         
+        <div class="container mt-4">
+            
+            <div class="mb-4">
+                <h3 class="fw-bold text-dark">Coupon Management Dashboard</h3>
+            </div>
+
+            <div class="row">
+                <!-- Left: Add Brand -->
+                <div class="col-md-3">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-primary text-white">Add Brand</div>
+                        <div class="card-body">
+                            <form action="/admin/createCoupon" method="POST">
+                                <div class="mb-3">
+                                    <label class="form-label">Coupon Name</label>
+                                    <input type="text" class="form-control" name="name" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" name="startdate" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">End Date</label>
+                                    <input type="date" class="form-control" name="enddate" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Offer Price</label>
+                                    <input type="text" class="form-control" name="offerprice" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Minimum Price</label>
+                                    <input type="text" class="form-control" name="minimumprice" required />
+                                </div>
+                                <button type="submit" class="btn btn-success w-100">Add Coupon</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Table and Search -->
+                <div class="col-md-9">
+                    <form method="GET" class="d-flex justify-content-end mb-3">
+                        <input type="text" name="search" value="<%= search %>" placeholder="Search..."
+                            class="form-control me-2" style="max-width: 300px;">
+                        <button class="btn btn-outline-primary">Search</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="clearSearch()">Clear</button>
+                    </form>
+
+                    <div class="table-responsive shadow-sm">
+                        <table class="table table-bordered table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Created on</th>
+                                    <th>Expire on</th>
+                                    <th>Offer Price</th>
+                                    <th>Minimum Price</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (coupons.length> 0) { %>
+                                    <% coupons.forEach(coupon=> { %>
+                                        <tr>
+                                            <td>
+                                                <%= coupon.name %>
+                                            </td>
+                                            <td>
+                                                <%= new Date(coupon.createOn).toLocaleDateString("en-GB",{
+                                                    day:"2-digit",
+                                                    month:"2-digit",
+                                                    year:"2-digit",
+                                                    hour:"2-digit",
+                                                    minute:"2-digit",
+                                                    second:"2-digit",
+                                                    hour12:false
+                                                }) %>
+                                            </td>
+                                            <td>
+                                                <%= new Date(coupon.expireOn).toLocaleDateString("en-GB") %>
+                                            </td>
+                                            <td>
+                                                <%= coupon.offerPrice %>
+                                            </td>
+                                            <td>
+                                                <%= coupon.minimumPrice %>
+                                            </td>
+                                            <td>
+                                                <%= coupon.isList ? "Listed" : "UnListed" %>
+                                            </td>
+                                            <td>
+                                                <form action="/admin/coupon/toggle-list/<%= coupon._id %>" method="POST"
+                                                    class="d-inline">
+                                                    <button
+                                                        class="btn btn-sm <%= coupon.isListed ? 'btn-warning' : 'btn-success' %>">
+                                                        <%= coupon.isList ? "List" : "Unlist" %>
+                                                    </button>
+                                                </form>
+                                                <a href="/admin/coupon/edit/<%= coupon._id %>"
+                                                    class="btn btn-sm btn-primary">Edit</a>
+                                                <form action="/admin/coupon/delete/<%= coupon._id %>" method="POST"
+                                                    class="d-inline" onsubmit="return confirmDelete(event)">
+                                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+                                            <% } else { %>
+                                                <tr>
+                                                    <td colspan="4" class="text-center">No brands found</td>
+                                                </tr>
+                                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container mt-3" id="paginationSection">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mb-4" style="margin-right: -250px;">
+                    <!-- Previous Button -->
+                    <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+                        <a class="page-link" href="?page=<%= currentPage - 1 %>&search=<%= search %>"
+                            aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+
+                    <!-- Page Numbers -->
+                    <% for(let i=1; i <=totalPages; i++) { %>
+                        <li class="page-item <%= i == currentPage ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %>&search=<%= search %>">
+                                <%= i %>
+                            </a>
+                        </li>
+                        <% } %>
+
+                            <!-- Next Button -->
+                            <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+                                <a class="page-link" href="?page=<%= currentPage + 1 %>&search=<%= search %>"
+                                    aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </li>
+                </ul>
+            </nav>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            window.addEventListener('DOMContentLoaded', () => {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+
+            const formattedDate = `${yyyy}-${mm}-${dd}`;
+
+    // Set value and min for start date
+           const startDateInput = document.querySelector('input[name="startdate"]');
+            if (startDateInput) {
+               startDateInput.value = formattedDate;
+               startDateInput.min = formattedDate; // prevent selecting past dates
+            }
+
+    // Optional: restrict end date also from being earlier than today
+            const endDateInput = document.querySelector('input[name="enddate"]');
+            if (endDateInput) {
+              endDateInput.min = formattedDate;
+            }
+          });
+            function clearSearch() {
+                document.querySelector('input[name="search"]').value = '';
+                document.getElementById('searchForm').submit();
+                window.location.href = "/admin/brands";
+            }
+            
+
+            function confirmDelete(event) {
+                event.preventDefault();
+
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "This brand will be permently deleted!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#6c757d",
+                    confirmButtonText: "Yes, delete it"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        event.target.submit();
+                    }
+                })
+
+            }
+        </script>
+
+        <%- include("../partials/admin/footer.ejs") %>

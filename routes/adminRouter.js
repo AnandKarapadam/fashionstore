@@ -10,6 +10,7 @@ const uploads = multer({storage:storage});
 const brandController = require("../controllers/admin/brandController");
 const productController = require("../controllers/admin/productController");
 const bannerController = require("../controllers/admin/bannerController");
+const couponController = require("../controllers/admin/couponController");
 
 router.get("/pageerror",adminController.pageError);
 
@@ -59,5 +60,16 @@ router.get("/add-banner",adminAuth,bannerController.getAddBanner);
 router.post("/add-banner",adminAuth,uploads.single("image"),bannerController.addBanner);
 router.get("/deleteBanner",adminAuth,bannerController.delBanner);
 
+//COUPON MANAGEMENT//
+router.get("/coupon",adminAuth,couponController.loadCouponPage);
+router.post("/createCoupon",adminAuth,couponController.createCoupon);
+router.post("/coupon/toggle-list/:id",adminAuth,couponController.toggleList);
+router.get("/coupon/edit/:id",adminAuth,couponController.loadEditCoupon);
+router.post("/coupon/edit/:id",adminAuth,couponController.editCoupon);
+router.post("/coupon/delete/:id",adminAuth,couponController.deleteCoupon);
+
+//ADMIN LOGOUT//
+
+router.get("/logout",adminAuth,adminController.adminLogout);
 
 module.exports = router;

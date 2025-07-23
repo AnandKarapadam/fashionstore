@@ -2,6 +2,7 @@ const user = require("../../models/userSchema");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const User = require("../../models/userSchema");
+const session = require("express-session");
 
 
 const loadLogin = async(req,res)=>{
@@ -28,15 +29,15 @@ const login = async(req,res)=>{
                 return res.redirect("/admin")
             }
             else{
-                return res.redirect("/login");
+                return res.render("admin/login",{message:"Wrong password"});
             }
         }
         else{
-            return res.redirect("/login")
+            return res.render("admin/login",{message:"Admin Not Found"})
         }
     } catch (error) {
         console.log("Login error",error.message);
-        return res.redirect("/pageerror");
+        return res.redirect("/admin/pageerror");
     }
 }
 
@@ -57,11 +58,38 @@ const loadDashboard = async(req,res)=>{
 const pageError = async(req,res)=>{
     res.render("admin/admin-error",{cssFile:"admin/dashboard"});
 }
+
+const adminLogout = async(req,res)=>{
+    try {
+
+        const id = req.session.user;
+
+        const adminData = await User.find({_id:id,isAdmin:true});
+
+        if(adminData){
+            req.session.destroy((err)=>{
+                if(err){
+                    console.error("Error in logout: ",err.message);
+                    return res.redirect("/admin/pageerror");
+                }
+
+                res.clearCookie("connect.id");
+                return res.redirect("/admin/login");
+            })
+        }
+        
+        
+    } catch (error) {
+        res.redirect("/admin/pageerror");
+        console.error("Error:",error.message);
+    }
+}
 module.exports = {
     loadLogin,
     login,
     loadDashboard,
-    pageError
+    pageError,
+    adminLogout
 }
 
 
