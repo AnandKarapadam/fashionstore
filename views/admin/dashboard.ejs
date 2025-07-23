@@ -2,9 +2,32 @@
 
 <%- include("../partials/admin/sidebar.ejs") %>
 
-<div class="container-fluid">
-  <h2>Welcome, Admin</h2>
-  <p>This is your dashboard overview.</p>
+<div class="container">
+  <div class="row jusitfy-content-center">
+    <div class="col-md-4">
+      <div class="card text-center p-2 shadow-sm bg-light">
+        <h2 style="text-shadow: 2px 1px 2px #000000;" class="fw-semibold">Active Users</h2>
+        <i class="bi bi-list-ol fs-1 text-success fw-bold"></i>
+        <p class="fw-bold fs-3">Count : <span class="text-primary fw-bold" style="text-shadow: 2px 1px 2px #000000;"  ><%= count%></span> </p>
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <div class="card text-center p-2  shadow-sm bg-light">
+        <h2 style="text-shadow: 2px 1px 2px #000000;" class="fw-semibold">Active Products</h2>
+        <i class="bi bi-luggage-fill fs-1 text-primary fw-bold"></i>
+        <p class="fw-bold fs-3">Count : <span class="text-success fw-bold" style="text-shadow: 2px 1px 2px #000000;"><%= products%></span> </p>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+       <div class=" card text-center p-2  shadow-sm bg-light">
+        <h2 style="text-shadow: 2px 1px 2px #000000;" class="fw-semibold">Companies</h2>
+        <i class="bi bi-suitcase-lg-fill text-danger fw-bold fs-1"></i>
+        <p class="fw-bold fs-3">Count : <span class="text-warning fw-bold" style="text-shadow: 2px 1px 2px #000000;"><%= brand%></span> </p>
+      </div>
+  </div>
+  </div>
 </div>
 
 <script>

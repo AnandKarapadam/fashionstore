@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const User = require("../../models/userSchema");
 const session = require("express-session");
+const Product = require("../../models/productSchema");
+const Brand = require("../../models/brandSchema");
 
 
 const loadLogin = async(req,res)=>{
@@ -44,7 +46,12 @@ const login = async(req,res)=>{
 const loadDashboard = async(req,res)=>{
     try {
         if(req.session.admin){
-           return res.render("admin/dashboard",{cssFile:"admin/dashboard"});
+
+           const count = await User.countDocuments({isBlocked:false});
+           const prCount = await Product.countDocuments({isBlocked:false});
+           const brCount = await Brand.countDocuments({isBlocked:false});
+
+           return res.render("admin/dashboard",{cssFile:"admin/dashboard",count,products:prCount,brand:brCount});
         }
         else {
       return res.redirect("/admin/login");
