@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const Category = require("../../models/categorySchema");
 const Product = require("../../models/productSchema");
 const Banner = require("../../models/bannerSchema");
+const Review = require("../../models/reviewSchema");
 
 let loadHomepage = async (req,res)=>{
     try {
@@ -23,7 +24,7 @@ let loadHomepage = async (req,res)=>{
                       for (let cat of category) {
                           
                         const product = await Product.findOne({
-                          category: cat.name,
+                          category: cat._id,
                           status: "Available", // matching your enum value
                           isBlocked: false
                         }).lean();
@@ -64,7 +65,7 @@ let loadLandingPage = async(req,res)=>{
                       for (let cat of category) {
                           
                         const product = await Product.findOne({
-                          category: cat.name,
+                          category: cat._id,
                           status: "Available", 
                           isBlocked: false
                         }).lean();
@@ -178,7 +179,7 @@ let signup = async (req,res)=>{
         const {name,email,phone,password,confirmPassword} = req.body;
 
         if(password !== confirmPassword){
-           return res.render("/signup",{message:"Password do not match"})
+           return res.render("user/signup",{message:"Password do not match"})
         }
         const findUser = await User.findOne({email});
         if(findUser){
@@ -187,10 +188,10 @@ let signup = async (req,res)=>{
 
         const otp = generateOtp();
 
-        const emailSend = sendVerificationEmail(email,otp);
+        const emailSend =await sendVerificationEmail(email,otp);
 
         if(!emailSend){
-            return res.json("email-error");
+            return res.render("user/signup",{message:"Email sending failed, check network connection!"})
         }
 
         req.session.userOtp = otp;
@@ -201,13 +202,13 @@ let signup = async (req,res)=>{
 
     } catch (error) {
         console.log("Signup Error",error);
-        res.redirect("../../views/user/pageNotFound");
+        res.redirect("/pageNotFound");
     }
 }
 
 let loadOtp = async (req,res)=>{
     try {
-        return res.render("user/otp");
+        return res.render("user/verify-otp");
     } catch (error) {
         console.log(error.message);
         res.status(500).send("server error");
@@ -265,9 +266,18 @@ let verifyOTP = async (req,res)=>{
             await saveUserData.save();
 
             req.session.user = saveUserData._id; 
-            res.json({success:true,redirectUrl:"/"})
+            req.session.save((err)=>{
+                if(err){
+                console.error("error:",err);
+                return res.status(500).json({success:false,message:"Failed to save session."});
+                }
+                return res.json({success:true,redirectUrl:"/login"})
+            })
+
+            
         }else{
-            res.status(400).json({success:false,message:"Invalied OTP, Please try again!"})
+            res.status(400).json({success:false,message:"Invalied OTP, Please try again!"});
+            console.log("error occured in otp sending")
         }
         
     } catch (error) {
@@ -280,7 +290,7 @@ const resendOTP = async(req,res)=>{
         const {email} = req.session.usersData;
 
         if(!email){
-            res.status(400).json({success:false,message:"Email found in session"})
+           return res.status(400).json({success:false,message:"Email not found in session"})
         }
 
         const otp = generateOtp();
@@ -335,12 +345,22 @@ const loadAllProductsPage = async(req,res)=>{
             maxPrice=100000,
         } = req.query;
 
+
+        let categoryName = null;
+
+        if(category){
+            const categoryDoc = await Category.findById(category).lean();
+            if(categoryDoc){
+                categoryName = categoryDoc.name;
+            }
+        }
+
             let query = {
                 salePrice:{$gte:parseInt(minPrice),$lte:parseInt(maxPrice)},
                 isBlocked:false
             }
             if(search){
-                query.productName = {$regex:new RegExp(search,"i")}
+                query.productName = {$regex:new RegExp(search,"i")} 
             }
             if(category){
                 query.category = category;
@@ -353,7 +373,7 @@ const loadAllProductsPage = async(req,res)=>{
             else if(sort === "nameDesc")sortOption.productName = -1;
         
 
-            const products = await Product.find(query).sort(sortOption).skip(skip).limit(limit);
+            const products = await Product.find(query).populate("category").sort(sortOption).skip(skip).limit(limit);
             const categories = await Category.find({isListed:true});
         
 
@@ -369,7 +389,8 @@ const loadAllProductsPage = async(req,res)=>{
             maxPrice,
             currentPage:page,
             totalPages,
-            categories
+            categories,
+            categoryName
         })
         
     } catch (error) {
@@ -387,24 +408,26 @@ const getProductDetails = async (req,res)=>{
             _id:id,
             isBlocked:false,
             status:{$ne:"Discontinued"}
-        });
-       
+        }).populate("category").populate("brand").lean();
+        
         if(!product){
             return res.redirect("/pageNotFound");
         }
-        
-        const productCategory = product.category;
+
+        const reviews = await Review.find({product:id}).populate("user","name").sort({createdAt:-1}).lean();       
 
         const relatedProducts = await Product.find({
             _id:{$ne:id},
-            category:productCategory,
+            category:product.category,
             isBlocked:false
-        })
+        }).populate("category").lean();
 
-        res.render("user/product_details",{product,relatedProducts})
+
+        res.render("user/product_details",{product,relatedProducts,reviews})
         
     } catch (error) {
-        
+        res.redirect("/pageNotFound");
+        console.error("Error while rendering product details:",error.message);
     }
 }
 const postReview = async(req,res)=>{
@@ -413,35 +436,52 @@ const postReview = async(req,res)=>{
         const id = req.params.id;
         const user = req.session.user;
         
-        const {
-            username,
-            rating,
-            comment,
-        } = req.body;
         if(!user){
             return res.redirect("/login");
         }
+
+        const {
+            rating,
+            comment,
+        } = req.body;
       
         const product = await Product.findById(id);
-        
+        if(!product){
+            return res.redirect("/pageNotFound");
+        }
 
-        product.ratings.reviews.push({
-            username,
+
+        const newReview = new Review({
+            user:user,
+            product:id,
             rating:Number(rating),
-            comment,
-            createdAt:new Date()
+            comment:comment
         })
 
-        product.ratings.count = product.ratings.reviews.length;
+        await newReview.save();
 
-        const totalRating = product.ratings.reviews.reduce((sum,review)=>sum+review.rating,0);
-        product.ratings.average = (totalRating/product.ratings.count).toFixed(1);
-        product.ratings.reviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        const reviews = await Review.find({product:id});
+
+        const totalRating = reviews.reduce((sum,r)=>sum+r.rating,0);
+        const averageRating =  totalRating/reviews.length;
+        
+        await Product.findByIdAndUpdate(id,{
+            "ratings.average":averageRating,
+            "ratings.count" :reviews.length
+        })
 
 
-        await product.save();
-       
-        res.render("user/product_details",{product});
+        const updatedProduct = await Product.findOne({_id:id}).populate("category").populate("brand").lean();
+
+        const updateReview = await Review.find({product:id}).populate("user","name").sort({createdAt:-1}).lean();
+
+        const relatedProducts = await Product.find({
+            _id:{$ne:id},
+            category:product.category,
+            isBlocked:false
+        }).populate("category").lean();
+              
+        res.render("user/product_details",{product:updatedProduct,reviews:updateReview,relatedProducts});
         
     } catch (error) {
         res.redirect("/pageNotFound");

@@ -23,8 +23,9 @@ const addproduct = async(req,res)=>{
 
         const products = req.body;
         const productExisting = await Product.find({productName:products.productName});
-
-       
+        
+       const categorys = await Category.find({ isListed: true });
+    const brands = await Brand.find({ isBlocked: false });
 
             if(productExisting.length === 0){
                 const images = [];
@@ -41,10 +42,11 @@ const addproduct = async(req,res)=>{
                         images.push(req.files[i].filename);
                     }
                 }
-                const categoryId = await Category.findOne({name:products.category});
+                const categoryDoc = await Category.findOne({_id:products.category});
+                const brandDoc = await Brand.findOne({_id:products.brands});
 
-                if(!categoryId){
-                    res.status(400).json("Invalid Category name");
+                if(!categoryDoc || !brandDoc){
+                  return  res.render("admin/addProduct",{message:"Category/Brand not found!",formData:products,categorys,brands});
                 }
 
                 let roundedOffer = '';
@@ -57,7 +59,7 @@ const addproduct = async(req,res)=>{
                     productName:products.productName,
                     description:products.description,
                     brand:products.brands,
-                    category:products.category,
+                    category:categoryDoc._id,
                     regularPrice:products.actualPrice,
                     salePrice:products.discountPrice,
                     quantity:products.quantity,
@@ -71,11 +73,13 @@ const addproduct = async(req,res)=>{
                 return res.redirect("/admin/products");
             }
         else{
-            return res.status(400).json("Product already exists");
+            return res.render("admin/addProduct",{message:"Product Already Exists!",formData:products,brands,categorys});
         }
+
         
     } catch (error) {
         console.log("Error in saving new Product");
+        console.error("Error:",error.message);  
         return res.redirect("/admin/pageerror");
         
     }
@@ -152,13 +156,17 @@ const addOffer = async(req,res)=>{
 
         if(productData){
             const realPrice = productData.regularPrice;
-            const offer = ((realPrice-offerPrice)/realPrice)*100;
+             
+
+            let  offer = ((realPrice-offerPrice)/realPrice)*100;
             await Product.findByIdAndUpdate(id,{
                 salePrice:offerPrice,
                 productOffer:Math.round(offer)});
                 
-        }
+             }   
+                
         res.redirect("/admin/products");
+        
         
     } catch (error) {
         console.error("Error in add offer:",error.message);

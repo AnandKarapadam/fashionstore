@@ -48,11 +48,12 @@ const sendVerificationEmail = async (email,otp)=>{
 const securePassword = async(password)=>{
     try {
         
-        const passwordHash = await hash(password,10);
+        const passwordHash = await bcrypt.hash(password,10);
         return passwordHash
         
     } catch (error) {
         console.log("Cannot hash password..!");
+        console.error("error:",error.message);
     }
 }
 
@@ -125,7 +126,7 @@ const getResetPasswordPage = async(req,res)=>{
     }
 }
 
-const resendOTP = async (req,res)=>{
+const resendforgotOTP = async (req,res)=>{
     try {
         const otp = generateOtp();
         req.session.userOtp = otp;
@@ -174,6 +175,6 @@ module.exports = {
     forgetEmailValid,
     verifyForgotPassOtp,
     getResetPasswordPage,
-    resendOTP,
+    resendforgotOTP,
     postNewPassword
 }

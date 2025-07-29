@@ -9,6 +9,13 @@
   <style>
     body {
       background: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .rorito{
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 40px;
     }
     .card {
       border: none;
@@ -22,23 +29,30 @@
     .google-btn:hover {
       background: #f1f1f1;
     }
+    .error-message{
+      color: red;
+      font-size: 12px;
+    }
+    
   </style>
 </head>
 <body>
-  <div class="container d-flex justify-content-center align-items-center vh-100">
-    <div class="col-md-5">
-      <div class="card p-4">
-        <h3 class="text-center mb-4">Welcome Back</h3>
 
-        <form method="POST" action="/login">
+  <div class="container d-flex justify-content-center mt-5">
+    <div class="row mt-5  w-75 border border-1 border-light  bg-white rounded-4 shadow-sm">
+    <div class="col-lg-6">
+      <div class="p-4">
+        <h3 class="text-center rorito mb-4">RORITO</h3>
+
+        <form method="POST" action="/login" id="loginform">
           <div class="mb-3">
-            <label for="email" class="form-label">Email address</label>
-            <input type="email" class="form-control" name="email" id="email" required />
+            <input type="email" class="form-control bg-light fw-semibold" name="email" id="email" placeholder="Email" />
+            <div><p id="error1" class="error-message"></p></div>
           </div>
 
-          <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" name="password" id="password" required />
+          <div class="mb-4">
+            <input type="password" class="form-control bg-light fw-semibold" name="password" id="password" placeholder="Password" />
+            <div><p id="error2" class="error-message"></p></div>
           </div>
 
           <% if(locals.message && message.length>0){ %>
@@ -47,12 +61,12 @@
             </div>
           <% } %>  
 
-          <div class="d-grid gap-2">
-            <button type="submit" class="btn btn-primary">Login</button>
+          <div class="d-grid d-flex justify-content-center">
+            <button  type="submit" class="btn w-75  btn-dark">Login</button>
           </div>
         </form>
-        <div class="text-center mt-3">
-          <small><a href="/forget-password">Forgot password?</a></small>
+        <div class="text-end mt-2">
+          <small><a href="/forget-password" class="text-decoration-none">Forgot password?</a></small>
         </div>
 
         <div class="text-center my-3">
@@ -66,10 +80,86 @@
         </div>
 
         <div class="text-center mt-3">
-          <small>Don't have an account? <a href="/signup">Sign Up</a></small>
+          <small>Don't have an account? <a href="/signup" class="text-decoration-none">Sign Up</a></small>
         </div>
       </div>
     </div>
+    <div class=" d-none d-lg-flex align-items-center col-lg-6 justify-content-center">
+      <img src="/images/otp-img.jpg" style="width: 350px;height: 350px;object-fit: cover;" alt="" >
+    </div>
+    </div>
   </div>
+
+  <script>
+    let email = document.getElementById("email");
+    let password = document.getElementById("password");
+    let error1 = document.getElementById("error1");
+    let error2 = document.getElementById("error2");
+    let loginform = document.getElementById("loginform");
+    
+
+    function emailValidation(e) {
+  const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
+  const emailVal = email.value.trim();
+
+  if (emailVal === "") {
+    error1.style.display = "block";
+    error1.innerHTML = "Email is required.";
+    return false;
+  } else if (!emailPattern.test(emailVal)) {
+    error1.style.display = "block";
+    error1.innerHTML =  "Email must contain a valid special character like '@' or '.'";
+    return false;
+  } else {
+    error1.style.display = "none";
+    error1.innerHTML = "";
+    return true;
+  }
+}
+
+    function passwordValidation(e){
+      let passwordVal = password.value.trim();
+      const alpha = /[a-zA-Z]/;
+      const digit = /\d/;
+
+      if(passwordVal == ""){
+        error2.style.display = "block";
+        error2.innerHTML = "This field cannot be empty";
+        return false;
+      }
+      else if (!alpha.test(passwordVal) || !digit.test(passwordVal)){
+        error2.style.display = "block";
+        error2.innerHTML = "Should contain alphabets and numbers";
+        return false;
+      }else if(passwordVal.length < 8){
+        error2.style.display = "block";
+        error2.innerHTML = "Should contain atleast 8 letters";
+        return false
+        
+      }
+      else{
+        error2.style.display = "none";
+        error2.innerHTML="";
+        return true;
+      }
+    }
+
+    email.addEventListener("input",emailValidation);
+    password.addEventListener("input",passwordValidation);
+
+loginform.addEventListener("submit",function(e){
+  e.preventDefault();
+ const isEmailValied = emailValidation();
+ const isPasswordValied = passwordValidation();
+
+  if(isEmailValied&& isPasswordValied){
+    loginform.submit()
+  }
+
+})
+
+
+
+  </script>
 </body>
 </html>

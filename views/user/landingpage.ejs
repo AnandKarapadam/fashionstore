@@ -150,7 +150,7 @@
    
   <div class="scroll-container d-flex justify-content-center" id="cardRow">
     <% category.forEach(cat => { %>
-      <a href="/all-products?category=<%= cat.name %>" class="text-decoration-none text-dark">
+      <a href="/all-products?category=<%= cat._id %>" class="text-decoration-none text-dark">
         <div class="card product-card">
           <img src="<%= cat.image %>" class="card-img-top" alt="<%= cat.name %>">
           <div class="card-body p-2">

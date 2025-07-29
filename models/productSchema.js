@@ -11,12 +11,12 @@ const productSchema = new mongoose.Schema({
         required:true
     },
     brand:{
-        type:String,
-        required:true
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Brand"
     },
     category:{
-        type: String,
-        required:true
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"Category"
     },
     regularPrice:{
         type:Number,
@@ -61,28 +61,6 @@ const productSchema = new mongoose.Schema({
       type: Number,
       default: 0
     },
-    reviews: [
-      {
-        username: {
-          type: String,
-          required: true
-        },
-        rating: {
-          type: Number,
-          required: true,
-          min: 1,
-          max: 5
-        },
-        comment: {
-          type: String,
-          trim: true
-        },
-        createdAt: {
-          type: Date,
-          default: Date.now
-        }
-      }
-    ]
   }
 },{timestamps:true})
 

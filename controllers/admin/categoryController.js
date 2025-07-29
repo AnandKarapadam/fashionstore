@@ -1,6 +1,6 @@
 const Category = require("../../models/categorySchema");
 
-
+const Product = require("../../models/productSchema");
 
 const categoryInfo = async(req,res)=>{
     try {
@@ -143,8 +143,9 @@ const editCategory = async(req,res)=>{
 const deleteCategory = async(req,res)=>{
     try {
         const {id} = req.params;
-        await Category.findByIdAndDelete(id);
-
+ 
+            await Category.findByIdAndDelete(id);
+        
         res.redirect("/admin/category");
 
     } catch (error) {

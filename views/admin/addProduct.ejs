@@ -1,396 +1,182 @@
 <%- include("../partials/admin/header.ejs") %>
     <%- include("../partials/admin/sidebar.ejs") %>
 
+        <div class="container py-2">
+            <h2 class="mb-3 fw-bold">Add Product</h2>
 
+            <form action="/admin/add-product" method="post" enctype="multipart/form-data"
+                onsubmit="return validateForm()">
 
-
-
-        <!DOCTYPE html>
-        <html lang="en">
-
-        <head>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <title>Add Product</title>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-                crossorigin="anonymous">
-            <!-- Cropper CSS -->
-            <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-
-            <style>
-                input.form-control {
-                    font-size: 15px;
-                    font-weight: 500;
-                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-                }
-                select.form-select{
-                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-                    font-size: 15px;
-                }   
-                textarea.form-control {
-                    font-size: 15px;
-                    font-weight: 500;
-                    resize: none;
-                    height: 90px;
-                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-                }
-
-                option {
-                    font-size: 13px;
-                    font-weight: 500;
-                }
-
-                .modal-dialog.modal-xl {
-                    max-width: 70vw;
-                    width: 75vw;
-                    height: 80vh;
-                }
-
-                .modal-content {
-                    height: 100%;
-                }
-
-                .modal-body {
-                    padding: 1rem;
-                    padding-left: 20%;
-                    max-height: 75vh;
-                    overflow: auto;
-                    
-                }
-
-                #cropper-image {
-                    display: block;
-                    object-fit: contain;
-                    max-width: 100%;
-                    max-height: 70vh;
-                    margin: 0 auto;
-                }
-            </style>
-        </head>
-
-        <body>
-
-            <div class="container py-4">
-                <h2 class="mb-3 fw-bold">Add Product</h2>
-
-                <form action="/admin/add-product" method="post" enctype="multipart/form-data"
-                    onsubmit="return validateForm()">
-                    <div class="mb-4">
-                        <label for="productName" class="fw-bold form-label">Product Name</label>
-                        <input type="text" name="productName" placeholder="Name.." class="form-control" id="productName"
-                            required>
-                        <div id="nameError" class="text-danger small"></div>
-                    </div>
-                    <div class="mb-4">
-                        <label for="productDescription" class="form-label fw-bold">Product Descritpion</label>
-                        <textarea name="description" id="productDescription" class="form-control"
-                            placeholder="Write the description here.."></textarea>
-                        <div id="descError" class="text-danger small"></div>
-                    </div>
-
-                    <div class="container mb-4">
-                        <div class="row">
-                            <!-- Brand -->
-                            <div class="col-6 col-md-3">
-                                <label for="brands" class="form-label fw-bold">Brands</label>
-                                <select class="form-select form-select-sm" name="brands" id="brands">
-                                    <% brands.forEach((brand)=>{%>
-                                        <option value="<%= brand.brandName %>"
-                                            style="font-size: 13px; font-weight: semibold;">
-                                            <%= brand.brandName %>
-                                        </option>
-                                        <% }) %>
-                                </select>
-                                <div id="brandError" class="text-danger small"></div>
-                            </div>
-                            
-
-                            <!-- Category -->
-                            <div class="col-6 col-md-3 mb-3">
-                                <label for="category" class="form-label fw-bold">Category</label>
-                                <select class="form-select form-select-sm" name="category" id="category">
-                                    <% categorys.forEach((category)=>{%>
-                                        <option value="<%= category.name %>"
-                                            style="font-size: 13px; font-weight: semibold;">
-                                            <%= category.name %>
-                                        </option>
-                                        <% }) %>
-                                </select>
-                                <div id="categoryError" class="text-danger small"></div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-2">
-                                    <label for="color" class="fw-bold mb-3">Color</label>
-                                    <input type="text" id="color" name="color" class="form-control" placeholder="Enter color">
-                                </div>
-                            </div>
+                <div class="row">
+                <div class="mb-2 col-md-6">
+                    <label for="productName" class="fw-bold form-label">Product Name</label>
+                    <input type="text" name="productName" placeholder="Name.." class="form-control productinput shadow-sm" id="productName"
+                        >
+                    <div id="nameError" class="text-danger small"></div>
+                </div>
+                <div class="mb-2 col-md-6">
+                    <label for="productDescription" class="form-label fw-bold">Product Descritpion</label>
+                    <textarea name="description" id="productDescription" class="form-control productinput shadow-sm"
+                        placeholder="Write the description here.."></textarea>
+                    <div id="descError" class="text-danger small"></div>
+                </div>
+                </div>
+                <div class="container mb-2">
+                    <div class="row">
+                        <!-- Brand -->
+                        <div class="col-6 col-md-3">
+                            <label for="brands" class="form-label fw-bold">Brands</label>
+                            <select class="form-select formselect form-select-sm shadow-sm" name="brands" id="brands">
+                                <option class="options" value="">Select</option>
+                                <% brands.forEach((brand)=>{%>
+                                    <option class="options" value="<%= brand._id %>"
+                                        style="font-size: 13px; font-weight: semibold;">
+                                        <%= brand.brandName %>
+                                    </option>
+                                    <% }) %>
+                            </select>
+                            <div id="brandError" class="text-danger small"></div>
                         </div>
-                    </div>
 
-                    <div class="container mb-4">
-                        <div class="row">
-                            <div class="col-4">
-                                <label for="actualPrice" class="form-label fw-bold">Actual Price</label>
-                                <input name="actualPrice" type="number" class="form-control" placeholder="₹">
-                                <div id="acPriceError" class="text-danger small"></div>
+
+                        <!-- Category -->
+                        <div class="col-6 col-md-3 mb-2">
+                            <label for="category" class="form-label fw-bold">Category</label>
+                            <select class="form-select formselect form-select-sm shadow-sm" name="category" id="category">
+                                <option class="options" value="">Select</option>
+                                <% categorys.forEach((category)=>{%>
+                                    
+                                    <option class="options" value="<%= category._id %>"
+                                        style="font-size: 13px; font-weight: semibold;">
+                                        <%= category.name %>
+                                    </option>
+                                    <% }) %>
+                            </select>
+                            <div id="categoryError" class="text-danger small"></div>
+                        </div>
+                        <div class="col-md-2">
+                                <label for="color" class="fw-bold mb-2">Color</label>
+                                <input type="text" id="color" name="color" class="form-control productinput shadow-sm"
+                                    placeholder="Enter color">
+                                    <div id="colorerror" class="text-danger small"></div>
                             </div>
-                            <div class="col-4">
-                                <label for="discountPrice" class="form-label fw-bold">Discount Price</label>
-                                <input name="discountPrice" type="number" class="form-control" placeholder="₹">
-                                <div id="dcPriceError" class="text-danger small"></div>
-                            </div>
-                            <div class="col-4">
-                                <label for="quantity" class="form-label fw-bold">Quantity</label>
-                                <input name="quantity" type="number" class="form-control">
-                                <div id="quantityError" class="text-danger small"></div>
-                            </div>
-                        </div>
+                       
                     </div>
+                </div>
 
-                    <!-- Edit Photos -->
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">Edit Photos</label>
-                        <div class="border p-3 rounded">
-                            <div class="row">
-                                <% for (let i=1; i <=4; i++) { %>
-                                    <div
-                                        class="col-12 col-md-6 col-lg-3 d-flex flex-column align-items-center mb-3 image-box">
-                                        <div class="mb-2 fw-semibold fs-6 text-muted">Add Image <%= i %>
-                                        </div>
-                                        <div class="image-preview mb-2 text-center rounded text-muted" id="preview<%= i %>"
-                                            style="width: 200px; height: 200px; line-height: 200px; border: 2px dashed #6c757d; background-color: #f8f9fa;">
-                                            No Image
-                                        </div>
-                                        <input type="file" name="images" class="form-control crop-image-input"
-                                            accept="image/*" style="width: 200px;">
-                                        <div id="imageError" class="text-danger small"></div>
-                                    </div>
-                                    <% } %>
-                            </div>
+                <div class="container mb-2">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="actualPrice" class="form-label fw-bold">Actual Price</label>
+                            <input name="actualPrice" type="number" class="form-control productinput shadow-sm" placeholder="₹">
+                            <div id="acPriceError" class="text-danger small"></div>
                         </div>
-                    </div>
-
-
-                    <div class="container">
-                        <div class=" d-flex justify-content-center align-items-center gap-3">
-                            <div><a class="btn btn-outline-dark fw-semibold" href="/admin/products">Cancel</a></div>
-                            <div><button class="btn btn-dark fw-semibold">Submit</button></div>
-
+                        <div class="col-4">
+                            <label for="discountPrice" class="form-label fw-bold">Discount Price</label>
+                            <input name="discountPrice" type="number" class="form-control productinput shadow-sm" placeholder="₹">
+                            <div id="dcPriceError" class="text-danger small"></div>
                         </div>
-                    </div>
-
-                </form>
-            </div>
-
-            <!-- Modal for cropping -->
-            <div class="modal fade" id="cropperModal" tabindex="-1" aria-labelledby="cropperModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog modal-xl modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Crop Image</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body mt-3">
-
-                            <img id="cropper-image"  />
-
-                        </div>
-                        <div class="modal-footer">
-                            <button id="cropImageBtn" class="btn btn-dark fw-semibold">Crop & Upload</button>
+                        <div class="col-4">
+                            <label for="quantity" class="form-label fw-bold">Quantity</label>
+                            <input name="quantity" type="number" class="form-control productinput shadow-sm">
+                            <div id="quantityError" class="text-danger small"></div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Edit Photos -->
+                <div class="mb-2">
+                    <label class="form-label fw-bold">Edit Photos</label>
+                    <div class="border p-2 rounded">
+                        <div class="row">
+                            <% for (let i=1; i <=4; i++) { %>
+                                <div
+                                    class="col-12 col-md-6 col-lg-3 d-flex flex-column align-items-center mb-3 image-box">
+                                    <div class="mb-2 fw-semibold fs-6 text-muted">Add Image <%= i %>
+                                    </div>
+                                    <div class="image-preview mb-2 text-center rounded text-muted" id="preview<%= i %>"
+                                        style="width: 200px; height: 200px; line-height: 200px; border: 2px dashed #6c757d; background-color: #f8f9fa;">
+                                        No Image
+                                    </div>
+                                    <input type="file" name="images" class="form-control productinput crop-image-input"
+                                        accept="image/*" style="width: 200px;">
+                                    
+                                </div>
+                                <% } %>
+                        </div>
+                    </div>
+                    <div id="imageError" class="text-danger small"></div>
+                </div>
+
+
+                <div class="container">
+                    <div class=" d-flex justify-content-center align-items-center gap-3">
+                        <div><a class="btn btn-outline-dark fw-semibold" href="/admin/products">Cancel</a></div>
+                        <div><button class="btn btn-dark fw-semibold">Submit</button></div>
+
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- Modal for cropping -->
+        <div class="modal fade" id="cropperModal" tabindex="-1" aria-labelledby="cropperModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered" >
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Crop Image</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body mt-3">
+
+                        <img id="cropper-image" />
+
+                    </div>
+                    <div class="modal-footer">
+                        <button id="cropImageBtn" class="btn btn-dark fw-semibold">Crop & Upload</button>
+                    </div>
+                </div>
             </div>
+        </div>
 
-            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-            
-              <% if (typeof error !== 'undefined' && error) { %>
-                 Swal.fire({
-                     icon: 'error',
-                     title: 'Oops...',
-                    text: "<%= error %>"
-                  });
-               <% } %>
-                  
-               <% if (typeof success !== 'undefined' && success) { %>
-                Swal.fire({
-                icon: 'success',
-                title: 'Success!',
-                text: "<%= success %>"
-                });
-               <% } %>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-                crossorigin="anonymous"></script>
+        
+
+        <% if (typeof error !=='undefined' && error) { %>
             <script>
-
-                function validateForm() {
-                    let isValid = true;
-                    document.querySelectorAll(".text-danger").forEach((text) => text.innerText = "");
-
-                    const name = document.getElementById("productName").value.trim();
-                    const desc = document.getElementById("productDescription").value.trim();
-                    const brand = document.getElementById("brands").value;
-                    const category = document.getElementById("category").value;
-                    const actualPrice = document.querySelector('input[name="actualPrice"]').value;
-                    const discountPrice = document.querySelector("input[name='discountPrice']").value;
-                    const quantity = document.querySelector("input[name='quantity']").value;
-
-                    const imageInputs = document.querySelectorAll(".crop-image-input");
-                    let imageSelected = false;
-                    imageInputs.forEach((input) => {
-                        if (input.files.length > 0) {
-                            imageSelected = true;
-                        }
-                    })
-
-                    if (!name) {
-                        document.getElementById("nameError").innerText = "Product name is required";
-                        isValid = false;
-                    }
-
-                    if (!desc) {
-                        document.getElementById("descError").innerText = "Product Description is required.";
-                        isValid = false;
-                    }
-
-                    if (!brand) {
-                        document.getElementById("brandError").innerText = "Please select a Brand.";
-                        isValid = false;
-                    }
-
-                    if (!category) {
-                        document.getElementById("categoryError").innerText = "Please select a Category.";
-                        isValid = false;
-                    }
-
-                    if (!actualPrice || actualPrice <= 0) {
-                        document.getElementById("acPriceError").innerText = "Enter a valid Actual Price.";
-                        isValid = false;
-                    }
-
-                    if (!discountPrice || discountPrice <= 0) {
-                        document.getElementById("dcPriceError").innerText = "Enter a valid Discount Price.";
-                        isValid = false;
-                    }
-
-                    if (parseFloat(discountPrice) >= parseFloat(actualPrice)) {
-                        document.getElementById("discountPriceError").innerText = "Discount Price must be less than Actual Price.";
-                        isValid = false;
-                    }
-
-                    if (!quantity || quantity <= 0) {
-                        document.getElementById("quantityError").innerText = "Enter a valid quantity.";
-                        isValid = false;
-                    }
-
-                    if (!imageSelected) {
-                        document.getElementById("imageError").innerText = "At least one image is required.";
-                        isValid = false;
-                    }
-                    if (!isValid) {
-                        const firstError = document.querySelector('.text-danger:not(:empty)');
-                        if (firstError) firstError.scrollIntoView({ behavior: 'smooth' });
-                    }
-
-                    return isValid;
-
-                }
-
-
-
-
-                let cropper;
-                let currentInput = null;
-                let currentPreview = null;
-                const cropperModal = new bootstrap.Modal(document.getElementById("cropperModal"));
-
-                document.querySelectorAll('.crop-image-input').forEach((input) => {
-                    input.addEventListener('change', openCropperModal);
+            Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: "<%= error %>"
                 });
+                </script>
+                <% } %>
+<% if(typeof message !== 'undefined' && message){%>
+    <script>
+    Swal.fire({
+        icon:"error",
+        title:"Oops...",
+        text:"<%= message %>"
+    })
+    </script>
 
-                function openCropperModal(event) {
-                    const file = event.target.files[0];
-                    if (!file) return;
-
-                    currentInput = event.target;
-                    currentPreview = currentInput.closest('.image-box').querySelector('.image-preview');
-
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        const image = document.getElementById("cropper-image");
-                        image.src = e.target.result;
-
-                        image.onload = function () {
-                            if (cropper) cropper.destroy();
-                            cropper = new Cropper(image, {
-                                aspectRatio: NaN,
-                                dragMode: 'move',
-                                viewMode: 0,
-                                cropBoxResizable: true,
-                                cropBoxMovable: true,
-                                left: 0,
-                                top: 0,
-                                responsive: true,
-                                autoCropArea: 1,
-                                rotatable: true,
-                                scalable: true,
-                                movable: true,
-                                zoomable: true,
-                                minContainerWidth: 600,
-                                minContainerHeight: 600,
-                                minCanvasWidth: 500,
-                                minCanvasHeight: 500,
+    <%}%>
+                    <% if (typeof success !=='undefined' && success) { %>
+                        <script>
+                        Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: "<%= success %>"
                             });
-
-                            cropperModal.show();
-                        };
-                    };
-                    reader.readAsDataURL(file);
-                }
-
-                document.getElementById("cropImageBtn").addEventListener("click", function () {
-                    if (!cropper || !currentInput || !currentPreview) return;
-
-
-                    const canvas = cropper.getCroppedCanvas();
-
-                    canvas.toBlob((blob) => {
-                        const ext = blob.type.split("/")[1] || "jpg";
-                        const fileName = `cropped-${Date.now()}.${ext}`;
-                        const file = new File([blob], fileName, { type: blob.type });
-
-                        const dataTransfer = new DataTransfer();
-                        dataTransfer.items.add(file);
-                        currentInput.files = dataTransfer.files;
-
-                        const previewImg = document.createElement("img");
-                        previewImg.src = URL.createObjectURL(blob);
-                        previewImg.style.width = "100%";
-                        previewImg.style.height = "100%";
-                        previewImg.style.objectFit = "cover";
-
-                        currentPreview.innerHTML = "";
-                        currentPreview.appendChild(previewImg);
-
-                        cropperModal.hide();
-                        cropper.destroy();
-                        cropper = null;
-                    });
-                });
-            </script>
-
-
-        </body>
-
-        </html>
+                            </script>
+                            <% } %>
+                           
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.js"></script>
+<script src="/script/admin/addproduct.js"></script>
 
 
 
-
-
-
-
-        <%- include("../partials/admin/footer.ejs") %>
+<%- include("../partials/admin/footer.ejs") %>

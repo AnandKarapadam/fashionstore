@@ -1,43 +1,86 @@
-<div id="sidebar" class="collapsed">
-  <h4 class="text-center">Admin Panel</h4>
-  <ul>
-    <li><a href="/admin"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a></li>
-    <li><a href="/admin/users"><i class="fa-solid fa-users me-2"></i> Customers</a></li>
-    <li><a href="/admin/category"><i class="fa-solid fa-layer-group me-2"></i>Category</a></li>
-    <li><a href="/admin/brands"><i class="fa-solid fa-medal me-2"></i>Brands</a></li>
-    <li><a href="/admin/add-product"><i class="fa-regular fa-square-plus me-2"></i>Add Product</a></li>
-    <li><a href="/admin/products"><i class="fa-brands fa-product-hunt me-2"></i>Products</a></li>
-    <li><a href="/admin/coupon"><i class="fa-solid fa-ticket me-2"></i>Coupon</a></li>
-    <li><a href="/admin/banner"><i class="fa-solid fa-rectangle-ad me-2"></i>Banner</a></li>
-    <li><a href="/admin/orders"><i class="fa-solid fa-cart-arrow-down me-2"></i>Orders</a></li>
-    <li><a href="/admin/logout"><i class="bi bi-box-arrow-right"></i>Logout</a></li>
-  </ul>
-</div>
+ <!-- Side-Nav -->
+  <div class="side-navbar  d-flex justify-content-between flex-wrap flex-column" id="sidebar">
+    <ul class="nav flex-column text-white w-100">
+      <a href="#" class="nav-link h3 text-white my-2">
+        RORITO
+      </a>
+      <li class="nav-link">
+        <a href="/admin" class="text-decoration-none text-white">
+          <i class="bi bi-house-door-fill"></i>
+          <span class="mx-2">Home</span>
+        </a>
+      </li>
+      <li class="nav-link">
+        <a href="/admin/users" class="text-decoration-none text-white">
+          <i class="bi bi-people-fill"></i>
+          <span class="mx-2">Customers</span>
+        </a>
+      </li>
+      <li class="nav-link">
+        <a href="/admin/category" class="text-decoration-none text-white">
+          <i class="bi bi-tags"></i>
+          <span class="mx-2">Category</span>
+        </a>
+      </li>
+      <li class="nav-link">
+        <a href="/admin/brands" class="text-decoration-none text-white">
+          <i class="bi bi-award"></i>
+          <span class="mx-2">Brands</span>
+        </a>
+      </li>
+      <li class="nav-link">
+        <a href="/admin/add-product" class="text-decoration-none text-white">
+          <i class="bi bi-plus-square"></i>
+          <span class="mx-2">Add Product</span>
+        </a>
+      </li>
+      <li class="nav-link">
+        <a href="/admin/products" class="text-decoration-none text-white">
+          <i class="bi bi-box-seam"></i>
+          <span class="mx-2">Products</span>
+        </a>
+      </li>
+      <li class="nav-link">
+        <a href="/admin/coupon" class="text-decoration-none text-white">
+          <i class="bi bi-gift"></i>
+          <span class="mx-2">Coupon</span>
+        </a>
+      </li>
+      <li class="nav-link">
+        <a href="/admin/banner" class="text-decoration-none text-white">
+          <i class="bi bi-images"></i>
+          <span class="mx-2">Banner</span>
+        </a>
+      </li>
+      <li class="nav-link">
+        <a href="/admin/orders" class="text-decoration-none text-white">
+          <i class="bi bi-receipt-cutoff"></i>
+          <span class="mx-2">Orders</span>
+        </a>
+      </li>
 
-<!-- Navbar -->
-<div id="content" class="expanded">
-  <nav class="navbar navbar-white bg-white mb-4">
-    <div class="container-fluid d-flex justify-content-between align-items-center position-relative">
 
-      <!-- Left: Toggle Button -->
-      <button class="toggle-btn btn" id="menu-toggle">
-        <i class="fas fa-bars"></i>
-      </button>
+    </ul>
 
-      <!-- Center: Brand Name -->
-      <div class="position-absolute start-50 translate-middle-x">
-        <span class="navbar-brand mb-0 h1" style="font-size: 40px;font-family: 'Times New Roman', Times, serif;color: rgb(74, 74,74);">
-           RORITO
-        </span>
+
+  </div>
+
+  <!-- Main Wrapper -->
+  <div class="p-1 my-container ">
+    <!-- Top Nav -->
+    <nav class="navbar top-navbar navbar-light bg-white px-3 border-bottom ">
+      <div class="container-fluid nav-container d-flex justify-content-between align-items-center w-100">
+        <!-- Sidebar toggle -->
+        <a class="btn border-0 fs-2 fw-bold" id="menu-btn"><i class="bx bx-menu"></i></a>
+
+        <!-- Centered brand -->
+        <span class="navbar-brand mx-auto fw-semibold fs-2 text-uppercase"
+          style="font-family: 'Times New Roman', Times, serif;">RORITO</span>
+
+        <!-- Placeholder for right side (can leave empty or add buttons) -->
+        <div style="width: 36px;"><a href="/admin/profile" class="text-decoration-none fs-4 text-secondary"><i class="bi bi-person-circle"></i></a>
+        </div> <!-- Maintains alignment balance -->
+
       </div>
 
-      <!-- Right: User Icon -->
-      <div>
-        <a href="#" class="text-decoration-none "><i class="fa-solid fa-user-tie fs-4"></i></a>
-      </div>
-
-    </div>
-    
-  </nav>
-  <hr style="height: 2px;background-color: black;border: none;">
-</div>
+    </nav>

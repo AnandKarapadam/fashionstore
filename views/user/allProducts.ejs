@@ -159,7 +159,7 @@
 
   <% if (category) { %>
     <li class="breadcrumb-item"><a href="/all-products">All Products</a></li>
-    <li class="breadcrumb-item active" aria-current="page"><%= category.charAt(0).toUpperCase() + category.slice(1) %></li>
+    <li class="breadcrumb-item active" aria-current="page"><%= categoryName %></li>
   <% } else if (search) { %>
     <li class="breadcrumb-item"><a href="/all-products">All Products</a></li>
     <li class="breadcrumb-item active" aria-current="page">Search: "<%= search %>"</li>
@@ -200,7 +200,7 @@
             <select class="form-select" name="category" onchange="this.form.submit()">
               <option value="">All</option>
               <% categories.forEach(cat =>{%>
-                <option value="<%= cat.name%>" <%category === cat.name?"active":"" %>><%= cat.name %></option>
+                <option value="<%= cat._id %>" <%category == cat._id.toString() ?"selected":""%> ><%= cat.name %></option>
               <%})%>
             </select>
           </div>

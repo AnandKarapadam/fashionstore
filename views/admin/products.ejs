@@ -94,8 +94,8 @@
           <% products.forEach(product => { %>
             <tr class="rounded-row">
               <td><%= product.productName %></td>
-              <td><%= product.brand ? product.brand : "N/A" %></td>
-              <td><%= product.category ? product.category    : "N/A" %></td>
+              <td><%= product.brand ? product.brand._id : "N/A" %></td>
+              <td><%= product.category ?"id:"+ product.category._id   : "N/A" %></td>
               <td>₹<%= product.regularPrice %></td> 
               <td>₹<%= product.salePrice %></td>
               <td><%= product.productOffer?product.productOffer+"%": "N/A" %></td>
@@ -107,8 +107,8 @@
                      </button>
                    </form>
                  <% } else { %>
-                   <form action="/admin/products/add-offer/<%= product._id %>" method="POST" class="d-flex align-items-center gap-2">
-                     <input type="number" name="offerPrice" placeholder="₹" class="form-control form-control-sm" style="max-width: 80px;" required />
+                   <form action="/admin/products/add-offer/<%= product._id %>" onsubmit="return validateOffer(this)" method="POST" class="d-flex align-items-center gap-2">
+                     <input type="number" name="offerPrice" placeholder="₹" data-regular-price ="<%= product.regularPrice %>" class="form-control form-control-sm" style="max-width: 80px;" min="1" />
                      <button class="btn btn-success btn-sm custom-btn">
                        <i class="fas fa-plus"></i> Add
                      </button>
@@ -178,27 +178,9 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <script>
-    document.querySelectorAll(".delete-form").forEach((form)=>{
-        form.addEventListener("submit",function(e){
-            e.preventDefault();
+ 
 
-            Swal.fire({
-                title:"Are you sure?",
-                text:"This product will be permentently deleted!",
-                icon:"warning",
-                showCancelButton:true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
-                confirmButtonText: "Yes, delete it!"
-            }).then((result)=>{
-                 if(result.isConfirmed){
-                    form.submit();
-                 }
-            })
-        })
-    })
-  </script>
+  <script src="/script/admin/products.js"></script>
 
 </body>
 </html>
