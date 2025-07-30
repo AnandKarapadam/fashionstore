@@ -5,7 +5,7 @@ const User = require("../../models/userSchema");
 const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
-const { options } = require("../../app");
+
 
 
 const getProductAddPage = async(req,res)=>{
@@ -55,6 +55,8 @@ const addproduct = async(req,res)=>{
                     roundedOffer = Math.round(offer);
                 }
 
+                const statusValidated = products.quantity > 0 ? 'Available' : 'Out of Stock';
+
                 const newProduct = new Product({
                     productName:products.productName,
                     description:products.description,
@@ -66,7 +68,7 @@ const addproduct = async(req,res)=>{
                     productOffer:roundedOffer||"",
                     color:products.color,
                     productImage:images,
-                    status:"Available",
+                    status:statusValidated,
                 })
                 await newProduct.save();
 
@@ -210,7 +212,7 @@ const productDelete = async (req,res)=>{
 const loadEditProduct = async(req,res)=>{
     try {
         const id = req.params.id;
-        const productData = await Product.findById(id);
+        const productData = await Product.findById(id).populate("category").populate("brand");
         
         if(!productData){
             return res.redirect("/admin/pageerror");
@@ -245,7 +247,7 @@ const editProduct = async (req, res) => {
     existingProduct.regularPrice = req.body.actualPrice;
     existingProduct.salePrice = req.body.discountPrice;
     existingProduct.quantity = req.body.quantity;
-
+    existingProduct.status = req.body.status;
    
 
     // Process uploaded images

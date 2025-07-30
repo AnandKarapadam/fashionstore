@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { search } = require("../app");
+
 const {Schema} = mongoose;
 
 const userSchema = new mongoose.Schema({

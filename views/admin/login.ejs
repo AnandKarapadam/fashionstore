@@ -1,28 +1,56 @@
-<%- include("../partials/admin/header.ejs") %> 
+<%- include("../partials/admin/header.ejs") %>
 
- <div class="container pt-4 mt-5">
-  <div class="container shadow-sm border border-1 rounded-4 w-50 p-4 mt-5" >
-  <form action="/admin/login" method="post">
-    <div class="row text-center">
-        <h3>Admin Login</h3>
-        <hr>
+    <div class="container pt-4 mt-5">
+        <div class="container shadow-sm border border-1 rounded-4 w-50 p-4 mt-5">
+            <form action="/admin/login" method="post" onsubmit="return validateForm()">
+                <div class="row text-center">
+                    <h3>Admin Login</h3>
+                    <hr>
+                </div>
+                <div class="row mb-4">
+                    <label for="email" class="form-label fw-bold">Email</label>
+                    <input type="text" id="email" class="form-control" name="email" placeholder="admin@example.com"
+                        required>
+                    <div class="text-danger small" id="emailerror"></div>
+                </div>
+                <div class="row mb-4">
+                    <label for="password" class="form-label fw-bold">Password</label>
+                    <input type="password" id="password" class="form-control" name="password"
+                        placeholder="enter password" required>
+                    <div class="text-danger small" id="passworderror"></div>
+                </div>
+                <% if (typeof message !=="undefined" ) { %>
+                    <div class="alert alert-danger py-1 text-center">
+                        <%= message %>
+                    </div>
+                    <% } %>
+                        <div class="row d-flex justify-content-center">
+                            <button type="submit" class="btn btn-dark fw-bold">Login</button>
+                        </div>
+            </form>
+        </div>
     </div>
-    <div class="row mb-4">
-        <label for="email" class="form-label fw-bold">Email</label>
-        <input type="text" id="email" class="form-control" name="email" placeholder="admin@example.com" required>
-    </div>
-    <div class="row mb-4">
-        <label for="password" class="form-label fw-bold">Password</label>
-        <input type="password" id="password" class="form-control" name="password" placeholder="enter password" required>
-    </div>
-    <% if (message) { %>
-          <div class="alert alert-danger py-1 text-center"><%= message %></div>
-    <% } %>
-    <div class="row d-flex justify-content-center">
-        <button type="submit" class="btn btn-dark fw-bold">Login</button>
-    </div>
-  </form>  
-  </div>
-  </div>
 
-<%- include("../partials/admin/footer.ejs") %>
+    <script>
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/;
+        function validateForm() {
+            let isValid = true;
+            document.getElementById("emailerror").innerText = "";
+            document.getElementById("passworderror").innerText = "";
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById("password").value;
+            if (!emailRegex.test(email)) {
+                document.getElementById("emailerror").innerText = "Enter a vaild email!";
+                isValid = false;
+            }
+            if (!passwordRegex.test(password)) {
+                document.getElementById("passworderror").innerText = "Password must contain both letters and numbers.";
+                isValid = false;
+            }
+            return isValid
+        }
+    </script>
+
+    <%- include("../partials/admin/footer.ejs") %>

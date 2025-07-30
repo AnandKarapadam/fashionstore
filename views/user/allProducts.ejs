@@ -90,7 +90,7 @@
 <body>
 
   <!-- Navbar -->
-  <nav class="navbar main-nav navbar-expand-lg navbar-light bg-white px-3 mb-4">
+  <nav class="navbar main-nav fixed-top navbar-expand-lg navbar-light bg-white px-3 mb-4">
     <a class="navbar-brand" href="#">RORITO</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -152,7 +152,7 @@
   </nav>
   
   
-  <div class="container mt-3">
+  <div class="container mt-5 pt-5">
   <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
   <li class="breadcrumb-item"><a href="/">Home</a></li>
@@ -177,7 +177,7 @@
   </div>
   
   <!-- Main Section -->
-  <div class="container mt-4">
+  <div class="container mt-1">
     <div class="row">
       <!-- Sidebar Filters -->
       <div class="col-md-3">
@@ -231,8 +231,10 @@
               <div class="product-card shadow-sm position-relative">
                 <a href="/product-details/<%= product._id %>" class="text-decoration-none text-dark">
                   <img src="/uploads/re-image/<%= product.productImage[0] %>?/uploads/re-image/<%= product.productImage[0] %>:/uploads/product-images/<%= product.productImage[0] %>"  alt="<%= product.productName %>">
-                  <% if (product.quantity > 0) { %>
-                   <span class="badge bg-success position-absolute top-0 end-0 m-2">Available</span>
+                  <% if (product.status == "Available") { %>
+                   <span class="badge bg-success position-absolute top-0 end-0 m-2"><%= product.status %></span>
+                   <%} else if(product.status == "Discontinued"){%>
+                    <span class="badge bg-danger position-absolute top-0 end-0  m-2"><%= product.status %></span>
                   <% } else { %>
                   <span class="badge bg-danger position-absolute top-0 end-0  m-2">Out of Stock</span>
                   <% } %>

@@ -104,7 +104,7 @@
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-light bg-white px-3 mb-4">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-white px-3 mb-4">
     <a class="navbar-brand" href="#">RORITO</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -152,7 +152,7 @@
     </div>
   </nav>
 
-  <div class="container-fluid mb-4">
+  <div class="container-fluid mb-4 mt-5 pt-5">
     <a href="/all-products"><img class="img-fluid banner" src="/uploads/re-image/<%= banner.image %>" alt=""></a>
   </div>
 
@@ -204,7 +204,7 @@
         <div class="card product-card pro-card">
           <img src="/uploads/re-image/<%= product.productImage[0] %>" class="card-img-top object-fit-cover" alt="<%= product.productName %>">
           <div class="card-body p-2">
-            <h6 class="card-title text-center mb-0"><%= product.productName %></h6>
+            <h6 class="card-title d-block text-truncate mb-0" ><%= product.productName %></h6>
           </div>
         </div>
       </a>

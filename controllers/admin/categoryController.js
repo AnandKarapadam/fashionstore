@@ -18,7 +18,6 @@ const categoryInfo = async(req,res)=>{
         const totalMatch = Math.ceil(totalCategories/limit);
 
         res.render("admin/category",{
-            cssFile:"admin/dashboard",
             search,
             categories:categoryData,
             cat:categoryData,

@@ -87,6 +87,7 @@
             <th>Add Offer Price</th>
             <th>Quantity</th>
             <th>Status</th>
+            <th>Active</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -94,8 +95,8 @@
           <% products.forEach(product => { %>
             <tr class="rounded-row">
               <td><%= product.productName %></td>
-              <td><%= product.brand ? product.brand._id : "N/A" %></td>
-              <td><%= product.category ?"id:"+ product.category._id   : "N/A" %></td>
+              <td><%= product.brand ? product.brand.brandName : "N/A" %></td>
+              <td><%= product.category ? product.category.name   : "N/A" %></td>
               <td>₹<%= product.regularPrice %></td> 
               <td>₹<%= product.salePrice %></td>
               <td><%= product.productOffer?product.productOffer+"%": "N/A" %></td>
@@ -116,6 +117,7 @@
                  <% } %>
               </td>
               <td><%= product.quantity %></td>
+              <td><%= product.status %></td>
               <td>
                 <%= product.isBlocked ? "Blocked":"UnBlocked" %>
               </td>
@@ -144,33 +146,33 @@
 
   <div class="container mt-3" id="paginationSection">
             <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center mb-4" style="margin-right: -250px;">
-                    <!-- Previous Button -->
-                    <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
-                        <a class="page-link" href="?page=<%= currentPage - 1 %>&search=<%= search %>"
-                            aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                    </li>
+                <ul class="pagination justify-content-center mb-4" style="margin-right: -50px;">
+                  <% const maxVisiblePages=3; let startPage=Math.max(1, currentPage - 1); let endPage=startPage +
+                        maxVisiblePages - 1; if (endPage> totalPages) {
+                        endPage = totalPages;
+                        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                        }
+                        %>
 
-                    <!-- Page Numbers -->
-                    <% for(let i=1; i <=totalPages; i++) { %>
-                        <li class="page-item <%= i == currentPage ? 'active' : '' %>">
-                            <a class="page-link" href="?page=<%= i %>&search=<%= search %>">
-                                <%= i %>
-                            </a>
+                        <!-- Previous Button -->
+                        <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+                            <a class="page-link" href="?page=<%= currentPage - 1 %>&search=<%= search %>">&laquo;</a>
                         </li>
-                        <% } %>
 
-                            <!-- Next Button -->
-                            <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
-                                <a class="page-link" href="?page=<%= currentPage + 1 %>&search=<%= search %>"
-                                    aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                    <span class="sr-only">Next</span>
+                        <!-- Page Numbers -->
+                        <% for (let i=startPage; i <=endPage; i++) { %>
+                            <li class="page-item <%= i == currentPage ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= i %>&search=<%= search %>">
+                                    <%= i %>
                                 </a>
                             </li>
+                            <% } %>
+
+                                <!-- Next Button -->
+                                <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+                                    <a class="page-link"
+                                        href="?page=<%= currentPage + 1 %>&search=<%= search %>">&raquo;</a>
+                                </li>
                 </ul>
             </nav>
         </div>  
