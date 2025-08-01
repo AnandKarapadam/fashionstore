@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(session({
     secret:process.env.SESSION_SECRET,
     resave:false,
-    saveUninitialized:true,
+    saveUninitialized:false,
     store:MongoStore.create({
         mongoUrl:'mongodb://127.0.0.1:27017/session-storage',
         collectionName:"sessions"
@@ -33,6 +33,7 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+
 
 app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"views"));;

@@ -12,9 +12,16 @@ passport.use(new GoogleStrategy({
     async (accessToken,refreshToken,profile,done)=>{
     try {
         
-        let user = await User.findOne({googleId:profile.id});
+        const email = profile.emails[0].value;
+        let user = await User.findOne({email});
+
+       
 
         if(user){
+            if(!user.googleId){
+                user.googleId=profile.id;
+                await user.save()
+            }
             return done(null,user);
         }
         else{

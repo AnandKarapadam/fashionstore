@@ -30,10 +30,11 @@
 
                 <!-- Right: Table and Search -->
                 <div class="col-md-9">
-                    <form method="GET" class="d-flex justify-content-end mb-3">
+                    <form method="GET" id="searchForm" class="d-flex justify-content-end mb-3">
                         <input type="text" name="search" value="<%= search?search:''%>" placeholder="Search..."
                             class="form-control me-2" style="max-width: 300px;">
-                        <button class="btn btn-outline-primary">Search</button>
+                        <button class="btn btn-outline-primary me-1">Search</button>
+                        <button class="btn btn-dark" onclick="clearSearch()">Clear</button>
                     </form>
 
                     <div class="table-responsive shadow-sm">

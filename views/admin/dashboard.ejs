@@ -3,29 +3,35 @@
 <%- include("../partials/admin/sidebar.ejs") %>
 
 <div class="container">
-  <div class="row jusitfy-content-center">
+  <div class="row mt-5 jusitfy-content-center">
     <div class="col-md-4">
+      <a href="/admin/users" class="text-decoration-none text-dark">
       <div class="card text-center p-2 shadow-sm bg-light">
         <h2 style="text-shadow: 2px 1px 2px #000000;" class="fw-semibold">Active Users</h2>
         <i class="bi bi-list-ol fs-1 text-success fw-bold"></i>
         <p class="fw-bold fs-3">Count : <span class="text-primary fw-bold" style="text-shadow: 2px 1px 2px #000000;"  ><%= count%></span> </p>
       </div>
+      </a>
     </div>
     
     <div class="col-md-4">
+      <a href="/admin/products" class="text-decoration-none text-dark">
       <div class="card text-center p-2  shadow-sm bg-light">
         <h2 style="text-shadow: 2px 1px 2px #000000;" class="fw-semibold">Active Products</h2>
         <i class="bi bi-luggage-fill fs-1 text-primary fw-bold"></i>
         <p class="fw-bold fs-3">Count : <span class="text-success fw-bold" style="text-shadow: 2px 1px 2px #000000;"><%= products%></span> </p>
       </div>
+    </a>
     </div>
 
     <div class="col-md-4">
+      <a href="/admin/brands" class="text-decoration-none text-dark">
        <div class=" card text-center p-2  shadow-sm bg-light">
         <h2 style="text-shadow: 2px 1px 2px #000000;" class="fw-semibold">Companies</h2>
         <i class="bi bi-suitcase-lg-fill text-danger fw-bold fs-1"></i>
         <p class="fw-bold fs-3">Count : <span class="text-warning fw-bold" style="text-shadow: 2px 1px 2px #000000;"><%= brand%></span> </p>
       </div>
+      </a>
   </div>
   </div>
 </div>

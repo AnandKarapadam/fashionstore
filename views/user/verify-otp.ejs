@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OTP Verification</title>
+  <title>RORITO</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
 
   <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.2/dist/sweetalert2.min.css" rel="stylesheet">
@@ -93,10 +93,9 @@
               <button  id="countdown" class="border-0" disabled>
                  (00:45)
               </button>
+              <button id="resendLink" onclick="return resendOTP(event)" class="btn btn-outline-secondary d-none btn-sm text-secondary " >Resend OTP</button>
    </div>
-  <div>
-    <button id="resendLink" onclick="return resendOTP(event)" class="btn btn-link p-0 text-primary small" >Resend OTP</button>
-  </div>
+
 
   <div class="bottom-links mt-4">
     <p class="text-muted mb-0">Go to login page
@@ -192,13 +191,13 @@
       const minutes = Math.floor(otptimer/60);
       const second = otptimer%60;
       
-      button.textContent = `${minutes}:${second<10?"0":''}${second}`;
+      button.textContent = `Resend-${minutes}:${second<10?"0":''}${second}`;
       updateTextColor((otptimer/60)*100);
 
       if(--otptimer<0){
         clearInterval(otpTimeInterval);
-        button.textContent = "Expired";
-        button.style.color = "red";
+        button.classList.add("d-none");
+        document.getElementById("resendLink").classList.remove("d-none");
       }
 
     },1000)
@@ -215,6 +214,8 @@
     clearInterval(otpTimeInterval);
     otptimer = 60;
     startOtpTimer();
+    document.getElementById("resendLink").classList.add("d-none");
+    button.classList.remove("d-none");
 
     $.ajax({
       type:"POST",

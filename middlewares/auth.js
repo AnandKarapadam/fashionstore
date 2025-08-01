@@ -2,23 +2,33 @@ const User = require("../models/userSchema");
 
 
 
-const userAuth = (req,res,next)=>{
-    if(req.session.user){
-        User.findById(req.session.user)
-        .then((data)=>{
-            if(data && !data.isBlocked){
-                next();
-            }else{
-                res.redirect("/login");
-            }
-        }).catch((err)=>{
-            console.log("Error in user auth middleware");
-            res.status(500).send("Internal Server error")
-        })
-    }else{
-        res.redirect("/landingpage");
+const userAuth = async (req, res, next) => {
+  try {
+    let user = req.user;
+
+    if (!user && req.session.user) {
+      user = await User.findById(req.session.user);
     }
-}
+
+    if (user) {
+      if (!user.isBlocked) {
+        req.user = user; // make sure to attach it for later use
+        return next();
+      } else {
+        req.session.destroy((err) => {
+          if (err) console.log("Session destroy error:", err);
+          res.clearCookie("connect.sid");
+          return res.redirect("/login?error=blocked");
+        });
+      }
+    } else {
+      return res.redirect("/landingpage");
+    }
+  } catch (error) {
+    console.log("userAuth error:", error);
+    return res.redirect("/landingpage");
+  }
+};
 
 const adminAuth = (req,res,next)=>{
     User.findOne({isAdmin:true})
@@ -33,10 +43,6 @@ const adminAuth = (req,res,next)=>{
         res.status(500).send("Internal Server Error");
     })
 }
-
-
-
-
 
 
 module.exports = {

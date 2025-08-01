@@ -55,11 +55,15 @@
                                         <td class="d-flex gap-2">
                                             <% if (!user.isBlocked) { %>
                                                 <a href="/admin/block-customer?id=<%= user._id %>"
-                                                    class="btn btn-danger btn-sm"
+                                                    class="btn btn-danger btn-sm confirm-link"
+                                                    data-action ="block"
+                                                    data-id = "<%= user._id %>"
                                                     style="width: 80px; text-decoration: none;">Block</a>
                                                 <% } else { %>
                                                     <a href="/admin/unblock-customer?id=<%= user._id %>"
-                                                        class="btn btn-success btn-sm"
+                                                        class="btn btn-success btn-sm confirm-link"
+                                                        data-action = "unblock"
+                                                        data-id = "<%= user._id %>"
                                                         style="width: 80px; text-decoration: none;">Unblock</a>
                                                     <% } %>
                                         </td>
@@ -105,11 +109,32 @@
                 </ul>
             </nav>
         </div>
-
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             function clearSearch() {
                 document.querySelector('input[name="search"]').value = '';
                 document.getElementById('searchForm').submit();
             }
+
+            document.querySelectorAll(".confirm-link").forEach((link)=>{
+                link.addEventListener("click",function(e){
+                    e.preventDefault();
+                    const action = this.dataset.action;
+                    const href = this.getAttribute("href");
+
+                    Swal.fire({
+                        title:`Are you want to ${action} this user?`,
+                        icon:"warning",
+                        showCancelButton:true,
+                        confirmButtonColor:'#6c757d',
+                        confirmButtonText:`Yes, ${action}`
+                    }).then((result)=>{
+                        if(result.isConfirmed){
+                            window.location.href = href;
+                        }
+                    })
+
+                })
+            })
         </script>
         <%- include("../partials/admin/footer.ejs") %>

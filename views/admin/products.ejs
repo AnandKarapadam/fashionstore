@@ -156,7 +156,7 @@
 
                         <!-- Previous Button -->
                         <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
-                            <a class="page-link" href="?page=<%= currentPage - 1 %>&search=<%= search %>">&laquo;</a>
+                            <a class="page-link" href="?page=<%= parseInt(currentPage) - 1 %>&search=<%= search %>">&laquo;</a>
                         </li>
 
                         <!-- Page Numbers -->
@@ -171,7 +171,7 @@
                                 <!-- Next Button -->
                                 <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
                                     <a class="page-link"
-                                        href="?page=<%= currentPage + 1 %>&search=<%= search %>">&raquo;</a>
+                                        href="?page=<%= parseInt(currentPage) + 1 %>&search=<%= search %>">&raquo;</a>
                                 </li>
                 </ul>
             </nav>

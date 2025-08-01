@@ -19,7 +19,7 @@
                         placeholder="enter password" required>
                     <div class="text-danger small" id="passworderror"></div>
                 </div>
-                <% if (typeof message !=="undefined" ) { %>
+                <% if ( message && message.trim().length > 0 ) { %>
                     <div class="alert alert-danger py-1 text-center">
                         <%= message %>
                     </div>

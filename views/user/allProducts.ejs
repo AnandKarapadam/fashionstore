@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Fashion Store - All Products</title>
+  <title>RORITO</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
@@ -83,7 +83,10 @@
   object-fit: contain;            
   border-radius: 4px;
 }
-
+.sticky-sidebar{
+  position: sticky;
+  top: 100px;
+}
   </style>
 </head>
 
@@ -181,6 +184,11 @@
     <div class="row">
       <!-- Sidebar Filters -->
       <div class="col-md-3">
+        <div class="sticky-sidebar">
+          <div class="d-flex justify-content-between align-items-center mb-2">          
+            <h5>Filter&Sort</h5>
+            <a href="/all-products" class="text-decoration-none text-secondary " >Clear All</a>
+            </div>
         <form method="get" action="/all-products"  class="d-flex flex-column gap-3">
           <!-- Sort -->
           <div>
@@ -222,7 +230,8 @@
           <button type="submit" class="btn btn-outline-primary">Apply Filters</button>
         </form>
       </div>
-
+      </div>
+      
       <!-- Products -->
       <div class="col-md-9 pt-4 ps-4">
         <div class="row g-4">
@@ -277,7 +286,7 @@
             <% for (let i = startPage; i <= endPage; i++) { %>
               <li class="page-item <%= currentPage === i ? 'active' : '' %>">
                 <a class="page-link" href="<%= queryString(i) %>"><%= i %></a>
-              </li>
+              </li> 
             <% } %>
 
             <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">

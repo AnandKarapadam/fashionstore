@@ -113,9 +113,10 @@
               <button  id="otpTimerBtn" class="border-0" disabled>
                  (00:45)
               </button>
+              <a href="#" id="resendOTP" onclick="return resendOTP()" class="btn d-none btn-outline-secondary btn-sm">Resend OTP</a>
             </div>
             <div class="text-center">
-              <a href="#" id="resendOTP" onclick="return resendOTP()" class="btn btn-outline-secondary btn-sm">Resend OTP</a>
+              
             </div>
             <div class="text-center mt-3 mb-2">
                 <button type="submit" class="btn btn-dark ">Verify OTP</button>
@@ -214,12 +215,12 @@
         const minutes  = Math.floor(timeLeft/60);
         const second = timeLeft%60;
         
-        button.textContent = `${minutes}:${second < 10?'0':''}${second}`;
+        button.textContent = `Resend-${minutes}:${second < 10?'0':''}${second}`;
         updateTimerColor((timeLeft/60)*100)
         if(--timeLeft<0){
             clearInterval(otpTimeInterval);
-            button.textContent = "Expired";
-            button.style.color = 'red'; 
+            button.classList.add("d-none");
+            document.getElementById("resendOTP").classList.remove("d-none");
         }
      },1000);
   }
@@ -235,6 +236,9 @@ initializeOtpTimer();
     clearInterval(otpTimeInterval);
     timeLeft = 60;
     startOtpTimer();
+    document.getElementById("resendOTP").classList.add("d-none");
+    button.classList.remove("d-none");
+    button.disabled=true;
     $.ajax({
       type:"POST",
       url:"/resend-forgot-otp",
