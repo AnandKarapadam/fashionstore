@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <title>Document</title>
+    <style>
+        body {
+            overflow-x: hidden;
+        }
+
+        .navbar .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .navbar .dropdown-toggle::after {
+            display: inline-block;
+            margin-left: 0.3em;
+            vertical-align: middle;
+            transition: transform 0.3s ease;
+            content: "";
+            border-top: 0.4em solid;
+            border-right: 0.4em solid transparent;
+            border-left: 0.4em solid transparent;
+        }
+
+        .navbar .dropdown:hover .dropdown-toggle::after {
+            transform: rotate(180deg);
+        }
+
+        .nav-link {
+            font-weight: 500;
+            font-size: 17px;
+            color: black;
+        }
+
+        .nav-icon {
+            font-size: 23px;
+            font-weight: 700;
+            color: black;
+        }
+
+        .main-nav {
+            border-bottom: 2px solid rgb(63, 61, 61);
+            border-color: #ccc;
+        }
+
+        .navbar-brand {
+            font-size: 40px;
+            font-family: 'Times New Roman', Times, serif;
+            color: rgb(74, 74, 74);
+        }
+
+        .nav-item:hover {
+            background-color: gainsboro;
+        }
+        .label{
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-white px-3 mb-4">
+        <a class="navbar-brand" href="#">RORITO</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <!-- Push everything to the right -->
+            <ul class="navbar-nav ms-auto gap-lg-5 mb-2 mb-lg-0">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/all-products">All products</a>
+                </li>
+                <% if(typeof user !=="undefined" ) {%>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <%= user.name.split(' ')[0] %>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="/profile">Profile</a></li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item" href="/logout">Logout</a></li>
+            </ul>
+          </li>
+          <% } %>
+          <li class="nav-item d-lg-flex gap-5 align-items-center ">
+            <a class="nav-icon" href="/cart"><i class="bi bi-cart4"></i></a>
+            <a href="/wishlist" class="nav-icon"><i class="bi bi-handbag"></i></a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <form action="/all-products" method="get" class="d-flex ms-lg-3 mt-2 mt-lg-0" role="search">
+              
+              <input class="form-control border border-1 border-dark me-2 form-control-sm rounded-4" name="search" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-dark btn-sm rounded-4 " type="submit">Search</button>
+              <a href="/" class="btn btn-dark rounded-5 btn-sm ms-1"><i class="bi bi-x-circle"></i></a>
+                        
+            </form>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    
+    <div class="row pt-4 mt-5 mx-md-3">
+      <div class="col-8 mt-5 px-4">
+       <div class="container border p-3 mb-3 rounded shadow-sm">
+  <!-- Row 1: Product Image + Details -->
+  <div class="row">
+    <!-- Left: Image + Quantity -->
+    <div class="col-md-3 d-flex flex-column justify-content-between">
+      <img src="/images/otp-img.jpg" alt="Product Image" class="img-fluid rounded mb-2">
+      <!-- Quantity -->
+      <div class="bg-light p-1 rounded text-center">
+        <label class="fw-semibold small d-block mb-1">Qty:</label>
+        <div class="input-group input-group-sm justify-content-center" style="width: 120px; margin: auto;">
+          <button class="btn btn-outline-secondary" type="button" onclick="changeQty(this, -1)">−</button>
+          <input type="text" class="form-control text-center" value="1" readonly>
+          <button class="btn btn-outline-secondary" type="button" onclick="changeQty(this, 1)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Product Details -->
+    <div class="col-md-9 d-flex flex-column justify-content-between">
+      <div class="d-flex justify-content-between">
+        <div>
+          <h5 class="fw-bold mb-1">Product Name</h5>
+          <p class="text-muted mb-2">Short description of the product goes here.</p>
+        </div>
+        <div>
+          <h5 class="text-success">₹1,299</h5>
+          <a href="" class="btn btn-sm btn-light">Remove</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: Shipping + InStock + Free Delivery -->
+  <div class="row mt-3 align-items-center">
+    <div class="col-md-6 d-flex align-items-top flex-wrap">
+      <span class=" me-2 mb-1">Shipping <br><small class="text-muted">• Delivery by Monday 11</small></span>
+      <span class="text-success ms-2 fw-bold me-2 mb-1">In Stock</span>
+    </div>
+    <div class="col-md-6 text-end">
+      <span class="text-dark fw-bold">Free Delivery</span><br>
+      
+    </div>
+  </div>
+  
+</div>
+
+<div class="container mt-3" id="paginationSection">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mb-4" style="margin-right: -50px;">
+                  <% const maxVisiblePages=3; let startPage=Math.max(1, currentPage - 1); let endPage=startPage +
+                        maxVisiblePages - 1; if (endPage> totalPages) {
+                        endPage = totalPages;
+                        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                        }
+                        %>
+
+                        <!-- Previous Button -->
+                        <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+                            <a class="page-link" href="?page=<%= parseInt(currentPage) - 1 %>&search=<%= search %>">&laquo;</a>
+                        </li>
+
+                        <!-- Page Numbers -->
+                        <% for (let i=startPage; i <=endPage; i++) { %>
+                            <li class="page-item <%= i == currentPage ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= i %>&search=<%= search %>">
+                                    <%= i %>
+                                </a>
+                            </li>
+                            <% } %>
+
+                                <!-- Next Button -->
+                                <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+                                    <a class="page-link"
+                                        href="?page=<%= parseInt(currentPage) + 1 %>&search=<%= search %>">&raquo;</a>
+                                </li>
+                </ul>
+            </nav>
+        </div>
+
+      </div>
+      <div class="col-4">
+
+        
+  <div class="p-3 shadow-sm border s rounded-3" style="position: sticky;background-color: rgb(212, 212, 212);top: 120px;">
+
+    <div class="mb-1">
+      <h5 class="fw-bold text-center">Order Summary</h5>
+    </div>
+
+    <div class="bg-light p-2 rounded-3">
+    <!-- 1. Product Summary -->
+    <div class="d-flex justify-content-between mb-2">
+      <div><span class="fw-semibold">1 × Denim Jacket</span></div>
+      <div><span class="fw-semibold text-success">₹1,299</span></div>
+    </div>
+
+    <!-- 2. Delivery Charges -->
+    <div class="d-flex justify-content-between small text-success fw-semibold mb-2">
+      <div>Delivery Charges</div>
+      <div class="text-success">Free</div>
+    </div>
+
+    <!-- 3. Platform Fee -->
+    <div class="d-flex justify-content-between small text-muted mb-3">
+      <div>Platform Fee</div>
+      <div>₹0</div>
+    </div>
+      </div>
+    <hr>
+
+    <!-- 4. Coupon Input -->
+    <div class="d-flex input-group-sm mb-3 gap-2">
+      <input type="text" class="form-control ps-3" placeholder="Enter Coupon Code">
+      <button class="btn btn-danger" type="button">Apply</button>
+    </div>
+
+    <hr>
+
+    <!-- 5. Total Price -->
+    <div class="d-flex justify-content-between mb-3 bg-light rounded-3 p-3">
+      <div class="fw-bold">Total <br> <small class="text-muted fw-normal">In rupees</small></div>
+      <div class="fw-bold text-success">₹999</div>
+    </div>
+
+    <!-- 6. Continue Button -->
+    <button class="btn btn-dark w-100 fw-semibold">Continue</button>
+  </div>
+</div> 
+    </div>
+
+
+
+
+    <%- include("../partials/user/footer.ejs") %>
+
+ <script>
+  function changeQty(btn, delta) {
+    const input = btn.parentElement.querySelector("input");
+    let value = parseInt(input.value) || 1;
+    value += delta;
+    if (value < 1) value = 1;
+    input.value = value;
+  }
+</script>
+</body>
+
+</html>

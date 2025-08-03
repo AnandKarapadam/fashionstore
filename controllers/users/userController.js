@@ -505,7 +505,24 @@ const postReview = async (req, res) => {
     res.redirect("/pageNotFound");
     console.error("Error in adding Review: ", error.message);
   }
-};
+}
+
+const loadCartPage = async(req,res)=>{
+  try {
+    res.render("user/cart",{currentPage:1,totalPages:1,search:""})
+  } catch (error) {
+    console.error("Error:",error.message);
+  }
+}
+const loadSelectAddress = async(req,res)=>{
+  try {
+    
+    res.render("user/selectAddress");
+
+  } catch (error) {
+    console.error("Error",error.message);
+  }
+}
 module.exports = {
   loadHomepage,
   loadLogin,
@@ -522,4 +539,6 @@ module.exports = {
   loadAllProductsPage,
   getProductDetails,
   postReview,
+  loadCartPage,
+  loadSelectAddress
 };

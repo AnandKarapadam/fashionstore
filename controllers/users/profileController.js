@@ -170,11 +170,60 @@ const postNewPassword = async(req,res)=>{
          res.status(500).json({ success: false, message: "Internal server error" });
     }
 }
+const loadEditProfile = async(req,res)=>{
+    try {
+        res.render("user/editProfile",{search:"",category:"",sort:"",})
+    } catch (error) {
+        console.log(error.message);
+        res.redirect("/pageNotFound");
+    }
+}
+
+const loadAddressPage = async(req,res)=>{
+    try {
+
+        res.render("user/manageAddress",{currentPage:"",totalPages:1,search:""});
+        
+    } catch (error) {
+        console.error(error.message);
+    
+    }
+}
+const loadProfile = async(req,res)=>{
+    try {
+        res.render("user/profile",{search:''})
+    } catch (error) {
+        console.error(error.message);
+    }
+}
+
+const loadNewAddressPage = async(req,res)=>{
+    try {
+
+        res.render("user/addAddress",{})
+        
+    } catch (error) {
+        console.error("Error: ",error.message);
+    }
+}
+
+const loadEditAddressPage = async(req,res)=>{
+    try {
+        res.render("user/editAddress",{});
+    } catch (error) {
+        console.error("Error:",error.message);
+    }
+}
 module.exports = {
     loadForgetpage,
     forgetEmailValid,
     verifyForgotPassOtp,
     getResetPasswordPage,
     resendforgotOTP,
-    postNewPassword
+    postNewPassword,
+    loadEditProfile,
+    loadAddressPage,
+    loadProfile,
+    loadNewAddressPage,
+    loadEditAddressPage
 }

@@ -69,9 +69,14 @@ router.post("/verify-passForgot-otp",profileController.verifyForgotPassOtp);
 router.get("/reset-password",profileController.getResetPasswordPage);
 router.post("/resend-forgot-otp",profileController.resendforgotOTP);
 router.post("/reset-password",profileController.postNewPassword);
+router.get("/profile",profileController.loadProfile);
+router.get("/edit-profile",profileController.loadEditProfile);
+router.get("/address",profileController.loadAddressPage);
+router.get("/add-address",profileController.loadNewAddressPage);
+router.get("/edit-address",profileController.loadEditAddressPage);
 
-
-
+router.get("/cart",userController.loadCartPage);
+router.get("/select-address",userController.loadSelectAddress);
 
 
 module.exports = router
