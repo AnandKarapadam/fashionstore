@@ -235,11 +235,11 @@
               <div class="product-card shadow-sm position-relative">
                 <a href="/product-details/<%= product._id %>" class="text-decoration-none text-dark">
                   <img src="/uploads/re-image/<%= product.productImage[0] %>?/uploads/re-image/<%= product.productImage[0] %>:/uploads/product-images/<%= product.productImage[0] %>"  alt="<%= product.productName %>">
-                  <% if (product.status == "Available") { %>
+                  <% if (product.status == "Available" && product.quantity>0) { %>
                    <span class="badge bg-success position-absolute top-0 end-0 m-2"><%= product.status %></span>
-                   <%} else if(product.status == "Discontinued"){%>
+                   <%} else if(product.status == "Discontinued" && product.quantity>0){%>
                     <span class="badge bg-danger position-absolute top-0 end-0  m-2"><%= product.status %></span>
-                  <% } else { %>
+                  <% } else  { %>
                   <span class="badge bg-danger position-absolute top-0 end-0  m-2">Out of Stock</span>
                   <% } %>
                   <% if (product.productOffer && product.productOffer > 0) { %>

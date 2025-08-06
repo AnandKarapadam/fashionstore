@@ -11,6 +11,7 @@ const brandController = require("../controllers/admin/brandController");
 const productController = require("../controllers/admin/productController");
 const bannerController = require("../controllers/admin/bannerController");
 const couponController = require("../controllers/admin/couponController");
+const orderController = require("../controllers/admin/orderController");
 
 router.get("/pageerror",adminController.pageError);
 
@@ -67,6 +68,11 @@ router.post("/coupon/toggle-list/:id",adminAuth,couponController.toggleList);
 router.get("/coupon/edit/:id",adminAuth,couponController.loadEditCoupon);
 router.post("/coupon/edit/:id",adminAuth,couponController.editCoupon);
 router.post("/coupon/delete/:id",adminAuth,couponController.deleteCoupon);
+
+
+// Order Management //
+router.get("/orders",adminAuth,orderController.loadOrderPage);
+
 
 //ADMIN LOGOUT//
 

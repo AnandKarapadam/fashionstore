@@ -75,8 +75,15 @@ router.get("/address",profileController.loadAddressPage);
 router.get("/add-address",profileController.loadNewAddressPage);
 router.get("/edit-address",profileController.loadEditAddressPage);
 
-router.get("/cart",userController.loadCartPage);
+router.get("/cart",userAuth,userController.loadCartPage);
+router.post("/cart/add/:id",userAuth,userController.addToCart);
 router.get("/select-address",userController.loadSelectAddress);
-
+router.get("/payment",userController.loadPaymentPage);
+router.post("/update-cart-quantity",userController.updateCartQuantity);
+router.delete("/remove-from-cart/:cartItemId",userController.removeCartItem);
+router.get("/wishlist",userAuth,userController.loadWishlistPage);
+router.post("/wishlist/add/:productId",userAuth,userController.addToWishlist);
+router.post("/wishlist/move-to-cart/:id",userAuth,userController.moveToCart);
+router.delete("/remove-from-wishlist/:id",userAuth,userController.removeWishlistItem)
 
 module.exports = router

@@ -27,7 +27,7 @@ let cartSchema = new Schema({
         },
         status:{
             type:String,
-            default:"placed"
+            default:"inCart"
         },
         cancellationReason:{
             type:String,

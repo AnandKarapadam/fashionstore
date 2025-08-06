@@ -268,14 +268,20 @@
         <% } else { %>
           <p class="text-success fw-bold">In Stock: <%= product.quantity %></p>
         <% } %>
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <button type="button" class="btn btn-outline-secondary px-2 py-1 btn-sm" onclick="changeQuantity(-1)">−</button>
+           <input type="number" id="quantity" name="quantity" value="1" min="1" max="<%= product.quantity %>" class="form-control text-center form-control-sm fw-bold" style="width: 60px;" readonly required>
+          <button type="button" class="btn btn-outline-secondary px-2 py-1 btn-sm" onclick="changeQuantity(1)">+</button>
+        </div>
 
         <!-- Add to Cart Button -->
         <% if (product.quantity > 0 && product.status === "Available") { %>
-          <form action="/wishlist/add/<%= product._id %>" method="POST">
-            <button class="btn btn-danger mb-3 rounded-4 fw-semibold w-50">Add to Wishlist</button>
-          </form>
-          <form action="/cart/add/<%= product._id %>" method="POST">
-            <button class="btn btn-primary rounded-4 fw-semibold w-50">Add to Cart</button>
+          
+            <button type="button" onclick="addToWishlist('<%= product._id %>',event)" class="btn btn-danger mb-3 rounded-4 fw-semibold w-50">Add to Wishlist</button>
+          
+          <form id="cartForm" action="/cart/add/<%= product._id %>" method="POST">
+            <input type="hidden" id="hiddenQuantity" name="quantity">
+            <button type="submit"  class="btn btn-primary rounded-4 fw-semibold w-50">Add to Cart</button>
           </form>
         <% } else { %>
           <button class="btn btn-secondary" disabled>Unavailable</button>
@@ -382,6 +388,10 @@
     </div>
 
     <%- include('../partials/user/footer.ejs') %>
+    <!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
       <script>
         const mainImage = document.getElementById("mainImage");
         const lens = document.getElementById("lens");
@@ -431,8 +441,64 @@
           scrollContainer.scrollBy({ left: 200, behavior: 'smooth' });
         }
 
+
+
+        // Quantity inc/dec function
+        function changeQuantity(change) {
+          const qtyInput = document.getElementById('quantity');
+          const currentQty = parseInt(qtyInput.value);
+          const maxQty = parseInt(qtyInput.max);
+          const minQty = parseInt(qtyInput.min);
+
+          let newQty = currentQty + change;
+          if (newQty < minQty) newQty = minQty;
+          if (newQty > maxQty) newQty = maxQty;
+
+          qtyInput.value = newQty;
+        }
+
+        const cartForm = document.getElementById("cartForm");
+        const visibleQuantity = document.getElementById("quantity");
+        const hiddenQuantity = document.getElementById("hiddenQuantity");
+
+        cartForm.addEventListener("submit",function(){
+          hiddenQuantity.value = visibleQuantity.value;
+        })
+
+        
       </script>
 
+<script>
+  async function addToWishlist(productId,e) {
+          console.log("productId",productId);
+          try {
+            e.preventDefault()
+            
+            const response = await fetch(`/wishlist/add/${productId}`,{
+              method:"POST",
+              headers:{
+                "Content-Type":"application/json"
+              }
+            })
+
+            const data = await response.json();
+
+            
+            if(!response.ok){
+              
+              Swal.fire("error!", data.message||"Error in adding product", "warning")
+            }
+            else{
+                window.location.href = "/wishlist";
+            }
+
+          } catch (error) {
+            console.error("Error: ",error.message);
+            Swal.fire("error!",error.message||"Error in wishlist","warning");
+            
+          }
+        }
+</script>
 </body>
 
 </html>

@@ -1,0 +1,321 @@
+  <!DOCTYPE html>
+  <html lang="en">
+
+  <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title></title>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+      <style>
+          body {
+              margin: 0;
+              padding: 0;
+              overflow-x: hidden;
+          }
+
+          .navbar {
+              z-index: 1050;
+          }
+
+          .sidebar {
+              position: fixed;
+              top: 100px;
+              left: 0;
+              height: 100%;
+              background-color: #ffffff;
+              border-right: 1px solid #ccc;
+              transition: width 0.3s ease;
+              overflow: hidden;
+              z-index: 1040;
+          }
+
+          .sidebar.expanded {
+              width: 300px;
+          }
+
+          .sidebar.collapsed {
+              width: 0;
+          }
+
+          .sidebar-content {
+              padding: 1rem;
+              transition: opacity 0.3s ease;
+          }
+
+          .sidebar.collapsed .sidebar-content {
+              opacity: 0;
+              pointer-events: none;
+          }
+
+          .main-content {
+              margin-top: 100px;
+              /* below navbar */
+              margin-left: 250px;
+              transition: margin-left 0.3s ease;
+          }
+
+          .main-content.full {
+              margin-left: 0;
+              width: 100%;
+          }
+
+          .toggle-btn {
+              position: fixed;
+              top: 50%;
+              left: 0;
+              transform: translate(-50%, -50%);
+              z-index: 1060;
+              background-color: #343a40;
+              color: white;
+              border-radius: 50%;
+              width: 30px;
+              height: 30px;
+              text-align: center;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+          }
+
+          .navbar .dropdown:hover .dropdown-menu {
+              display: block;
+          }
+
+          .navbar .dropdown-toggle::after {
+              display: inline-block;
+              margin-left: 0.3em;
+              vertical-align: middle;
+              transition: transform 0.3s ease;
+              content: "";
+              border-top: 0.4em solid;
+              border-right: 0.4em solid transparent;
+              border-left: 0.4em solid transparent;
+          }
+
+          .navbar .dropdown:hover .dropdown-toggle::after {
+              transform: rotate(180deg);
+          }
+
+          .nav-link {
+              font-weight: 500;
+              font-size: 17px;
+              color: black;
+          }
+
+          .nav-icon {
+              font-size: 23px;
+              font-weight: 700;
+              color: black;
+          }
+
+          .main-nav {
+              border-bottom: 2px solid rgb(63, 61, 61);
+              border-color: #ccc;
+          }
+
+          .navbar-brand {
+              font-size: 40px;
+              font-family: 'Times New Roman', Times, serif;
+              color: rgb(74, 74, 74);
+          }
+
+          @media (max-width: 768px) {
+
+
+
+              .main-content {
+                  margin-left: 0 !important;
+                  width: 100% !important;
+              }
+
+
+          }
+      </style>
+  </head>
+
+  <body>
+
+      <!-- Navbar -->
+      <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-white px-3 mb-4">
+      <a class="navbar-brand" href="#">RORITO</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <!-- Push everything to the right -->
+        <ul class="navbar-nav ms-auto gap-lg-5 mb-2 mb-lg-0">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/all-products">All products</a>
+          </li>
+          <% if(typeof user !== "undefined") {%>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              <%= user.name.split(' ')[0] %>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="/profile">Profile</a></li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item" href="/logout">Logout</a></li>
+            </ul>
+          </li>
+          <% } %>
+          <li class="nav-item d-lg-flex gap-5 align-items-center ">
+            <a class="nav-icon" href="/cart"><i class="bi bi-cart4"></i></a>
+            <a href="/wishlist" class="nav-icon"><i class="bi bi-handbag"></i></a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <form action="/all-products" method="get" class="d-flex ms-lg-3 mt-2 mt-lg-0" role="search">
+              
+              <input class="form-control border border-1 border-dark me-2 form-control-sm rounded-4" name="search" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-dark btn-sm rounded-4 " type="submit">Search</button>
+              <a href="/" class="btn btn-dark rounded-5 btn-sm ms-1"><i class="bi bi-x-circle"></i></a>
+                        
+            </form>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    
+    <div class="container mt-5">
+    <div class="row pt-4 justify-content-center ">
+
+  <div class="col-md-12 mt-4 w-75">
+
+    <% products.forEach((item)=>{%>
+    <div class="d-flex flex-row align-items-start justify-content-between px-sm-5 py-4 gap-2">
+      
+      <!-- Product Image -->
+       <a href="/product-details/<%= item.product._id %>" class="text-decoration-none">
+      <div style="width: 120px;height: 150px;">
+        <img src="/uploads/re-image/<%= item.product.productImage[0] %>" alt="Product Image" style="object-fit: cover;width: 100%;height: 100%;" class="img-fluid rounded">
+      </div>
+      </a>
+
+      <!-- Product Details and Actions -->
+      <div class="d-flex flex-column flex-sm-row flex-grow-1 justify-content-between">
+        
+        <!-- Product Info -->
+        <div>
+          <h6 class="mb-1 fw-semibold"><%= item.product.productName %></h6>
+          <p>Added On: <%=item.addedOn.toDateString() %></p>
+          <p class="mb-1 text-success fw-semibold">₹<%= item.product.salePrice %></p>
+          
+        </div>
+        <div>
+          <p class="mb-2 text-success fw-bold text-truncate">In Stock</p>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex flex-column gap-2">
+          <!-- Move to Cart Form -->
+          <form action="/wishlist/move-to-cart/<%= item.product._id %>" method="POST">
+            <button class="btn btn-sm btn-success text-truncate" type="submit">Move to Cart</button>
+          </form>
+
+          <!-- Remove Button -->
+          <div>
+            <button class="btn btn-sm btn-outline-secondary" type="button" onclick="removeFromWishlist('<%= item.product._id %>')">
+            Remove
+          </button> 
+          </div>
+        </div>
+        
+    </div>
+    </div>
+    <hr class="border border-dark">
+    <% })%>
+  </div>
+</div>
+
+      </div>
+
+
+      <div class="container mt-3">
+              <nav aria-label="Page navigation">
+                  <ul class="pagination justify-content-center mb-4" style="margin-right: 50px;">
+                      
+                      <% const maxVisiblePages=3; let startPage=Math.max(1, currentPage - 1); let endPage=startPage +
+                          maxVisiblePages - 1; if (endPage> totalPages) {
+                          endPage = totalPages;
+                          startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                          }
+                          %>
+
+                          <!-- Previous Button -->
+                          <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+                              <a class="page-link" href="?page=<%= currentPage - 1 %>&search=<%= search %>">&laquo;</a>
+                          </li>
+
+                          <!-- Page Numbers -->
+                          <% for (let i=startPage; i <=endPage; i++) { %>
+                              <li class="page-item <%= i == currentPage ? 'active' : '' %>">
+                                  <a class="page-link" href="?page=<%= i %>&search=<%= search %>">
+                                      <%= i %>
+                                  </a>
+                              </li>
+                              <% } %>
+
+                                  <!-- Next Button -->
+                                  <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+                                      <a class="page-link"
+                                          href="?page=<%= currentPage + 1 %>&search=<%= search %>">&raquo;</a>
+                                  </li>
+
+                  </ul>
+              </nav>
+          </div>
+  </div>
+  
+  </div>
+  </div>
+  </div>
+  
+
+
+    <!-- Scripts -->
+  
+      
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function removeFromWishlist(productId){
+        Swal.fire({
+            title:"Are you sure?",
+            text:"You want to remove this from the wishlist?",
+            icon:"warning",
+            showCancelButton:true,
+            confirmButtonColor:"#d33",
+            cancelButtonColor:"#aaa",
+            confirmButtonText:"Yes, remove it!"
+        }).then((res)=>{
+            if(res.isConfirmed){
+                fetch(`/remove-from-wishlist/${productId}`,{
+                    method:"DELETE"
+                }).then(res=>res.json())
+                .then(data=>{
+                    if(data.success){
+                        Swal.fire("!removed","Product has been removed.","success").then(()=>location.reload());
+                    }
+                    else{
+                        Swal.fire("Error!",data.message||'Failed to remove product!',"error")
+                    }
+                })
+            }
+        })
+    }
+</script>
+
+  </body>
+
+  </html>
