@@ -73,7 +73,10 @@ router.get("/profile",profileController.loadProfile);
 router.get("/edit-profile",profileController.loadEditProfile);
 router.get("/address",profileController.loadAddressPage);
 router.get("/add-address",profileController.loadNewAddressPage);
-router.get("/edit-address",profileController.loadEditAddressPage);
+router.post("/add-address",profileController.postAddress);
+router.get("/edit-address/:id",profileController.loadEditAddressPage);
+router.post("/edit-address/:id",profileController.postEditAddress);
+router.delete("/delete-address/:id",profileController.deleteAddress);
 
 router.get("/cart",userAuth,userController.loadCartPage);
 router.post("/cart/add/:id",userAuth,userController.addToCart);

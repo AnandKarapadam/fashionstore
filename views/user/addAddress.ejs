@@ -114,7 +114,7 @@
 
     <div class="row mt-5 pt-5">
         <div class="col-md-3 mt-5 d-none d-lg-block">
-    <div class="sidebar-content ms-5 w-100">
+    <div class="sidebar-content ms-5 w-100" style="position: sticky;top: 150px;">
         <div class="bg-dark rounded-3 mb-4">
             <h6 class="text-white d-flex align-items-center py-3 ps-2 text-truncate"><i class="bi bi-person-circle fs-4 me-2"></i>Hello Anand KV</h6>
         </div>
@@ -122,7 +122,7 @@
           <li class="nav-item"><a class="nav-link text-dark border" href="#"><i class="bi bi-person-circle me-2"></i> Profile</a></li>
           <li class="nav-item"><a class="nav-link text-dark border" href="#"><i class="bi bi-inboxes-fill me-2"></i> Orders</a></li>
           <li class="nav-item"><a class="nav-link text-dark border" href="#"><i class="bi bi-wallet me-2"></i> Wallet</a></li>
-          <li class="nav-item"><a class="nav-link text-dark border" href="#"><i class="bi bi-geo me-2"></i> Address</a></li>
+          <li class="nav-item"><a class="nav-link text-dark border" href="/address"><i class="bi bi-geo me-2"></i> Address</a></li>
           <li class="nav-item"><a class="nav-link text-dark border text-truncate" href="#"><i class="bi bi-trash2-fill me-2"></i> Delete Account</a></li>
           <li class="nav-item"><a class="nav-link text-dark border" href="#"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
         </ul>
@@ -132,38 +132,44 @@
             <div id="mainContent" class="main-content container">
     <div class="card shadow rounded-4 mx-auto p-4" style="max-width: 600px;">
       <h4 class="card-title text-center mb-4 fw-bold">ADD NEW ADDRESS</h4>
-    <form>
+    <form id="addressForm" action="/add-address" method="post">
       <div class="row mb-2">
         <div class="col-md-6">
             <label for="name" class="fw-bold label">Name</label>
-            <input type="text" id="name" class="form-control bg-light form-control-sm" placeholder="Enter name">
+            <input type="text" id="name" name="name" class="form-control bg-light form-control-sm" placeholder="Enter name">
+            <div class="text-danger small" id="nameError"></div>
         </div>
         <div class="col-md-6">
             <label for="phone" class="fw-bold label">Mobile Number</label>
-            <input type="text" id="phone" class="form-control bg-light form-control-sm" placeholder="Enter Phone">
+            <input type="text" id="phone" name="phone" class="form-control bg-light form-control-sm" placeholder="Enter Phone">
+             <div class="text-danger small" id="phoneError"></div>
         </div>
       </div>
       <div class="row mb-2">
         <div class="col-md-6">
             <label for="pin" class="fw-bold label">PIN Code</label>
-            <input type="text" id="pin" class="form-control bg-light form-control-sm" placeholder="Enter PIN code">
+            <input type="text" id="pin" name="pincode" class="form-control bg-light form-control-sm" placeholder="Enter PIN code">
+             <div class="text-danger small" id="pinError"></div>
         </div>
         <div class="col-md-6">
             <label for="locality" class="fw-bold label">Locality</label>
-            <input type="text" id="locality" class="form-control bg-light form-control-sm" placeholder="Your Locality">
+            <input type="text" id="locality" name="locality" class="form-control bg-light form-control-sm" placeholder="Your Locality">
+             <div class="text-danger small" id="localityError"></div>
         </div>
       </div>
 
       <div class="row mb-2">
         <div class="col-md-12 d-flex flex-column">
             <label for="address" class="fw-bold label">Address</label>
-            <textarea name="address" id="address" rows="3" placeholder="Your address" class="form-control bg-light"></textarea>
+            <textarea name="address" id="address" name="address" rows="3" formnoValidate placeholder="Your address" class="form-control bg-light"></textarea>
+             <div class="text-danger small" id="addressError"></div>
         </div>
       </div>
       <div class="row mb-2">
         <div class="col-md-6">
             <label for="city" class="fw-bold label">City/Dist/Town</label>
-            <input type="text" id="city" class="form-control bg-light form-control-sm" placeholder="Enter city/dist/town">
+            <input type="text" id="city" name="city" class="form-control bg-light form-control-sm" placeholder="Enter city/dist/town">
+             <div class="text-danger small" id="cityError"></div>
         </div>
         <div class="col-md-6">
             <label for="state" class="fw-bold label">State</label>
@@ -206,25 +212,29 @@
               <option value="Lakshadweep">Lakshadweep</option>
               <option value="Puducherry">Puducherry</option>
             </select>
+             <div class="text-danger small" id="stateError"></div>
         </div>
       </div>
       <div class="row mb-2">
         <div class="col-md-6">
             <label for="landmark" class="fw-bold label">Landmark</label>
-            <input type="text" id="landmark" class="form-control bg-light form-control-sm" placeholder="Enter landmark">
+            <input type="text" id="landmark" name="landMark" class="form-control bg-light form-control-sm" placeholder="Enter landmark">
+             <div class="text-danger small" id="landmarkError"></div>
         </div>
         <div class="col-md-6">
             <label for="alt-number" class="fw-bold label">Alternative Mobile Number</label>
-            <input type="text" id="alt-number" class="form-control bg-light form-control-sm" placeholder="Your Locality">
+            <input type="text" id="alt-number" name="altPhone" class="form-control bg-light form-control-sm" placeholder="Your Alternate Number">
+            <div class="text-danger small" id="altPhoneError"></div>
         </div>
       </div>
 
       <div class="row d-flex flex-row mt-2 mb-2">
         <div class="col-sm-6">
-            <label for="male" class="fw-bold label">Male</label>
-            <input type="radio" name="gender" id="male" class="margin-right" value="male">
-            <label for="female" class="fw-bold label">Female</label>
-            <input type="radio" name="gender" id="female" value="female" >
+            <label for="work" class="fw-bold label">Work</label>
+            <input type="radio" name="addressType" id="work" class="margin-right" value="work">
+            <label for="home" class="fw-bold label">Home</label>
+            <input type="radio" name="addressType" id="home" value="home">
+            <div class="text-danger" id="addressTypeError"></div>
         </div>
         <div class="col-sm-6 text-end">
             <button type="submit" class="btn btn-dark btn-sm" >Save</button>
@@ -237,6 +247,101 @@
     </div>
     </div>
     <%- include("../partials/user/footer.ejs") %>
+
+    <script>
+
+      document.getElementById("addressForm").addEventListener("submit",(e)=>{
+        let hasError = false;
+
+        const fields = ['name','phone','pin','locality','adderss','city','state','landmark','alt-number','addressType'];
+
+        fields.forEach((id)=>{
+          const errorDiv =  document.getElementById(id+'Error')||document.getElementById("altPhoneError")||document.getElementById("addressTypeError");
+          if(errorDiv){
+            errorDiv.innerText = "";
+          }
+        })
+
+         const name = document.getElementById('name').value.trim();
+         const phone = document.getElementById('phone').value.trim();
+         const pin = document.getElementById('pin').value.trim();
+         const locality = document.getElementById('locality').value.trim();
+         const address = document.getElementById('address').value.trim();
+         const city = document.getElementById('city').value.trim();
+         const state = document.getElementById('state').value;
+         const landmark = document.getElementById('landmark').value.trim();
+         const altPhone = document.getElementById('alt-number').value.trim();
+         const addressTypeWork = document.getElementById('work').checked;
+         const addressTypeHome = document.getElementById('home').checked;
+
+         const phoneRegex = /^\d{10}$/;
+         const pinRegex = /^\d{6}$/;
+
+         if(name===''){
+          document.getElementById("nameError").innerText = "Name is required";
+          hasError = true;
+         }
+         if(!phoneRegex.test(phone)){
+          document.getElementById("phoneError").innerText = "Phone must be 10 numbers";
+          hasError = true;
+         }
+         if(!pinRegex.test(pin)){
+          document.getElementById("pinError").innerText = "PIN must be 6 digits";
+          hasError = true;
+         }
+         if(locality === ""){
+          document.getElementById("localityError").innerText = "Locality is required";
+          hasError = true;
+         }
+
+         if(address === ""){
+          document.getElementById("addressError").innerText = "Adderss is required";
+          hasError = true;
+         }
+
+         if(city === ""){
+          document.getElementById("cityError").innerText = "City is required";
+          hasError = true;
+         }
+
+         if(landmark === ""){
+          document.getElementById("landmarkError").innerText = "Landmark is required";
+          hasError = true
+         }
+         
+
+         if(!state){
+          document.getElementById("stateError").innerText = "State is required";
+          hasError = true;
+         }
+
+         if(altPhone === ""){
+          document.getElementById("altPhoneError").innerText = "Alternate Number is required.";
+          hasError = true;
+         }
+          else if(altPhone !== ""){
+          if(!phoneRegex.test(altPhone)){
+            document.getElementById("altPhoneError").innerText = "Alternate number must be 10 digits";
+            hasError =  true;
+          }else if(altPhone === phone){
+            document.getElementById("altPhoneError").innerText = "Alternate number must be different from phone";
+            hasError = true;
+          }
+         }
+
+         if(!addressTypeHome && !addressTypeWork){
+          document.getElementById("addressTypeError").innerHTML = "Please select home/work";
+          hasError = true;
+         }
+
+         if (hasError){
+          e.preventDefault();   
+         }
+
+
+      })
+
+    </script>
 </body>
 
 </html>

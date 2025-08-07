@@ -173,11 +173,11 @@
             <a href="/wishlist" class="nav-icon"><i class="bi bi-handbag"></i></a>
           </li>
           <li class="nav-item d-flex align-items-center">
-            <form action="/all-products" method="get" class="d-flex ms-lg-3 mt-2 mt-lg-0" role="search">
+            <form action="/wishlist" method="get" class="d-flex ms-lg-3 mt-2 mt-lg-0" role="search">
               
               <input class="form-control border border-1 border-dark me-2 form-control-sm rounded-4" name="search" type="search" placeholder="Search" aria-label="Search">
               <button class="btn btn-outline-dark btn-sm rounded-4 " type="submit">Search</button>
-              <a href="/" class="btn btn-dark rounded-5 btn-sm ms-1"><i class="bi bi-x-circle"></i></a>
+              <a href="/wishlist" class="btn btn-dark rounded-5 btn-sm ms-1"><i class="bi bi-x-circle"></i></a>
                         
             </form>
           </li>
@@ -197,7 +197,7 @@
       <!-- Product Image -->
        <a href="/product-details/<%= item.product._id %>" class="text-decoration-none">
       <div style="width: 120px;height: 150px;">
-        <img src="/uploads/re-image/<%= item.product.productImage[0] %>" alt="Product Image" style="object-fit: cover;width: 100%;height: 100%;" class="img-fluid rounded">
+        <img src="/uploads/re-image/<%= item.product.productImage[0] %>" alt="Product Image" style="object-fit: contain;width: 100%;height: 100%;" class="img-fluid rounded">
       </div>
       </a>
 

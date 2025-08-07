@@ -715,8 +715,8 @@ const loadWishlistPage = async(req,res)=>{
       }));
 
       if(search.trim()!== ""){
-        const regex = new RegExp(search,'i');
-        allproducts = allproducts.filter(item=> regex.test(item.productName))
+        const regex = new RegExp(search.toLowerCase(),'i');
+        allproducts = allproducts.filter(item=> regex.test(item.product.productName))
       }
     }
 

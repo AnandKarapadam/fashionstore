@@ -1,12 +1,12 @@
 // const { schema } = require("./userSchema");
 
-const mongoose = required("mongoose");
+const mongoose = require("mongoose");
 const {Schema} = mongoose;
 
 
 const addressSchema = new mongoose.Schema({
         userId:{
-            type:Schema.Types.ObejetId,
+            type:Schema.Types.ObjectId,
             ref:"User",
             required:true
         },
@@ -27,6 +27,10 @@ const addressSchema = new mongoose.Schema({
                 type:String,
                 required:true
             },
+            locality:{
+                type:String,
+                required:false
+            },
             state:{
                 type:String,
                 required:true
@@ -42,9 +46,13 @@ const addressSchema = new mongoose.Schema({
             altPhone:{
                 type:String,
                 required:true
+            },
+            address:{
+                type:String,
+                required:false
             }
         }]
-})
+},{timestamps:true});
 
 
 const Address = mongoose.model("Address",addressSchema);
