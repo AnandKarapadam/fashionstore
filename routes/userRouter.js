@@ -4,6 +4,8 @@ let userController = require("../controllers/users/userController");
 let {userAuth} = require("../middlewares/auth");
 const passport = require("passport");
 let profileController = require("../controllers/users/profileController");
+let addressController = require("../controllers/users/addressController");
+let cartController = require("../controllers/users/cartController");
 
 
 
@@ -71,19 +73,25 @@ router.post("/resend-forgot-otp",profileController.resendforgotOTP);
 router.post("/reset-password",profileController.postNewPassword);
 router.get("/profile",profileController.loadProfile);
 router.get("/edit-profile",profileController.loadEditProfile);
-router.get("/address",profileController.loadAddressPage);
-router.get("/add-address",profileController.loadNewAddressPage);
-router.post("/add-address",profileController.postAddress);
-router.get("/edit-address/:id",profileController.loadEditAddressPage);
-router.post("/edit-address/:id",profileController.postEditAddress);
-router.delete("/delete-address/:id",profileController.deleteAddress);
 
-router.get("/cart",userAuth,userController.loadCartPage);
-router.post("/cart/add/:id",userAuth,userController.addToCart);
-router.get("/select-address",userController.loadSelectAddress);
-router.get("/payment",userController.loadPaymentPage);
-router.post("/update-cart-quantity",userController.updateCartQuantity);
-router.delete("/remove-from-cart/:cartItemId",userController.removeCartItem);
+
+// Address Management
+router.get("/address",addressController.loadAddressPage);
+router.get("/add-address",addressController.loadNewAddressPage);
+router.post("/add-address",addressController.postAddress);
+router.get("/edit-address/:id",addressController.loadEditAddressPage);
+router.post("/edit-address/:id",addressController.postEditAddress);
+router.delete("/delete-address/:id",addressController.deleteAddress);
+
+// Cart Management
+router.get("/cart",userAuth,cartController.loadCartPage);
+router.post("/cart/add/:id",userAuth,cartController.addToCart);
+router.get("/select-address",cartController.loadSelectAddress);
+router.get("/payment",cartController.loadPaymentPage);
+router.post("/update-cart-quantity",cartController.updateCartQuantity);
+router.delete("/remove-from-cart/:cartItemId",cartController.removeCartItem);
+
+// Wishlist Management
 router.get("/wishlist",userAuth,userController.loadWishlistPage);
 router.post("/wishlist/add/:productId",userAuth,userController.addToWishlist);
 router.post("/wishlist/move-to-cart/:id",userAuth,userController.moveToCart);

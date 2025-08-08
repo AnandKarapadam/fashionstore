@@ -60,6 +60,11 @@
         .label{
             font-size: 14px;
         }
+
+        .address-card.selected {
+         border: 2px solid #0d6efd; /* Bootstrap primary color */
+         background-color: #e7f1ff;
+        }
     </style>
 </head>
 
@@ -116,18 +121,20 @@
     <div class="row pt-5 mt-5 mx-md-3">
       <div class="col-8 mt-5 px-4" >
         <div class="bg-light p-5 border border-1 rounded-3 shadow-sm">
+
+          <% addresses.forEach((address,index)=>{ %>
        <div class="container border p-3 mb-3 rounded shadow-sm address-card" onclick="selectAddress(this)">
   <div class="d-flex justify-content-between align-items-start">
     
     <!-- Radio button (left) -->
     <div class="pt-1 pe-2">
-      <input type="radio" name="address" />
+      <input type="radio" name="address" value="<%= address._id %>" <%= index === 0 ? 'checked':'' %> />
     </div>
 
     <!-- Address info (middle) -->
     <div class="flex-grow-1">
-      <p class="mb-1 fw-semibold">Anand KV, 123, MG Road, Kochi, Kerala - 682001</p>
-      <span class="badge bg-primary">Home</span>
+      <p class="mb-1 fw-semibold"><%= address.name %>,PH:<%= address.phone %>, <%= address.locality %>, <%= address.city %>- <%= address.pincode %></p>
+      <span class="badge bg-primary"><%= address.addressType %></span>
     </div>
 
     <!-- Edit icon (right) -->
@@ -137,27 +144,8 @@
 
   </div>
 </div>
-<div class="container border p-3 mb-3 rounded shadow-sm address-card " onclick="selectAddress(this)">
-  <div class="d-flex justify-content-between align-items-start">
-    
-    <!-- Radio button (left) -->
-    <div class="pt-1 pe-2">
-      <input type="radio" name="address" />
-    </div>
+<% }) %>
 
-    <!-- Address info (middle) -->
-    <div class="flex-grow-1">
-      <p class="mb-1 fw-semibold">Anand KV, 123, MG Road, Kochi, Kerala - 682001</p>
-      <span class="badge bg-primary">Home</span>
-    </div>
-
-    <!-- Edit icon (right) -->
-    <div class="pt-1 ps-2">
-      <i class="bi bi-pencil-square fs-5 text-secondary" role="button"></i>
-    </div>
-
-  </div>
-</div>
 
 <div class="bg-white shadow-sm border border-1 border-secondary p-2 text-center rounded-3 mt-5">
     <a href="/add-address" class="text-decoration-none text-dark fw-semibold"><i class="bi bi-plus-lg fw-semibold"></i> add new address</a>
@@ -176,10 +164,12 @@
 
     <div class="bg-light p-2 rounded-3">
     <!-- 1. Product Summary -->
+     <% cartItems.forEach((item)=>{ %>
     <div class="d-flex justify-content-between mb-2">
-      <div><span class="fw-semibold">1 × Denim Jacket</span></div>
-      <div><span class="fw-semibold text-success">₹1,299</span></div>
+      <div><span class="fw-semibold"><%= item.quantity %> × <%= item.productId.productName %></span></div>
+      <div><span class="fw-semibold text-success <%= item.productId.isBlocked? 'text-decoration-line-through text-danger':'' %> ">₹ <%= item.quantity * item.productId.salePrice %> </span></div>
     </div>
+    <% }) %>
 
     <!-- 2. Delivery Charges -->
     <div class="d-flex justify-content-between small text-success fw-semibold mb-2">
@@ -206,7 +196,7 @@
     <!-- 5. Total Price -->
     <div class="d-flex justify-content-between mb-3 bg-light rounded-3 p-3">
       <div class="fw-bold">Total <br> <small class="text-muted fw-normal">In rupees</small></div>
-      <div class="fw-bold text-success">₹999</div>
+      <div class="fw-bold text-success">₹<%= subtotal %></div>
     </div>
 
     <!-- 6. Continue Button -->
@@ -221,18 +211,16 @@
     <%- include("../partials/user/footer.ejs") %>
 
 <script>
-  document.querySelectorAll('.address-card input[type="radio"]').forEach(radio => {
-    radio.addEventListener('change', function () {
-      // Reset all cards
-      document.querySelectorAll('.address-card').forEach(card => {
-        card.style.backgroundColor = "white";
-      });
-
-      // Highlight selected card
-      const selectedCard = this.closest('.address-card');
-      selectedCard.style.backgroundColor = "#f8f9fa";
-    });
+  function selectAddress(card) {
+  document.querySelectorAll(".address-card").forEach(c => {
+    c.classList.remove("selected");
+    c.querySelector("input[type=radio]").checked = false;
   });
+
+  card.classList.add("selected");
+  card.querySelector("input[type=radio]").checked = true;
+}
+
 </script>
 
 </body>
