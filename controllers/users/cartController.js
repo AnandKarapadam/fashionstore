@@ -1,6 +1,9 @@
 const Address = require("../../models/addressSchema");
 const Cart = require("../../models/cartSchema");
+const Wishlist = require("../../models/wishlistSchema");
 const mongoose = require("mongoose");
+const Product = require("../../models/productSchema");
+const { countDocuments, validate } = require("../../models/userSchema");
 
 const loadCartPage = async(req,res)=>{
   try {
@@ -20,6 +23,7 @@ const loadCartPage = async(req,res)=>{
         totalPages:1,
         search:"",
         items:[],
+        cartItems:[],
         subtotal:0});
     }
 
@@ -107,21 +111,41 @@ const loadSelectAddress = async(req,res)=>{
   try {
     
     const userId = req.session.user;
+    const type = req.query.type; 
+    const productId = req.query.productId; 
 
-    const addressDoc = await Address.findOne({userId});
+    const addressDoc = await Address.findOne({ userId });
+    const addresses = addressDoc ? addressDoc.address : [];
+
+    let cartItems = [];
+    let subtotal = 0;
+    
+    if(type==="single"){
+        
+        
+        const cart = await Cart.findOne(
+          {userId,'items.productId':productId},
+          {"items.$":1}
+        ).populate("items.productId");
+
+        cartItems = cart?cart.items:[];
+        subtotal = cart.items[0].totalPrice;
+        
+    }
+    else{
     const cart = await Cart.findOne({userId}).populate("items.productId");
 
     const validItems =cart ? cart.items.filter(item=>item.productId&& !item.productId.isBlocked):[];
-
-    const subtotal = validItems.reduce((acc,item)=>acc+item.totalPrice,0);
-
-    const addresses = addressDoc?addressDoc.address:[];
+      cartItems = validItems;
+   subtotal = validItems.reduce((acc,item)=>acc+item.totalPrice,0);
+  }
+    
 
     res.render("user/selectAddress",{
       userId,
       addresses,
-      cartItems:validItems,
-      subtotal})
+      cartItems,
+      subtotal,type,productId});
 
   } catch (error) {
     console.error("Error",error.message);
@@ -174,7 +198,264 @@ const removeCartItem = async(req,res)=>{
 
 const loadPaymentPage = async(req,res)=>{
   try {
-     res.render("user/payment");
+
+    const userId = req.session.user;
+    const {type,productId} = req.query;
+
+    let cartItems = [];
+    let subtotal = 0;
+
+    if(type==="single"&&productId){
+
+      const cart = await Cart.findOne(
+        {userId,"items.productId":productId},
+        {"items.$":1}
+      ).populate("items.productId");  
+
+      if(cart){
+        const item = cart.items[0];
+        if(item.productId&&!item.productId.isBlocked){
+          cartItems = [item];
+          subtotal = item.totalPrice;
+        }
+      }
+
+    }
+    else{
+      const cart = await Cart.findOne({userId}).populate("items.productId");
+
+    const validItems = cart?cart.items.filter(item=>item.productId && !item.productId.isBlocked):[];
+
+    subtotal = validItems.reduce((acc,item)=>acc+item.totalPrice,0);
+      cartItems = validItems;
+    }
+    
+    
+
+     res.render("user/payment",{cartItems,subtotal,type,productId});
+
+  } catch (error) {
+    console.error("Error:",error.message);
+  }
+}
+
+const postSelectedAddress = async (req,res)=>{
+  try {
+    
+      const {selectedAddress,type,productId}  = req.body;
+      const userId = req.session.user;
+     
+
+    const userAddressDoc = await Address.findOne({userId:req.session.user});
+    
+
+    if(!userAddressDoc){
+      return res.status(404).send("No address found for user.");
+    }
+
+    const selected = userAddressDoc.address.find(addr=>
+      addr._id.toString() === selectedAddress
+    );
+
+    if(!selected){
+      return res.status(404).send("Invalied address selected.");
+    }
+
+    req.session.selectedAddress = selected;
+    
+    let redirectUrl = `/checkout/payment?addressId=${selected._id}`;
+    if(type === "single" && productId){
+      redirectUrl += `&type=single&productId=${productId}`;
+    }
+    
+    res.json({ success: true, redirectUrl });
+    
+  } catch (err) {
+    console.error("Error:",err.message)
+  }
+}
+
+const postPaymentMethod = async(req,res)=>{
+  try {
+    const userId  = req.session.user;
+    const {paymentMethod} = req.body;
+    const method = paymentMethod.toLowerCase();
+
+    const validateMethods = ["cod","razorpay","upi","card","wallet"];
+    if(!validateMethods.includes(method)){
+      return res.json({success:false,message:"Invalied payment method"});
+    }
+
+    if(!req.session.selectedAddress){
+      return res.json({success:false,message:"No delivery address selected"});
+    }
+
+    const {type,productId} = req.body;
+
+    if(type==="single"&&productId){
+        const cart = await Cart.findOne({userId}).populate("items.productId");
+
+        if(!cart){
+          return res.json({success:false,message:"Your cart is empty."})
+        }
+
+        const item = cart.items.find(item=>item.productId&&item.productId._id.toString()===productId);
+
+        if(!item){
+          return res.json({success:false,message:"Product not available!"});
+        }
+
+        const subtotal = item.totalPrice;
+
+        req.session.orderData = {
+          userId,
+          address:req.session.selectedAddress,
+          paymentMethod:method,
+          products:[item],
+          totalAmount:subtotal
+        }
+
+    }
+    else{
+      const cart = await Cart.findOne({userId}).populate("items.productId");
+
+       if(!cart||cart.items.length === 0){
+      return res.json({success:false,message:"Your cart is empty"});
+    }
+
+    const validItems = cart?cart.items.filter(item=>item.productId&&!item.productId.isBlocked):[];
+
+      const subtotal = validItems.reduce((acc,item)=>
+      acc+item.totalPrice,0
+    )
+
+    req.session.orderData = {
+      userId,
+      address:req.session.selectedAddress,
+      paymentMethod:method,
+      products:cart.items,
+      totalAmount:subtotal
+    }
+
+    }
+       
+
+    if(method === "cod"){
+      return res.json({success:true,redirectUrl:"/checkout/confirm"})
+    }
+    else if(method === "razorpay"){
+      return res.json({success:true,redirectUrl:"/checkout/razorpay"});
+    }
+    else if(method === "upi"){
+      return res.json({success:true,redirectUrl:"/checkout/upi"});
+    }
+    else if(method === "card"){
+      return res.json({success:true,redirectUrl:"/checkout/card"})
+    }else if(method === "wallet"){
+      return res.json({success:true,redirectUrl:"/checkout/wallet"})
+    }
+
+  } catch (error) {
+    console.error("Error: ",error.message);
+  }
+}
+
+const getConfirmOrderPage = async(req,res)=>{
+  try {
+      
+     const search = req.query.search||"";
+     const page = parseInt(req.query.page)||1;
+     const limit = 4;
+     const skip = (page-1)*limit;
+     const searchRegex = new RegExp(search,"i");
+
+     let itemsToShow = [];
+     let cart;
+     const orderData = req.session.orderData;
+
+     if(orderData?.products){
+      itemsToShow = req.session.orderData.products;
+     }
+     else{
+    
+      cart = await Cart.findOne({userId:req.session.user}).populate("items.productId");
+      if(!cart||!cart.items.length){
+      return res.redirect("/cart");
+     }
+     itemsToShow = cart.items;
+
+    }
+
+     let filterItems = itemsToShow.filter(item=>{ 
+      const product = item.productId;
+
+      if(!product||product.isBlocked||product.status == "out of stock"){
+        return false
+      }
+      
+     return searchRegex.test(product.productName);
+  })
+
+     const totalProducts = filterItems.length;
+     const totalPages = Math.ceil(totalProducts/limit);
+
+     const paginateItems = filterItems.slice(skip,skip+limit);
+
+     const products = paginateItems.map((item)=>({
+      _id:item.productId?._id||item._id,
+      name:item.productId?.productName||item.name,
+      image:item.productId?.productImage?.[0]||item.image,
+      price:item.price,
+      quantity:item.quantity,
+      totalPrice:item.totalPrice||(item.price*item.quantity)
+     }))
+     
+
+     const totalAmount = filterItems.reduce(
+      (acc,item)=>acc+(item.productId.salePrice*item.quantity),0
+     )
+
+     res.render("user/orderConfirmation",{
+      address:orderData.address,
+      paymentMethod:orderData.paymentMethod,
+      products,
+      totalAmount,
+      totalPages,
+      currentPage:page,
+      search
+     })
+
+
+  } catch (error) {
+    console.error("Error:",error.message);
+    res.redirect('/cart');
+  }
+}
+
+const buyNowSingleProduct = async(req,res)=>{
+  try {
+    
+    const userId = req.session.user;
+    const productId = req.params.id;
+    
+    const cart  = await Cart.findOne(
+     {userId,"items.productId": productId}, 
+     { "items.$": 1 }    
+    ).populate("items.productId");
+
+    if(!cart){
+      const product =  await Product.findById(productId);
+      await Cart.updateOne(
+    {userId},
+    {$push:{items:{productId:product_id,quantity:1,price:product.salePrice}}}
+    )
+      return res.redirect("/cart");
+    }
+
+    
+
+    res.redirect(`/select-address?type=single&productId=${productId}`);
+
   } catch (error) {
     console.error("Error:",error.message);
   }
@@ -186,5 +467,9 @@ module.exports = {
     loadSelectAddress,
     loadPaymentPage,
     updateCartQuantity,
-    removeCartItem
+    removeCartItem,
+    postSelectedAddress,
+    postPaymentMethod,
+    getConfirmOrderPage,
+    buyNowSingleProduct
 }

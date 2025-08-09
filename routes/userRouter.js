@@ -6,6 +6,7 @@ const passport = require("passport");
 let profileController = require("../controllers/users/profileController");
 let addressController = require("../controllers/users/addressController");
 let cartController = require("../controllers/users/cartController");
+let wishlistController = require("../controllers/users/wishlistController");
 
 
 
@@ -86,15 +87,20 @@ router.delete("/delete-address/:id",addressController.deleteAddress);
 // Cart Management
 router.get("/cart",userAuth,cartController.loadCartPage);
 router.post("/cart/add/:id",userAuth,cartController.addToCart);
+router.get("/buy-now/:id",userAuth,cartController.buyNowSingleProduct);
 router.get("/select-address",cartController.loadSelectAddress);
-router.get("/payment",cartController.loadPaymentPage);
+router.post("/select-address",cartController.postSelectedAddress);
+router.get("/checkout/payment",cartController.loadPaymentPage);
+router.post("/checkout/payment",cartController.postPaymentMethod);
+router.get("/checkout/confirm",userAuth,cartController.getConfirmOrderPage);
 router.post("/update-cart-quantity",cartController.updateCartQuantity);
 router.delete("/remove-from-cart/:cartItemId",cartController.removeCartItem);
 
+
 // Wishlist Management
-router.get("/wishlist",userAuth,userController.loadWishlistPage);
-router.post("/wishlist/add/:productId",userAuth,userController.addToWishlist);
-router.post("/wishlist/move-to-cart/:id",userAuth,userController.moveToCart);
-router.delete("/remove-from-wishlist/:id",userAuth,userController.removeWishlistItem)
+router.get("/wishlist",userAuth,wishlistController.loadWishlistPage);
+router.post("/wishlist/add/:productId",userAuth,wishlistController.addToWishlist);
+router.post("/wishlist/move-to-cart/:id",userAuth,wishlistController.moveToCart);
+router.delete("/remove-from-wishlist/:id",userAuth,wishlistController.removeWishlistItem)
 
 module.exports = router

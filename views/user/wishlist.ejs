@@ -211,8 +211,16 @@
           <p class="mb-1 text-success fw-semibold">₹<%= item.product.salePrice %></p>
           
         </div>
-        <div>
-          <p class="mb-2 text-success fw-bold text-truncate">In Stock</p>
+        <div class=" d-flex align-items-center justify-content-center w-100">
+          <% if( item.product.isBlocked || item.product.status === "Discontinued"){ %>
+          <p class="mb-2 text-danger fw-bold text-truncate">Currently Unavailable</p>
+           <% } else if(item.product.quantity==0){ %>
+            <p class="mb-2 text-danger fw-bold text-truncate">Out Of Stock</p>
+            <% } else{ %>
+              <p class="mb-2 text-success fw-bold text-truncate">In Stock</p>
+              <% } %>
+          </div>
+       
         </div>
 
         <!-- Buttons -->

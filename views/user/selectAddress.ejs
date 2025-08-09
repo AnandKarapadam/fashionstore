@@ -200,7 +200,7 @@
     </div>
 
     <!-- 6. Continue Button -->
-    <button class="btn btn-dark w-100 fw-semibold">Continue</button>
+    <button class="btn btn-dark w-100 fw-semibold" onclick="submitAddress()">Continue</button>
   </div>
 </div> 
     </div>
@@ -209,8 +209,12 @@
 
 
     <%- include("../partials/user/footer.ejs") %>
+<!-- Add this in your <head> -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+  const type = "<%= typeof type !== 'undefined' ? type : '' %>";
+  const productId = "<%= typeof productId !== 'undefined' ? productId : '' %>";
   function selectAddress(card) {
   document.querySelectorAll(".address-card").forEach(c => {
     c.classList.remove("selected");
@@ -221,6 +225,56 @@
   card.querySelector("input[type=radio]").checked = true;
 }
 
+ async function submitAddress(){
+
+  const selected = document.querySelector("input[name='address']:checked");
+
+  console.log(selected.value)
+  if(!selected){
+    return Swal.fire({
+      icon:"warning",
+      title:"No address selected",
+      text:"Please select a delivery address before continuing.",
+    })
+  }
+  try {
+
+    const res = await fetch("/select-address",{
+      method:"POST",
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({selectedAddress:selected.value,type,productId})
+    })
+
+    if(res.ok){
+      const data = await res.json();
+      
+      
+      window.location.href = data.redirectUrl;
+    }
+    else{
+      const error = await res.text();
+      Swal.fire({
+        icon:"error",
+        title:"Error",
+        text:error||'Something went wrong. Please try again.'
+      })
+    }
+
+    
+    
+  } catch (err) {
+    console.error("Error:",err.message);
+    Swal.fire({
+      icon:"error",
+      title:"Oops!",
+      text:"Network error or server not responding."
+    })
+  }
+
+
+}
 </script>
 
 </body>

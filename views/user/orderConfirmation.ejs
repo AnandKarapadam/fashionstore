@@ -108,38 +108,44 @@
       </ul>
     </div>
   </nav>
-
+ 
   <!-- Updated Row -->
   <div class="row pt-4 mt-5 mx-md-3 align-items-start">
     <!-- Cart Section -->
     <div class="col-md-8 mt-5 px-4">
       <div class="border p-4 mb-3 rounded shadow-sm">
+        <% if(products){ %>
+          <% products.forEach((product)=>{%>
         <div class="row shadow-sm rounded-3 bg-light p-3 mb-3 align-items-top">
           <div class="col-md-4 text-center">
-            <img src="/images/otp-img.jpg" alt="Product Image" class="img-fluid rounded" style="max-height: 150px;">
-            <p class="small mt-2 fw-semibold">Quantity: <span class="fw-bold">12</span></p>
+           <a href="/product-details/<%= product._id %>"><img src="/uploads/re-image/<%= product.image %>" alt="Product Image" class="img-fluid rounded" style="max-height: 150px;"></a>
+            <p class="small mt-2 fw-semibold">Quantity: <span class="fw-bold"><%= product.quantity %></span></p>
           </div>
           <div class="col-md-8">
             <div>
-            <h5 class="fw-bold mb-1">Product Name Here</h5>
-            <p class="mb-1 text-muted small fw-semibold">Address: <span class="text-break fw-normal">Karapadam(HO)/Thovarimala(PO)/Wayanad(district)</span></p>
-            <span class="small text-muted">Phone:9587487548</span><br>
-            <span class="small text-muted">PIN:674839</span>
-              </div>
+               <h5 class="fw-bold mb-1"><%= product.name %></h5>
+               <p class="mb-1 text-muted small fw-semibold">Address: <span class="text-break fw-normal"><%= address.address %></span></p>
+               <span class="small text-muted">Phone:<%= address.phone %></span><br>
+               <span class="small text-muted">PIN:<%= address.pincode %></span>
+            </div>
             
             <div class="d-flex justify-content-between mt-5">
               
-                <p>Delivery by Monday, June</p>
+                <p><%= address.addressType.toUpperCase() %></p>
               
               
-                <h5 class="text-success">₹1,299</h5>
+                <h5 class="text-success">₹<%= product.price %></h5>
               
             </div>
           
           </div>
         </div>
-
+        <% }) %>
+        <%} else{ %>
+            <h4 class="text-center fw-bold">No products found</h4>
+          <% } %>
         <!-- Pagination -->
+          <% if(products){ %>
         <div class="container mt-3" id="paginationSection">
           <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center mb-4" style="margin-right: -50px;">
@@ -167,6 +173,7 @@
             </ul>
           </nav>
         </div>
+        <% } %>
       </div>
     </div>
 
@@ -177,10 +184,13 @@
           <h5 class="fw-bold text-center">Order Summary</h5>
         </div>
         <div class="bg-light p-2 rounded-3">
+          
+          <% products.forEach((product)=>{%>
           <div class="d-flex justify-content-between mb-2">
-            <div><span class="fw-semibold">1 × Denim Jacket</span></div>
-            <div><span class="fw-semibold text-success">₹1,299</span></div>
+            <div><span class="fw-semibold"><%= product.quantity %> × <%= product.name %></span></div>
+            <div><span class="fw-semibold text-success">₹<%= product.quantity* product.price %></span></div>
           </div>
+          <% }) %>
           <div class="d-flex justify-content-between small text-success fw-semibold mb-2">
             <div>Delivery Charges</div>
             <div class="text-success">Free</div>
@@ -198,7 +208,7 @@
         <hr>
         <div class="d-flex justify-content-between mb-3 bg-light rounded-3 p-3">
           <div class="fw-bold">Total <br> <small class="text-muted fw-normal">In rupees</small></div>
-          <div class="fw-bold text-success">₹999</div>
+          <div class="fw-bold text-success">₹<%= totalAmount %></div>
         </div>
         <button class="btn btn-dark w-100 fw-semibold">Continue</button>
       </div>

@@ -159,7 +159,7 @@
               <p class="text-danger fw-bold"><%= item.productId.productOffer %>% off</p>
             <%}%>
         </div>
-        <div>
+        <div >
           <h5 class="text-success">₹<%= item.productId.salePrice %></h5>
           <button class="btn btn-sm btn-light" onclick="removeFromCart('<%= item._id %>')">Remove</button>
           
@@ -181,7 +181,18 @@
       <%} %>  
     </div>
     <div class="col-md-6 text-end">
-      <span class="text-dark fw-bold">Free Delivery</span><br>
+      <% if (item.productId.isBlocked) { %>
+    <a class="btn btn-sm btn-secondary disabled"
+       onclick="return false;"
+       style="pointer-events: none; cursor: not-allowed; opacity: 0.6;"
+       title="This product is currently unavailable.">
+      Buy Now
+    </a>
+  <% } else { %>
+    <a href="/buy-now/<%= item.productId._id %>" class="btn btn-sm btn-primary">
+      Buy Now
+    </a>
+  <% } %>
       
     </div>
   </div>
@@ -234,13 +245,14 @@
 
     <div class="bg-light p-2 rounded-3">
     <!-- 1. Product Summary -->
-
-    <% cartItems.slice().reverse().forEach(item=>{ %>
+      <div style="max-height: 200px;overflow-y: scroll;">
+    <% (cartItems||[]).slice().reverse().forEach(item=>{ %>
     <div class="d-flex justify-content-between mb-2">
       <div><span class="fw-semibold"><%= item.quantity %> × <%= item.productId.productName %></span></div>
       <div><span class="fw-semibold text-success <%= item.productId.isBlocked ? 'text-decoration-line-through text-danger' : '' %>">₹<%= item.quantity * item.productId.salePrice %></span></div>
     </div>
     <% }) %>
+    </div>
 
     <!-- 2. Delivery Charges -->
     <div class="d-flex justify-content-between small text-success fw-semibold mb-2">

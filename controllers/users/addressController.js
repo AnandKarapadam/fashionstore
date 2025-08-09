@@ -1,5 +1,6 @@
 const Address = require("../../models/addressSchema");
 const Cart = require("../../models/cartSchema");
+const Wishlist = require("../../models/wishlistSchema");
 
 
 
