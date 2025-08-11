@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <title>Document</title>
   <style>
     body {
@@ -86,6 +88,7 @@
     background-color: green; /* green overlay */
     z-index: 2;
   }
+  
 
   .tracking-step {
     position: relative;
@@ -100,8 +103,8 @@
     position: absolute;
     left: -8.5px; /* centers the circle on 3px line */
     top: 0;
-    width: 20px;
-    height: 20px;
+    width: 15px;
+    height: 15px;
     background-color: white;
     border: 3px solid #ccc; /* grey by default */
     border-radius: 50%;
@@ -168,8 +171,7 @@
 
   <!-- Updated Row -->
   <!-- Bootstrap CSS & Icons -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
 
 <div class="container mt-5 pt-5">
   <div class="row g-4 align-items-start">
@@ -177,25 +179,33 @@
     <div class="col-md-8 d-flex justify-content-md-center">
       <!-- Image & Rating -->
       <div class="me-4 text-center">
-        <img src="/images/otp-img.jpg" alt="Product Image" class="img-fluid mb-2" style="width: 120px; height: 160px; object-fit: cover;">
+        <img src="/uploads/re-image/<%= product.productImage[0] %>" alt="Product Image" class="img-fluid mb-2" style="width: 120px; height: 160px; object-fit: contain;">
         <p class="mb-1"><small class="fw-bold">Rate This Product</small></p>
-        <div class="text-warning mb-2">
-          <i class="bi bi-star-fill"></i>
-          <i class="bi bi-star-fill"></i>
-          <i class="bi bi-star-fill"></i>
-          <i class="bi bi-star-fill"></i>
-          <i class="bi bi-star"></i>
-        </div>
-        <a href="#" class="btn btn-dark btn-sm fw-semibold">Add/Edit Review</a>
+        <% if (product.averageRating && product.averageRating > 0) { %>
+  <div class="text-warning mb-2">
+    <% for (let i = 1; i <= 5; i++) { %>
+      <% if (i <= product.averageRating) { %>
+        <i class="bi bi-star-fill"></i>
+      <% } else { %>
+        <i class="bi bi-star"></i>
+      <% } %>
+    <% } %>
+    <span class="text-muted">(<%= product.reviewCount %> reviews)</span>
+  </div>
+<% } else { %>
+  <p class="text-muted">No reviews yet</p>
+<% } %>
+
+        <a href="/product-details/<%=product._id%>#review-section" class="btn btn-dark btn-sm fw-semibold">Add Review</a>
       </div>
 
       <!-- Product Text Details -->
       <div>
-        <p class="mb-2 fw-bold">Product Details</p>
-        <p class="mb-2 small">Color</p>
-        <p class="small fw-semibold">Order ID: <span class="text-muted">U8Y9E44</span></p>
-        <p class="fw-bold fs-5 mb-0 text-success">₹1,299</p>
-        <p class="text-danger  small mt-4" style="font-size: 12px;">Return policy ended</p>
+        <p class="mb-2 fw-bold"><%= product.productName %></p>
+        <p class="mb-2 small">Color:<%= product.color %></p>
+        <p class="small fw-semibold">Order ID: <span class="text-muted"><%= order.orderId %></span></p>
+        <p class="fw-bold fs-5 mb-0 text-success">₹<%= product.salePrice %></p>
+        <p class="text-  small mt-4" style="font-size: 12px;">Status: <span class="text-success"><%= order.status %></span></p>
       </div>
     </div>
 
@@ -212,19 +222,19 @@
     <div class="tracking-line-progress" style="height: 75%;"></div> <!-- Change this -->
 
     <!-- Step 1 -->
-    <div class="tracking-step completed">
+    <div class="tracking-step">
       <div class="circle"></div>
       <div class="label">Order Placed</div>
     </div>
 
     <!-- Step 2 -->
-    <div class="tracking-step completed">
+    <div class="tracking-step">
       <div class="circle"></div>
       <div class="label">Shipped</div>
     </div>
 
     <!-- Step 3 -->
-    <div class="tracking-step completed">
+    <div class="tracking-step">
       <div class="circle"></div>
       <div class="label">Out for Delivery</div>
     </div>
@@ -247,15 +257,15 @@
       <hr>
       <div class="d-flex justify-content-between">
         <p class="small">List Price</p>
-        <p class="small fw-bold">₹1,500</p>
+        <p class="small fw-bold">₹<%= product.regularPrice %></p>
       </div>
       <div class="d-flex justify-content-between">
         <p class="small">Selling Price</p>
-        <p class="small fw-bold">₹1,350</p>
+        <p class="small fw-bold">₹<%= product.salePrice %></p>
       </div>
       <div class="d-flex justify-content-between">
-        <p class="small">Extra Discount</p>
-        <p class="small fw-bold">₹1,310</p>
+        <p class="small">Discount</p>
+        <p class="small fw-bold">%<%= product.productOffer %></p>
       </div>
       <div class="d-flex justify-content-between">
         <p class="small">Platform Fee</p>
@@ -264,7 +274,7 @@
       <hr>
       <div class="d-flex justify-content-between">
         <p class="small">Total Amount</p>
-        <p class="small fw-bold text-success">₹1,299</p>
+        <p class="small fw-bold text-success">₹<%= product.salePrice-11 %></p>
       </div>
       </div>
     </div>
@@ -272,24 +282,65 @@
       <div class="border border-1 h-100 rounded-4 p-3 shadow-sm">
       <p class="text-muted small">Shipping Details</p>
       <hr>
-        <p class="small">Anand KV</p> 
-        <p class="small">Thovarimala(PO)/Karapadam(HO)/Ambukuthy</p>
-        <p class="small">City-Sulthan Bathery</p>
-        <p class="small">PIN:758745</p>
-        <p class="small">Phone:9865658547</p>    
+        <p class="small"><%= address.name %></p> 
+        <p class="small"><%= address.address %></p>
+        <p class="small"><%= address.city %></p>
+        <p class="small">PIN:<%= address.pincode %></p>
+        <p class="small">Phone:<%= address.phone %></p>    
       <hr>
       </div>
     </div>
   </div>
   <div class="text-center">
-    <a href="/invoice/download/<%= order._id %>" class="btn btn-outline-dark mt-4">
+    <a href="/invoice/download/<%= order._id %>/<%= product._id %>" class="btn btn-outline-dark mt-4">
   <i class="bi bi-download me-1"></i> Download Invoice
 </a>
   </div>
 </div>
-
+<div id="order-status" style="display:none;"><%= order.status %></div>
 
   <%- include("../partials/user/footer.ejs") %>
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const status = document.getElementById("order-status").textContent.trim();
+
+  const stepIndexMap = {
+    "Pending": 0,
+    "Processing": 0, 
+    "Shipped": 1,
+    "Out for Delivery": 2,
+    "Delivered": 3,
+    "Cancelled": 0,
+    "Return Request": 0,
+    "Returned": 3
+  };
+
+  const statusProgressMap = {
+    0: 10,
+    1: 50,
+    2: 75,
+    3: 100
+  };
+
+  const completedIndex = stepIndexMap[status] ?? -1;
+  const percent = statusProgressMap[completedIndex] || 0;
+
+   const progressLine = document.querySelector(".tracking-line-progress");
+  progressLine.style.height = "0%"; // start collapsed
+  progressLine.style.transition = "height 1.5s ease-in-out"; // animate change
+  setTimeout(() => {
+    progressLine.style.height = percent + "%"; // animate to desired height
+  }, 100);
+
+ 
+
+  document.querySelectorAll(".tracking-step").forEach((step, i) => {
+    if (i <= completedIndex) {
+      step.classList.add("completed");
+    }
+  });
+});
+</script>
 
 </body>
 

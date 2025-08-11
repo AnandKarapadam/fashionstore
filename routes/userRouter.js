@@ -7,7 +7,7 @@ let profileController = require("../controllers/users/profileController");
 let addressController = require("../controllers/users/addressController");
 let cartController = require("../controllers/users/cartController");
 let wishlistController = require("../controllers/users/wishlistController");
-
+let orderController = require("../controllers/users/ordersController");
 
 
 
@@ -93,8 +93,15 @@ router.post("/select-address",cartController.postSelectedAddress);
 router.get("/checkout/payment",cartController.loadPaymentPage);
 router.post("/checkout/payment",cartController.postPaymentMethod);
 router.get("/checkout/confirm",userAuth,cartController.getConfirmOrderPage);
+router.post("/checkout/confirm",userAuth,cartController.postConfirmation);
 router.post("/update-cart-quantity",cartController.updateCartQuantity);
 router.delete("/remove-from-cart/:cartItemId",cartController.removeCartItem);
+router.get("/order-success",cartController.loadSuccessPage);
+
+// Order Management
+router.get("/orders",userAuth,orderController.loadOrderPage);
+router.get("/order-details/:orderId",userAuth,orderController.loadOrderDetails);
+router.get("/invoice/download/:orderId/:productId",userAuth,orderController.invoiceDownload);
 
 
 // Wishlist Management

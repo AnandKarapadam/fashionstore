@@ -116,6 +116,7 @@
     
     <div class="row pt-4 mt-5 mx-md-3">
       <div class="col-8 mt-5 px-4 bg-light border rounded-3 shadow-sm py-3">
+        <% if(items && items.length>0){ %>
         <% items.slice().reverse().forEach(item=>{ %>
        <div class="container bg-white border p-3 mb-3 rounded shadow-sm">
 
@@ -200,6 +201,8 @@
 </div>
 <% })%>
 
+
+
 <div class="container mt-3" id="paginationSection">
             <nav aria-label="Page navigation">
                 <ul class="pagination justify-content-center mb-4" style="margin-right: -50px;">
@@ -233,6 +236,14 @@
             </nav>
         </div>
 
+        <% } else{ %>
+
+  <div class="text-center h-100 d-flex flex-column align-items-center justify-content-center">
+    <p class="fw-semibold">No items found in cart</p>
+    <a class="btn btn-outline-secondary" href="/all-products">Explore Products</a>
+  </div>
+
+  <% } %>
       </div>
       <div class="col-4">
 
@@ -283,7 +294,7 @@
     </div>
 
     <!-- 6. Continue Button -->
-    <a href="/select-address" class="btn btn-dark w-100 fw-semibold">Continue</a>
+    <a href="/select-address" class="btn btn-dark w-100 fw-semibold">Select Address</a>
   </div>
 </div> 
     </div>

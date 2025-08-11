@@ -11,6 +11,7 @@ const Wishlist = require("../../models/wishlistSchema");
 const mongoose = require("mongoose");
 const Address  = require("../../models/addressSchema");
 
+
 let loadHomepage = async (req, res) => {
   try {
     const today = new Date().toISOString();
@@ -414,6 +415,7 @@ const loadAllProductsPage = async (req, res) => {
 const getProductDetails = async (req, res) => {
   try {
     const id = req.params.id;
+   
 
     const product = await Product.findOne({
       _id: id,
@@ -441,7 +443,7 @@ const getProductDetails = async (req, res) => {
       .populate("category")
       .lean();
 
-    res.render("user/product_details", { product, relatedProducts, reviews });
+    res.render("user/product_details", { product, relatedProducts, reviews});
   } catch (error) {
     res.redirect("/pageNotFound");
     console.error("Error while rendering product details:", error.message);
@@ -455,6 +457,14 @@ const postReview = async (req, res) => {
     if (!user) {
       return res.redirect("/login");
     }
+
+      const existingReview = await Review.findOne({ product: id, user});
+
+
+
+      if(existingReview){
+        return res.redirect(`/product-details/${id}`);
+      }
 
     const { rating, comment } = req.body;
 

@@ -210,7 +210,7 @@
           <div class="fw-bold">Total <br> <small class="text-muted fw-normal">In rupees</small></div>
           <div class="fw-bold text-success">₹<%= totalAmount %></div>
         </div>
-        <button class="btn btn-dark w-100 fw-semibold">Continue</button>
+        <button onclick="postOrders('<%= paymentMethod %>','<%= address._id %>','<%= type %>','<%= product %>')" class="btn btn-dark w-100 fw-semibold">Continue</button>
       </div>
     </div>
   </div>
@@ -224,6 +224,34 @@
       value += delta;
       if (value < 1) value = 1;
       input.value = value;
+    }
+    async function postOrders(paymentMethod,addressId,type,product) {
+      try {
+
+        const res =await fetch("/checkout/confirm",{
+          method:"POST",
+          headers:{
+            'Content-Type':"application/json"
+          },
+          body:JSON.stringify({paymentMethod,addressId,type,product})
+        })
+
+        if(res.ok){
+          const data = await res.json();
+          window.location.href = "/order-success"
+        }
+        else{
+          const data = await res.json();
+          Swal.fire({
+            icon:"error",
+            title:"Error Occured!",
+            text:data.message||"Cannot confirm order"
+          })
+        }
+        
+      } catch (error) {
+        console.error("Error:",error.message);
+      }
     }
   </script>
 </body>

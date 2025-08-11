@@ -119,6 +119,9 @@
               font-family: 'Times New Roman', Times, serif;
               color: rgb(74, 74, 74);
           }
+          
+ 
+
 
           @media (max-width: 768px) {
 
@@ -187,12 +190,23 @@
 
     
     
-      <div class="container mt-5 pt-5 px-5">
-        <div class="row mt-5 px-3 px-md-5 py-3 border rounded-3 shadow-sm">
+      <div class="container mt-5 pt-5 px-5 mb-4">
+        <% orders.forEach(order=>{ %>
+          <% order.orderedItems.forEach((item)=>{ %>
+            
+        <div class="row mt-5 px-3 px-md-5 py-3 border rounded-3 shadow-sm"  >
   <!-- Image Column -->
-  <div class="col-12 col-md-2 d-flex align-items-center justify-content-center mb-3 mb-md-0">
-    <img src="/images/otp-img.jpg" alt="Product Image" style="width: 100px; height: 150px;">
-  </div>
+   
+  <div onclick="orderDetails('<%= item.product._id %>','<%= order.orderId %>')"  class="col-12 col-md-2 d-flex align-items-center justify-content-center mb-3 mb-md-0" style="width: 120px; height: 150px;cursor: pointer;">
+  
+    <img src="/uploads/re-image/<%= item.product.productImage[0] %>" 
+         class="img-fluid rounded" 
+         alt="Product Image"  
+         style="width: 100%; height: 100%; object-fit: contain;">
+  
+</div>
+
+  
 
   <!-- Info Column -->
   <div class="col-12 col-md-10">
@@ -200,60 +214,31 @@
       
       <!-- Product Info -->
       <div>
-        <p class="fw-bold mb-1">Product Name</p>
-        <p class="fw-semibold mb-2">Description</p>
-        <p class="text-muted small mb-0">Order ID : ORD-5GHT9B</p>
+        <p class="fw-bold mb-1"><%= item.product.productName %></p>
+        <p class="fw-semibold mb-2"><%= item.product.description.split(" ").slice(0,8).join(" ") %>...</p>
+        <p class="text-muted small mb-0">Order ID : <%= order.orderId %></p>
+        
+        <a href="/order-details/<%= order.orderId %>?productId=<%= item.product._id %>" class="btn btn-outline-secondary btn-sm mt-2 mt-md-4">Order Details</a>
       </div>
 
       <!-- Price -->
       <div class="mt-2 mt-md-5">
-        <p class="text-success fw-bold mb-0">₹799</p>
+        <p class="text-success fw-bold mb-0">₹<%= item.product.salePrice %></p>
       </div>
 
       <!-- Status & Actions -->
       <div class="text-md-end mt-2 mt-md-0">
         <a href="#" class="btn btn-danger btn-sm fw-semibold mb-1">Cancel Order</a>
-        <p class="fw-semibold small mb-1">Delivery Expected By Sat June 1</p>
+        <p class="fw-semibold small mb-1">Ordered Date: <%= new Date(order.createOn).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })%></p>
         <p class="text-muted small mb-0">Your Order Has Been Placed</p>
       </div>
     </div>
   </div>
 </div>
 
-      <div class="container mt-3">
-              <nav aria-label="Page navigation">
-                  <ul class="pagination justify-content-center mb-4" style="margin-right: 50px;">
-                      
-                      <% const maxVisiblePages=3; let startPage=Math.max(1, currentPage - 1); let endPage=startPage +
-                          maxVisiblePages - 1; if (endPage> totalPages) {
-                          endPage = totalPages;
-                          startPage = Math.max(1, endPage - maxVisiblePages + 1);
-                          }
-                          %>
-
-                          <!-- Previous Button -->
-                          <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
-                              <a class="page-link" href="?page=<%= currentPage - 1 %>&search=<%= search %>">&laquo;</a>
-                          </li>
-
-                          <!-- Page Numbers -->
-                          <% for (let i=startPage; i <=endPage; i++) { %>
-                              <li class="page-item <%= i == currentPage ? 'active' : '' %>">
-                                  <a class="page-link" href="?page=<%= i %>&search=<%= search %>">
-                                      <%= i %>
-                                  </a>
-                              </li>
-                              <% } %>
-
-                                  <!-- Next Button -->
-                                  <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
-                                      <a class="page-link"
-                                          href="?page=<%= currentPage + 1 %>&search=<%= search %>">&raquo;</a>
-                                  </li>
-
-                  </ul>
-              </nav>
-          </div>
+<% }) %>
+  <% }) %>
+      
   </div>
 
 

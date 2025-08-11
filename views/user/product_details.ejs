@@ -19,6 +19,10 @@
       font-size: 23px;
       font-weight: 500;
     }
+    html {
+  scroll-behavior: smooth;
+}
+
 
     .banner {
       height: 400px;
@@ -299,7 +303,7 @@
 
       <!-- Reviews Section -->
       <div class="mt-5 col-md-6 overflow-auto"  style="max-height: 300px;">
-      <h5>Customer Reviews</h5>
+      <h5 style="position: sticky;top: 0;background-color: white;">Customer Reviews</h5>
       <% if (reviews.length === 0) { %>
         <p>No reviews yet.</p>
       <% } else { %>
@@ -358,7 +362,7 @@
   </div>
 </div>
 
-<div class="mt-5">
+<div class="mt-5" id="review-section">
   <h5>Add Your Review</h5>
   <form action="/product/<%= product._id %>/review" method="POST" class="mt-3">
 

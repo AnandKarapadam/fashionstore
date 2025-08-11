@@ -3,6 +3,7 @@ const Cart = require("../../models/cartSchema");
 const Wishlist = require("../../models/wishlistSchema");
 const mongoose = require("mongoose");
 const Product = require("../../models/productSchema");
+const Order = require("../../models/orderSchema");
 const { countDocuments, validate } = require("../../models/userSchema");
 
 const loadCartPage = async(req,res)=>{
@@ -341,7 +342,13 @@ const postPaymentMethod = async(req,res)=>{
        
 
     if(method === "cod"){
-      return res.json({success:true,redirectUrl:"/checkout/confirm"})
+
+      if(type==="single"&&productId){
+         return res.json({success:true,redirectUrl:`/checkout/confirm?type=${type}&product=${productId}`})
+      }else{
+        return res.json({success:true,redirectUrl:"/checkout/confirm"})
+      }
+      
     }
     else if(method === "razorpay"){
       return res.json({success:true,redirectUrl:"/checkout/razorpay"});
@@ -368,6 +375,7 @@ const getConfirmOrderPage = async(req,res)=>{
      const limit = 4;
      const skip = (page-1)*limit;
      const searchRegex = new RegExp(search,"i");
+     const {type,product} = req.query;
 
      let itemsToShow = [];
      let cart;
@@ -375,6 +383,7 @@ const getConfirmOrderPage = async(req,res)=>{
 
      if(orderData?.products){
       itemsToShow = req.session.orderData.products;
+      
      }
      else{
     
@@ -422,7 +431,9 @@ const getConfirmOrderPage = async(req,res)=>{
       totalAmount,
       totalPages,
       currentPage:page,
-      search
+      search,
+      type,
+      product
      })
 
 
@@ -431,6 +442,110 @@ const getConfirmOrderPage = async(req,res)=>{
     res.redirect('/cart');
   }
 }
+
+const postConfirmation = async (req, res) => {
+  try {
+    const userId = req.session.user;
+    
+    const { addressId, paymentMethod,type,product } = req.body;
+
+    let orderedItems = [];
+    let totalPrice = 0;
+
+    
+    if (type === "single" && product) {
+      const cart = await Cart.findOne(
+        { userId, "items.productId": product },
+        { "items.$": 1 } 
+      ).populate("items.productId");
+
+      if (!cart || cart.items.length === 0) {
+        return res.status(404).json({ message: "Product not found in cart" });
+      }
+
+      const singleItem = cart.items[0];
+      const price = singleItem.productId.salePrice || singleItem.productId.price;
+
+      orderedItems.push({
+        product: singleItem.productId._id,
+        quantity: singleItem.quantity,
+        price: price,
+        totalPrice: singleItem.totalPrice
+      });
+
+      totalPrice = price * singleItem.quantity;
+
+      // Remove the product from the cart
+      await Cart.updateOne(
+        { userId },
+        { $pull: { items: { productId: product } } }
+      );
+    }
+
+    // WHOLE CART CHECKOUT
+    else {
+      const cart = await Cart.findOne({ userId })
+    .populate("items.productId");
+
+  if (!cart || cart.items.length === 0) {
+    return res.status(400).json({ message: "Your cart is empty" });
+  }
+
+  // Filter out blocked products
+  const validCartItems = cart.items.filter(item => 
+    item.productId && item.productId.isBlocked === false
+  );
+
+  if (validCartItems.length === 0) {
+    return res.status(400).json({ message: "No available products to order" });
+  }
+
+  orderedItems = validCartItems.map(item => {
+    const price = item.productId.salePrice || item.productId.price;
+    return {
+      product: item.productId._id,
+      quantity: item.quantity,
+      price: price,
+      totalPrice: price * item.quantity
+    };
+  });
+
+  totalPrice = orderedItems.reduce((sum, item) => sum + item.totalPrice, 0);
+
+    await Cart.findOneAndUpdate({userId:userId},{$set:{items:[]}})
+
+    }
+
+    // Discount logic (optional)
+    let discount = 0; // Placeholder for coupon logic
+    let finalAmount = totalPrice - discount;
+
+    // Create new order
+    const newOrder = new Order({
+      userId,
+      orderedItems,
+      totalPrice,
+      discount,
+      finalAmount,
+      address: addressId,
+      invoiceDate: new Date(),
+      status: "Processing",
+      couponApplied: discount > 0
+    });
+
+    await newOrder.save();
+
+    res.status(200).json({
+      message: "Order placed successfully",
+      orderId: newOrder.orderId
+    });
+
+  } catch (error) {
+    console.error("Error placing order:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 
 const buyNowSingleProduct = async(req,res)=>{
   try {
@@ -450,12 +565,20 @@ const buyNowSingleProduct = async(req,res)=>{
     {$push:{items:{productId:product_id,quantity:1,price:product.salePrice}}}
     )
       return res.redirect("/cart");
-    }
-
-    
+    }    
 
     res.redirect(`/select-address?type=single&productId=${productId}`);
 
+  } catch (error) {
+    console.error("Error:",error.message);
+  }
+}
+
+const loadSuccessPage = async (req,res)=>{
+  try {
+
+    res.render("user/orderSuccess");
+    
   } catch (error) {
     console.error("Error:",error.message);
   }
@@ -471,5 +594,7 @@ module.exports = {
     postSelectedAddress,
     postPaymentMethod,
     getConfirmOrderPage,
-    buyNowSingleProduct
+    buyNowSingleProduct,
+    postConfirmation,
+    loadSuccessPage
 }
