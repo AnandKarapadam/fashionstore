@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { file } = require("pdfkit");
 
 const {Schema} = mongoose;
 
@@ -6,6 +7,10 @@ const userSchema = new mongoose.Schema({
     name:{
             type:String,
             required:true
+    },
+    image:{
+        type:String,
+        default:"default-img.jpg"
     },
     email:{
         type:String,
@@ -18,6 +23,10 @@ const userSchema = new mongoose.Schema({
         unique:true,
         sparse:true,
         default:null
+    },
+    gender: {
+        type: String,
+        enum: ['Male', 'Female', 'Other', 'Prefer not to say']
     },
     googleId:{
         type:String,

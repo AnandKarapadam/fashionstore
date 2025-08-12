@@ -8,7 +8,9 @@ let addressController = require("../controllers/users/addressController");
 let cartController = require("../controllers/users/cartController");
 let wishlistController = require("../controllers/users/wishlistController");
 let orderController = require("../controllers/users/ordersController");
-
+const multer = require("multer");
+const storage = require("../helpers/multer");
+const uploads = multer({storage:storage});
 
 
 router.get("/",userAuth,userController.loadHomepage);
@@ -74,6 +76,18 @@ router.post("/resend-forgot-otp",profileController.resendforgotOTP);
 router.post("/reset-password",profileController.postNewPassword);
 router.get("/profile",profileController.loadProfile);
 router.get("/edit-profile",profileController.loadEditProfile);
+router.post("/profile/update",uploads.single('image'),profileController.postProfile);
+router.get("/change-password",profileController.loadChangePassword);
+router.post("/change-password",profileController.postEmailForOtp);
+router.post("/change-password/verify-otp",profileController.verifyChangeOTP);
+router.post("/change-password/resend-otp",profileController.resendChangePassOTP);
+router.get("/password-change",profileController.loadPasswordChangePage);
+router.post("/password-change",profileController.postPasswordChangePage);
+router.get("/change-email",profileController.changeEmailPage);
+router.post("/change-email",profileController.varifyEmailChangeOTP);
+router.post("/change-email/otp",profileController.changeEmailOTPVerify);
+router.post("/change-email/resend-otp",profileController.changeEmailResendOTP);
+
 
 
 // Address Management

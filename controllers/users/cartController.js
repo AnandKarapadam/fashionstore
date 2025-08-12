@@ -516,6 +516,15 @@ const postConfirmation = async (req, res) => {
 
     }
 
+    for (const item of orderedItems) {
+      console.log(item);
+      // Update stock by subtracting ordered quantity
+     const updatedProduct = await Product.findByIdAndUpdate(item.product, {
+        $inc: { quantity: -item.quantity },
+      });
+      console.log(updatedProduct)
+    }
+
     // Discount logic (optional)
     let discount = 0; // Placeholder for coupon logic
     let finalAmount = totalPrice - discount;
