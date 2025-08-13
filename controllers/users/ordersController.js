@@ -179,7 +179,7 @@ const postReturnRequest = async(req,res)=>{
 
         item.returnReason = reason.trim();
         item.status = "Return Request";
-       
+        order.overAllStatus = "Return Request";
         
 
         await Product.findByIdAndUpdate(
@@ -223,6 +223,7 @@ const postCancelOrder = async(req,res)=>{
         }
 
         item.status = "Cancelled";
+        order.overAllStatus = "Cancelled";
         await order.save();
 
         await Product.findByIdAndUpdate(productId,{$inc:{quantity:item.quantity}});

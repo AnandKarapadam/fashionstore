@@ -549,7 +549,9 @@ const postConfirmation = async (req, res) => {
       finalAmount,
       address: addressId,
       invoiceDate: new Date(),
-      couponApplied: discount > 0
+      couponApplied: discount > 0,
+      paymentMethod:paymentMethod,
+      overAllStatus:"Processing"
     });
 
     await newOrder.save();

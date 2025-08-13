@@ -72,6 +72,9 @@ router.post("/coupon/delete/:id",adminAuth,couponController.deleteCoupon);
 
 // Order Management //
 router.get("/orders",adminAuth,orderController.loadOrderPage);
+router.post("/orders/update-status",orderController.updateOverallStatus);
+router.get("/orders/order-details/:orderId",orderController.loadOrderDetailsPage);
+router.get
 
 
 //ADMIN LOGOUT//

@@ -7,9 +7,9 @@
   <h2 class="mb-4 fw-bold">Order Management</h2>
 
   <!-- 🔍 Search, Filter, Sort Controls -->
-  <form class="row g-3 mb-3" method="GET" action="/admin/orders">
+  <form class="row g-3 mb-3" method="GET" action="/admin/orders/order-details/<%=order.orderId %>">
     <div class="col-md-3">
-      <input type="text" class="form-control" name="search" placeholder="Search by Order ID or User" value="<%= search || '' %>">
+      <input type="text" class="form-control" name="search" placeholder="Search by Item ID" value="<%= search || '' %>">
     </div>
     <div class="col-md-3">
       <select name="status" class="form-select" onchange="this.form.submit()">
@@ -34,7 +34,7 @@
     </div>
     <div class="col-md-3 d-flex gap-2">
       <button class="btn btn-dark" type="submit">Apply</button>
-      <a href="/admin/orders" class="btn btn-outline-secondary">Clear</a>
+      <a href="/admin/orders/order-details/<%= order.orderId %>" class="btn btn-outline-secondary">Clear</a>
     </div>
   </form>
 
@@ -43,49 +43,54 @@
     <table class="table table-bordered align-middle text-center">
       <thead class="table-dark">
         <tr>
-          <th>Order ID</th>
-          <th>User</th>
+          <th>Item ID</th>
+          <th>Product</th>
           <th>Date</th>
           <th>Time</th>
+          <th>Quantity</th>
           <th>Total</th>
           <th>Status</th>
           <th>Return Request</th>
-          <th>Actions</th>
+          <th>Return reason</th>
         </tr>
       </thead>
       <tbody>
-        <% orders.forEach(order => { %>
+        <% products.forEach(product => { %>
           <tr>
-            <td><%= order.orderId %></td>
-            <td><%= order.userId.name %><br><small><%= order.userId.email %></small></td>
-            <td><%= order.createOn.toLocaleDateString() %></td>
-            <th><%= order.createOn.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %></th>
+            <td><%= product.orderItemId %></td>
+            <td><%= product.productName %></td>
+            <td><%= product.orderDate.toLocaleDateString() %></td>
+            <th><%= product.orderDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %></th>
+            <th><%= product.quantity %></th>
             <td class="text-success fw-bold">₹<%= order.totalPrice %></td>
             <td>
-              <form method="POST" action="/admin/orders/update-status" class="update-status-form d-flex justify-content-center align-items-center gap-2" data-order-id="<%= order.orderId %>">
-                <input type="hidden" name="order_id" value="<%= order._id %>">
+              <form method="POST" action="/admin/orders/order-details/<%= order.orderId %>/update-status" class="update-status-form d-flex justify-content-center align-items-center gap-2" data-item-id="<%= product.orderItemId %>">
+                <input type="hidden" name="order_id" value="<%= product.productId %>">
                 <select name="status" class="form-select form-select-sm">
-                  <option selected disabled><%= order.overAllStatus %></option>
-                  <option value="Pending" <%= order.overAllStatus ==="Pending"?'selected':''%>>Pending</option>
-                  <option value="Shipped" <%= order.overAllStatus ==="Shipped"?'selected':''%>>Shipped</option>
-                  <option value="Out for Delivery" <%= order.overAllStatus ==="Out for Delivery"?'selected':''%>>Out for Delivery</option>
-                  <option value="Delivered" <%= order.overAllStatus ==="Delivered"?'selected':''%>>Delivered</option>
-                  <option value="Cancelled" <%= order.overAllStatus ==="Cancelled"?'selected':''%>>Cancelled</option>
+                  <option selected disabled><%= product.status %></option>
+                  <option value="Pending" <%= product.status ==="Pending"?'selected':''%>>Pending</option>
+                  <option value="Shipped" <%= product.status ==="Shipped"?'selected':''%>>Shipped</option>
+                  <option value="Out for Delivery" <%= product.status ==="Out for Delivery"?'selected':''%>>Out for Delivery</option>
+                  <option value="Delivered" <%= product.status ==="Delivered"?'selected':''%>>Delivered</option>
+                  <option value="Cancelled" <%= product.status ==="Cancelled"?'selected':''%>>Cancelled</option>
+                  <option value="Pending" <%= product.status ==="Returned"?'selected':''%>>Returned</option>
                 </select>
                 <button class="btn btn-sm btn-primary">Update</button>
               </form>
             </td> 
             <td>
-              <% if (order.overAllStatus === 'Return Request') { %>
-                <span class="badge bg-danger">Return Requested</span>
+              <% if (product.status==="Return Request"){ %>
+              <span class="badge bg-danger">Requested</span>
+              <% }else {%>
+                <span class="badge bg-secondary">No Request</span>
+                <% } %>
+            </td>
+            <td>
+              <% if (product.status === 'Return Request') { %>
+                <span><small><%= product.returnReason %></small></span>
               <% } else { %>
                 <span class="badge bg-secondary">None</span>
               <% } %>
-            </td>
-            <td>
-              <a href="/admin/orders/order-details/<%= order.orderId %>" class="btn btn-sm btn-outline-dark">
-                View
-              </a>
             </td>
           </tr>
         <% }) %>
@@ -130,7 +135,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script src="/script/admin/orders.js"></script>
+<script src="/script/admin/orderdetails.js"></script>
 
 
 

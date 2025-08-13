@@ -54,13 +54,16 @@ let orderSchema = new Schema({
         type:Number,
         required:true
     },
+    overAllStatus:{
+        type:String,
+    },
     address:{
         type:Schema.Types.ObjectId,
         ref:"Address",
         required:true
     },
     invoiceDate:{
-        type:Date
+        type:Date,
     },
     createOn:{
         type:Date,
@@ -70,6 +73,10 @@ let orderSchema = new Schema({
     couponApplied:{
         type:Boolean,
         default:false
+    },
+    paymentMethod:{
+        type:String,
+        enum:['cod', 'wallet', 'razorpay', 'card','upi'],
     }
     
 })
