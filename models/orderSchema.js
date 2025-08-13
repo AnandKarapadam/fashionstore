@@ -16,8 +16,12 @@ let orderSchema = new Schema({
     orderedItems:[{
         product:{
             type:Schema.Types.ObjectId,
-        ref:"Product",
-        required:true
+            ref:"Product",
+            required:true
+        },
+        orderItemId: {           
+           type: String,
+           required:true,
         },
         quantity:{
             type:Number,
@@ -26,7 +30,17 @@ let orderSchema = new Schema({
         price:{
             type:Number,
             default:0
-        }
+        },
+        returnReason: {
+        type: String,
+        trim: true,
+        default: null
+        },
+        status:{
+        type:String,
+        required:true,
+        enum:["Pending","Processing","Shipped","Delivered","Cancelled","Return Request","Returned"]
+    }
     }],
     totalPrice:{
         type:Number,
@@ -48,11 +62,6 @@ let orderSchema = new Schema({
     invoiceDate:{
         type:Date
     },
-    status:{
-        type:String,
-        required:true,
-        enum:["Pending","Processing","Shipped","Delivered","Cancelled","Return Request","Returned"]
-    },
     createOn:{
         type:Date,
         default:Date.now,
@@ -62,6 +71,7 @@ let orderSchema = new Schema({
         type:Boolean,
         default:false
     }
+    
 })
 
 

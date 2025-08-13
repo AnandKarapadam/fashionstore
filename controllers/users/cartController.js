@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const Product = require("../../models/productSchema");
 const Order = require("../../models/orderSchema");
 const { countDocuments, validate } = require("../../models/userSchema");
+const {v4:uuidv4} = require("uuid");
 
 const loadCartPage = async(req,res)=>{
   try {
@@ -138,6 +139,10 @@ const loadSelectAddress = async(req,res)=>{
 
     const validItems =cart ? cart.items.filter(item=>item.productId&& !item.productId.isBlocked):[];
       cartItems = validItems;
+
+      if(validItems.length===0){
+        return res.redirect("cart");
+      }
    subtotal = validItems.reduce((acc,item)=>acc+item.totalPrice,0);
   }
     
@@ -182,7 +187,6 @@ const removeCartItem = async(req,res)=>{
     const cartItemId = req.params.cartItemId;
     const userId = req.session.user;
 
-    console.log(cartItemId);
 
     const result = await Cart.updateOne({userId},{$pull:{items:{_id:cartItemId}}})
 
@@ -446,12 +450,14 @@ const getConfirmOrderPage = async(req,res)=>{
 const postConfirmation = async (req, res) => {
   try {
     const userId = req.session.user;
+    const userObjectId = new mongoose.Types.ObjectId(userId);
     
     const { addressId, paymentMethod,type,product } = req.body;
 
     let orderedItems = [];
     let totalPrice = 0;
-
+     
+    
     
     if (type === "single" && product) {
       const cart = await Cart.findOne(
@@ -467,10 +473,12 @@ const postConfirmation = async (req, res) => {
       const price = singleItem.productId.salePrice || singleItem.productId.price;
 
       orderedItems.push({
+        orderItemId: uuidv4(),
         product: singleItem.productId._id,
         quantity: singleItem.quantity,
         price: price,
-        totalPrice: singleItem.totalPrice
+        totalPrice: singleItem.totalPrice,
+        status:"Processing"
       });
 
       totalPrice = price * singleItem.quantity;
@@ -496,6 +504,7 @@ const postConfirmation = async (req, res) => {
     item.productId && item.productId.isBlocked === false
   );
 
+  
   if (validCartItems.length === 0) {
     return res.status(400).json({ message: "No available products to order" });
   }
@@ -503,16 +512,18 @@ const postConfirmation = async (req, res) => {
   orderedItems = validCartItems.map(item => {
     const price = item.productId.salePrice || item.productId.price;
     return {
+      orderItemId: uuidv4(),
       product: item.productId._id,
       quantity: item.quantity,
       price: price,
-      totalPrice: price * item.quantity
+      totalPrice: price * item.quantity,
+      status:"Processing"
     };
   });
 
   totalPrice = orderedItems.reduce((sum, item) => sum + item.totalPrice, 0);
 
-    await Cart.findOneAndUpdate({userId:userId},{$set:{items:[]}})
+    await Cart.findOneAndUpdate({userId:new mongoose.Types.ObjectId(userId)},{$set:{items:[]}})
 
     }
 
@@ -538,7 +549,6 @@ const postConfirmation = async (req, res) => {
       finalAmount,
       address: addressId,
       invoiceDate: new Date(),
-      status: "Processing",
       couponApplied: discount > 0
     });
 

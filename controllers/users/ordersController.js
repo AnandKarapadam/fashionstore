@@ -11,22 +11,36 @@ const loadOrderPage = async(req,res)=>{
         const userId = req.session.user;
         const page = parseInt(req.query.page)||1;
         const search = req.query.search||"";
-        const limit = 4;
+        const limit = 2;
         const skip = (page-1)*limit;
 
         const searchRegex = new RegExp(search,"i"); 
 
-        let orders = await Order.find({userId}).populate({path:"orderedItems.product",match:{productName:searchRegex}}).populate("address").sort({createOn:-1}).skip(skip).limit(limit);
+        let orders = await Order.find({userId}).populate({path:"orderedItems.product",match:{productName:searchRegex}}).populate("address").sort({createOn:-1});
+
+        let allItems = [];
+
+        orders.forEach(order=>{
+            order.orderedItems.forEach(item=>{
+                if(item.product){
+                    allItems.push({
+                        orderId:order.orderId,
+                        orderItemId:item.orderItemId,
+                        product:item.product,
+                        quantity:item.quantity,
+                        status:item.status,
+                        orderDate:order.createOn,
+                        address:order.address
+                    })
+                }
+            })
+        })
         
-        orders = orders.map(order=>{
-            const matchingItems = order.orderedItems.filter(item=>item.product);
+        
 
-            return matchingItems.length>0?{...order.toObject(),orderedItems:matchingItems}:null;
-        }).filter(order=>order!==null);
+        const totalOrders = allItems.length;
 
-        const totalOrders = orders.length;
-
-        const paginateItems = orders.slice(skip,skip+limit);
+        const paginateItems = allItems.slice(skip,skip+limit);
 
       
         res.render("user/orders",{
@@ -45,30 +59,44 @@ const loadOrderDetails = async(req,res)=>{
     try {
         const {orderId} = req.params;
         const {productId} = req.query;
-        
+        const userId = req.session.user;
+                
 
-        const order = await Order.findOne({orderId,userId:req.session.user}).populate("orderedItems.product");
+        const order = await Order.findOne({orderId,userId}).populate("orderedItems.product")
 
-        const userAddress = await Address.findOne({userId:req.session.user,"address._id":order.address},{"address.$":1});
-        console.log(userAddress);
-
-        const address = userAddress.address[0];
-        
-        if (!order) {
-          console.log("order not found");
+        if(!order){
+            console.log("order not found")
         }
 
-        const product = await Product.findById(productId);
+        const orderItem = order.orderedItems.find(
+            (item) => item.product._id.toString() === productId
+        )
 
-        if (!product) {
-            console.log("Product not found");
+        if(!orderItem){
+            console.log("Product not found in Order");
         }
+        
+        const userAddress = await Address.findOne(
+          { userId, "address._id": order.address },
+          { "address.$": 1 }
+        );
 
+        const address = userAddress ? userAddress.address[0] : null;
+
+        const itemDetails = {
+            order_id:order._id,
+            orderId:order.orderId,
+            orderItemId:orderItem.orderItemId,
+            product:orderItem.product,
+            quantity:orderItem.quantity,
+            returnReason:orderItem.returnReason,
+            orderDate:order.createOn,
+            status:orderItem.status,
+            address
+        }
         
         res.render("user/orderDetails",{
-            order,
-            product,
-            address
+            orderItem:itemDetails
         });
         
     } catch (error) {
@@ -128,8 +156,88 @@ const invoiceDownload = async (req,res)=>{
     }
 }
 
+const postReturnRequest = async(req,res)=>{
+    try {
+
+        const {orderId,productId,reason} = req.body;
+        const userId = req.session.user;
+
+        const order = await Order.findOne({orderId,userId}).populate("orderedItems.product");
+
+        if(!order){
+            return console.log("Order not found");
+        }
+
+
+        const item = order.orderedItems.find(
+            (i)=>i.product._id.toString()===productId
+        )
+        
+        if(item.status!== "Delivered"){
+            return console.log("Cannot return delivered product");
+        }
+
+        item.returnReason = reason.trim();
+        item.status = "Return Request";
+       
+        
+
+        await Product.findByIdAndUpdate(
+      productId,
+      { $inc: { quantity: item.quantity } }
+      
+    );
+
+    
+        await order.save();
+
+        console.log("order saved");
+
+        res.redirect("/orders");
+
+        
+    } catch (error) {
+        console.log("Error:",error.message);
+    }
+}
+
+const postCancelOrder = async(req,res)=>{
+    try {
+        const {orderId,productId} = req.body;
+        const userId = req.session.user;
+
+        const order = await Order.findOne({orderId,userId});
+
+        if(!order){
+            return res.status(404).json({success:false,message:"Order not found!"})
+        }
+
+        const item = order.orderedItems.find(i=>i.product._id.toString()===productId);
+
+        if(!item){
+            return res.status(404).json({success:false,message:"Product not found in order"});
+        }
+
+        if(["Delivered","Shipped"].includes(item.status)){
+            return res.status(400).json({success:false,message:"Cannot cancel at this stage"});
+        }
+
+        item.status = "Cancelled";
+        await order.save();
+
+        await Product.findByIdAndUpdate(productId,{$inc:{quantity:item.quantity}});
+
+        res.json({success:true,message:"Order cancelled successfully."});
+
+        
+    } catch (error) {
+        console.log("Error:",error.message);
+    }
+}
 module.exports = {
     loadOrderPage,
     loadOrderDetails,
-    invoiceDownload
+    invoiceDownload,
+    postReturnRequest,
+    postCancelOrder
 }

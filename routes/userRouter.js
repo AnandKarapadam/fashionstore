@@ -112,10 +112,13 @@ router.post("/update-cart-quantity",cartController.updateCartQuantity);
 router.delete("/remove-from-cart/:cartItemId",cartController.removeCartItem);
 router.get("/order-success",cartController.loadSuccessPage);
 
+
 // Order Management
 router.get("/orders",userAuth,orderController.loadOrderPage);
 router.get("/order-details/:orderId",userAuth,orderController.loadOrderDetails);
 router.get("/invoice/download/:orderId/:productId",userAuth,orderController.invoiceDownload);
+router.post("/orders/return",userAuth,orderController.postReturnRequest);
+router.post("/orders/cancel",userAuth,orderController.postCancelOrder)
 
 
 // Wishlist Management

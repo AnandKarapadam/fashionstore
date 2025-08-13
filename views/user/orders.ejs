@@ -176,11 +176,11 @@
             <a href="/wishlist" class="nav-icon"><i class="bi bi-handbag"></i></a>
           </li>
           <li class="nav-item d-flex align-items-center">
-            <form action="/all-products" method="get" class="d-flex ms-lg-3 mt-2 mt-lg-0" role="search">
+            <form action="/orders?<%= search %>" method="get" class="d-flex ms-lg-3 mt-2 mt-lg-0" role="search">
               
-              <input class="form-control border border-1 border-dark me-2 form-control-sm rounded-4" name="search" type="search" placeholder="Search" aria-label="Search">
+              <input class="form-control border border-1 border-dark me-2 form-control-sm rounded-4" name="search" type="search" placeholder="Search order" aria-label="Search">
               <button class="btn btn-outline-dark btn-sm rounded-4 " type="submit">Search</button>
-              <a href="/" class="btn btn-dark rounded-5 btn-sm ms-1"><i class="bi bi-x-circle"></i></a>
+              <a href="/orders" class="btn btn-dark rounded-5 btn-sm ms-1"><i class="bi bi-x-circle"></i></a>
                         
             </form>
           </li>
@@ -192,14 +192,14 @@
     
       <div class="container mt-5 pt-5 px-5 mb-4">
         <% orders.forEach(order=>{ %>
-          <% order.orderedItems.forEach((item)=>{ %>
+          
             
         <div class="row mt-5 px-3 px-md-5 py-3 border rounded-3 shadow-sm"  >
   <!-- Image Column -->
    
-  <div onclick="orderDetails('<%= item.product._id %>','<%= order.orderId %>')"  class="col-12 col-md-2 d-flex align-items-center justify-content-center mb-3 mb-md-0" style="width: 120px; height: 150px;cursor: pointer;">
+  <div onclick="orderDetails('<%= order.product._id %>','<%= order.orderId %>')"  class="col-12 col-md-2 d-flex align-items-center justify-content-center mb-3 mb-md-0" style="width: 120px; height: 150px;cursor: pointer;">
   
-    <img src="/uploads/re-image/<%= item.product.productImage[0] %>" 
+    <img src="/uploads/re-image/<%= order.product.productImage[0] %>" 
          class="img-fluid rounded" 
          alt="Product Image"  
          style="width: 100%; height: 100%; object-fit: contain;">
@@ -214,39 +214,204 @@
       
       <!-- Product Info -->
       <div>
-        <p class="fw-bold mb-1"><%= item.product.productName %></p>
-        <p class="fw-semibold mb-2"><%= item.product.description.split(" ").slice(0,8).join(" ") %>...</p>
+        <p class="fw-bold mb-1"><%= order.product.productName %></p>
+        <p class="fw-semibold mb-2"><%= order.product.description.split(" ").slice(0,8).join(" ") %>...</p>
         <p class="text-muted small mb-0">Order ID : <%= order.orderId %></p>
         
-        <a href="/order-details/<%= order.orderId %>?productId=<%= item.product._id %>" class="btn btn-outline-secondary btn-sm mt-2 mt-md-4">Order Details</a>
+        <a href="/order-details/<%= order.orderId %>?productId=<%= order.product._id %>" class="btn btn-outline-secondary btn-sm mt-2 mt-md-4">Order Details</a>
       </div>
 
       <!-- Price -->
       <div class="mt-2 mt-md-5">
-        <p class="text-success fw-bold mb-0">₹<%= item.product.salePrice %></p>
+        <p class="text-success fw-bold mb-0">₹<%= order.product.salePrice %></p>
       </div>
 
       <!-- Status & Actions -->
       <div class="text-md-end mt-2 mt-md-0">
-        <a href="#" class="btn btn-danger btn-sm fw-semibold mb-1">Cancel Order</a>
-        <p class="fw-semibold small mb-1">Ordered Date: <%= new Date(order.createOn).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })%></p>
-        <p class="text-muted small mb-0">Your Order Has Been Placed</p>
+        <% if(["Processing","Shipped","Pending"].includes(order.status)){ %>
+  <!-- Cancel Order Button -->
+  <button type="button" 
+          class="btn btn-danger btn-sm fw-semibold mb-1 cancel-order-btn"
+          data-bs-toggle="modal" 
+          data-bs-target="#cancelModal"
+          data-order-id="<%= order.orderId %>"
+          data-product-id="<%= order.product._id %>" >
+          
+    Cancel Order
+  </button>
+<% } else if(order.status === "Delivered"){ %>
+  <!-- Return Order Button -->
+  <button type="button" 
+          class="btn btn-danger btn-sm fw-semibold mb-1"
+          data-bs-toggle="modal" 
+          data-bs-target="#returnModal"
+          data-order-id="<%= order.orderId %>"
+          data-product-id="<%= order.product._id %>">
+    Return Order
+  </button>
+<% } else if(order.status === "Return Request"){ %>
+  <p class="border text-center border-secondary rounded-4 text-muted shadow-sm small">Return Request Send</p>
+  
+  <% } else if(order.status === "Returned"){ %>
+    <p class="border text-center border-secondary rounded-4 text-muted shadow-sm small">Returned</p>
+    <% } else if(order.status === "Cancelled"){ %>
+      <p class="border text-center border-secondary rounded-4 text-muted shadow-sm small">Cancelled</p>
+      <% } %>
+<div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="returnModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="returnForm" method="POST">
+       <input type="hidden" id="returnOrderId" name="orderId">
+        <input type="hidden" id="returnProductId" name="productId">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="returnModalLabel">Return Order</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <label for="returnReason" class="form-label">Reason for return <span class="text-danger">*</span></label>
+          <textarea id="returnReason" name="reason" class="form-control" rows="3" required></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-warning">Submit Return Request</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+        <p class="fw-semibold small mb-1">Ordered Date: <%= new Date(order.orderDate).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })%></p>
+        <p class="fw-semibold small mb-1">
+  Order Time: <%= new Date(order.orderDate).toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true
+  }) %>
+</p>
+        <p class="text-muted small mb-0">Status:<%= order.status %></p>
       </div>
     </div>
   </div>
 </div>
 
 <% }) %>
-  <% }) %>
-      
+  
+      <div class="container mt-3" id="paginationSection">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mb-4" style="margin-right: -50px;">
+                  <% const maxVisiblePages=3; let startPage=Math.max(1, currentPage - 1); let endPage=startPage +
+                        maxVisiblePages - 1; if (endPage> totalPages) {
+                        endPage = totalPages;
+                        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                        }
+                        %>
+
+                        <!-- Previous Button -->
+                        <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+                            <a class="page-link" href="?page=<%= parseInt(currentPage) - 1 %>&search=<%= search %>">&laquo;</a>
+                        </li>
+
+                        <!-- Page Numbers -->
+                        <% for (let i=startPage; i <=endPage; i++) { %>
+                            <li class="page-item <%= i == currentPage ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= i %>&search=<%= search %>">
+                                    <%= i %>
+                                </a>
+                            </li>
+                            <% } %>
+
+                                <!-- Next Button -->
+                                <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+                                    <a class="page-link"
+                                        href="?page=<%= parseInt(currentPage) + 1 %>&search=<%= search %>">&raquo;</a>
+                                </li>
+                </ul>
+            </nav>
+        </div>
   </div>
 
 
     <!-- Scripts -->
   
       
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+  const returnModal = document.getElementById("returnModal");
+  const returnForm = document.getElementById("returnForm");
+
+  returnModal.addEventListener("show.bs.modal", function (event) {
+    const button = event.relatedTarget;
+    const orderId = button.getAttribute("data-order-id");
+    const productId = button.getAttribute("data-product-id");
+    document.getElementById("returnOrderId").value = orderId;
+    document.getElementById("returnProductId").value = productId;
+    returnForm.action = `/orders/return`;
+  });
+});
+
+document.addEventListener("DOMContentLoaded",function(){
+  document.querySelectorAll(".cancel-order-btn").forEach(btn=>{
+    btn.addEventListener("click",async()=>{
+
+      const orderId = btn.getAttribute("data-order-id");
+      const productId = btn.getAttribute("data-product-id");
+
+      const result = await Swal.fire({
+        title:"Are you sure?",
+        icon:"warning",
+        text:"This will cancel the product from your order.",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, cancel it!",
+        cancelButtonText: "No, keep it"
+      })
+
+      if(result.isConfirmed){
+        try {
+          
+          const res = await fetch("/orders/cancel",{
+            method:"POST",
+            headers:{
+              "Content-Type":"application/json"
+            },
+            body:JSON.stringify({orderId,productId})
+          })
+
+          const data = await res.json();
+
+          if(data.success){
+            Swal.fire({
+              icon:"success",
+              title:"Cancelled",
+              text:data.message
+            }).then(() => location.reload()); 
+          }
+          else{
+            Swal.fire({
+              icon:"error",
+              title:"OOPS...",
+              text:data.message||"Failed to cancel order"
+            })
+          }
+
+        } catch (error) {
+          console.log("Error:",error.message);
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Something went wrong"
+          });
+        }
+      }
+
+    })
+  })
+})
+
+  </script>
   </body>
 
   </html>

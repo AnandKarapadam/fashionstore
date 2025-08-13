@@ -179,33 +179,34 @@
     <div class="col-md-8 d-flex justify-content-md-center">
       <!-- Image & Rating -->
       <div class="me-4 text-center">
-        <img src="/uploads/re-image/<%= product.productImage[0] %>" alt="Product Image" class="img-fluid mb-2" style="width: 120px; height: 160px; object-fit: contain;">
+        <img src="/uploads/re-image/<%= orderItem.product.productImage[0] %>" alt="Product Image" class="img-fluid mb-2" style="width: 120px; height: 160px; object-fit: contain;">
         <p class="mb-1"><small class="fw-bold">Rate This Product</small></p>
-        <% if (product.averageRating && product.averageRating > 0) { %>
+        <% if (orderItem.product.ratings && orderItem.product.ratings.average > 0) { %>
   <div class="text-warning mb-2">
     <% for (let i = 1; i <= 5; i++) { %>
-      <% if (i <= product.averageRating) { %>
+      <% if (i <= orderItem.product.ratings.average) { %>
         <i class="bi bi-star-fill"></i>
       <% } else { %>
         <i class="bi bi-star"></i>
       <% } %>
     <% } %>
-    <span class="text-muted">(<%= product.reviewCount %> reviews)</span>
+    <span class="text-muted">(<%= orderItem.product.ratings.count %> reviews)</span>
   </div>
 <% } else { %>
   <p class="text-muted">No reviews yet</p>
 <% } %>
 
-        <a href="/product-details/<%=product._id%>#review-section" class="btn btn-dark btn-sm fw-semibold">Add Review</a>
+        <a href="/product-details/<%= orderItem.product._id%>#review-section" class="btn btn-dark btn-sm fw-semibold">Add Review</a>
       </div>
 
       <!-- Product Text Details -->
       <div>
-        <p class="mb-2 fw-bold"><%= product.productName %></p>
-        <p class="mb-2 small">Color:<%= product.color %></p>
-        <p class="small fw-semibold">Order ID: <span class="text-muted"><%= order.orderId %></span></p>
-        <p class="fw-bold fs-5 mb-0 text-success">₹<%= product.salePrice %></p>
-        <p class="text-  small mt-4" style="font-size: 12px;">Status: <span class="text-success"><%= order.status %></span></p>
+        <p class="mb-2 fw-bold"><%= orderItem.product.productName %></p>
+        <p class="mb-2 small">Color:<%= orderItem.product.color %></p>
+        <p class="small fw-semibold mb-2">Order ID: <span class="text-muted"><%= orderItem.orderId %></span></p>
+        <p class="small fw-semibold">Item ID: <span class="text-muted"><%= orderItem.orderItemId %></span></p>
+        <p class="fw-bold fs-5 mb-0 text-success">₹<%= orderItem.product.salePrice %></p>
+        <p class="text-  small mt-4" style="font-size: 12px;">Status: <span class="text-muted fw-bold"><%= orderItem.status %></span></p>
       </div>
     </div>
 
@@ -257,15 +258,15 @@
       <hr>
       <div class="d-flex justify-content-between">
         <p class="small">List Price</p>
-        <p class="small fw-bold">₹<%= product.regularPrice %></p>
+        <p class="small fw-bold">₹<%= orderItem.product.regularPrice %></p>
       </div>
       <div class="d-flex justify-content-between">
         <p class="small">Selling Price</p>
-        <p class="small fw-bold">₹<%= product.salePrice %></p>
+        <p class="small fw-bold">₹<%= orderItem.product.salePrice %></p>
       </div>
       <div class="d-flex justify-content-between">
         <p class="small">Discount</p>
-        <p class="small fw-bold">%<%= product.productOffer %></p>
+        <p class="small fw-bold">%<%= orderItem.product.productOffer %></p>
       </div>
       <div class="d-flex justify-content-between">
         <p class="small">Platform Fee</p>
@@ -274,7 +275,7 @@
       <hr>
       <div class="d-flex justify-content-between">
         <p class="small">Total Amount</p>
-        <p class="small fw-bold text-success">₹<%= product.salePrice-11 %></p>
+        <p class="small fw-bold text-success">₹<%= orderItem.product.salePrice-11 %></p>
       </div>
       </div>
     </div>
@@ -282,22 +283,22 @@
       <div class="border border-1 h-100 rounded-4 p-3 shadow-sm">
       <p class="text-muted small">Shipping Details</p>
       <hr>
-        <p class="small"><%= address.name %></p> 
-        <p class="small"><%= address.address %></p>
-        <p class="small"><%= address.city %></p>
-        <p class="small">PIN:<%= address.pincode %></p>
-        <p class="small">Phone:<%= address.phone %></p>    
+        <p class="small"><%= orderItem.address.name %></p> 
+        <p class="small"><%= orderItem.address.address %></p>
+        <p class="small"><%= orderItem.address.city %></p>
+        <p class="small">PIN:<%= orderItem.address.pincode %></p>
+        <p class="small">Phone:<%= orderItem.address.phone %></p>    
       <hr>
       </div>
     </div>
   </div>
   <div class="text-center">
-    <a href="/invoice/download/<%= order._id %>/<%= product._id %>" class="btn btn-outline-dark mt-4">
+    <a href="/invoice/download/<%= orderItem.order_id %>/<%= orderItem.product._id %>" class="btn btn-outline-dark mt-4">
   <i class="bi bi-download me-1"></i> Download Invoice
 </a>
   </div>
 </div>
-<div id="order-status" style="display:none;"><%= order.status %></div>
+<div id="order-status" style="display:none;"><%= orderItem.status %></div>
 
   <%- include("../partials/user/footer.ejs") %>
   <script>
@@ -316,10 +317,12 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const statusProgressMap = {
+    
     0: 10,
     1: 50,
     2: 75,
-    3: 100
+    3: 100,
+    
   };
 
   const completedIndex = stepIndexMap[status] ?? -1;
