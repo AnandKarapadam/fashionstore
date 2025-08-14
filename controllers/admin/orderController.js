@@ -2,6 +2,8 @@ const Order = require("../../models/orderSchema");
 const Product = require("../../models/productSchema");
 const Wallet = require("../../models/walletSchema");
 const User = require("../../models/walletSchema");
+const mongoose = require("mongoose");
+
 
 const loadOrderPage = async (req,res)=>{
     try {
@@ -163,9 +165,76 @@ const loadOrderDetailsPage = async(req,res)=>{
   }
 }
 
+const postOrderItemStatus = async(req,res)=>{
+  try {
+
+    const {orderItemId,status} = req.body;
+    const {orderId} = req.params;
+
+    if(!orderItemId||!status){
+      return res.status(400).json({success:false,message:"Missing Data"});
+    }
+
+    const order = await Order.findOne({
+      orderId:orderId,
+      "orderedItems.orderItemId":orderItemId
+    })
+
+    
+    if(!order){
+      return res.status(400).json({success:false,message:"Order not found"})
+    }
+
+    const updated = await Order.updateOne(
+      {orderId:orderId,'orderedItems.orderItemId':orderItemId},
+      {$set:{"orderedItems.$.status":status}}
+    );  
+
+    
+
+    if(updated.modifiedCount>0){
+      if(status==="Returned"){
+        const returnedItem = order.orderedItems.find(
+          item=>item.orderItemId === orderItemId
+        )
+
+        const refundAmount = returnedItem?returnedItem.price*returnedItem.quantity:0;
+
+        if(refundAmount>0){
+          let wallet = await Wallet.findOne({userId:order.userId});
+
+          if(wallet){
+            const currentBalance = parseFloat(wallet.balance.toString());
+            wallet.balance = (currentBalance+refundAmount).toFixed(2);
+            await wallet.save();
+          }
+          else{
+            wallet = new Wallet({
+              userId:order.userId,
+              balance:refundAmount
+            });
+            await wallet.save();
+          }
+        }
+        
+      }
+      return res.json({success:true,message:"Order item updated successfully"});
+    }
+    else{
+     return res.json({success:false,message:"Status update failed"}); 
+    }
+
+    
+  } catch (error) {
+    console.log("Error:",error.message);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
 
 module.exports = {
     loadOrderPage,
     updateOverallStatus,
-    loadOrderDetailsPage
+    loadOrderDetailsPage,
+    postOrderItemStatus
 }

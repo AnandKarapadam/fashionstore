@@ -6,6 +6,7 @@ const Product = require("../../models/productSchema");
 const Order = require("../../models/orderSchema");
 const { countDocuments, validate } = require("../../models/userSchema");
 const {v4:uuidv4} = require("uuid");
+const User = require("../../models/userSchema");
 
 const loadCartPage = async(req,res)=>{
   try {
@@ -16,8 +17,13 @@ const loadCartPage = async(req,res)=>{
     const limit = 4;
     const skip = (page-1)*limit;
 
+    let user
+        if(id){
+             user = await User.findById(id);
+        }
     const cart  = await Cart.findOne({userId:id}).populate("items.productId");
-    
+            
+
 
     if(!cart || cart.items.length === 0){
       return res.render("user/cart",{
@@ -26,7 +32,8 @@ const loadCartPage = async(req,res)=>{
         search:"",
         items:[],
         cartItems:[],
-        subtotal:0});
+        subtotal:0,
+      user});
     }
 
     const filterItems = search?cart.items.filter(item=>{
@@ -54,7 +61,8 @@ const loadCartPage = async(req,res)=>{
       items:paginateItems,
       cartItems:filterItems,
       subtotal,
-      search
+      search,
+      user
     })
 
   } catch (error) {
@@ -116,6 +124,11 @@ const loadSelectAddress = async(req,res)=>{
     const type = req.query.type; 
     const productId = req.query.productId; 
 
+    let user
+        if(userId){
+             user = await User.findById(userId);
+        }
+
     const addressDoc = await Address.findOne({ userId });
     const addresses = addressDoc ? addressDoc.address : [];
 
@@ -151,7 +164,7 @@ const loadSelectAddress = async(req,res)=>{
       userId,
       addresses,
       cartItems,
-      subtotal,type,productId});
+      subtotal,type,productId,user});
 
   } catch (error) {
     console.error("Error",error.message);
@@ -206,6 +219,10 @@ const loadPaymentPage = async(req,res)=>{
 
     const userId = req.session.user;
     const {type,productId} = req.query;
+    let user
+        if(userId){
+             user = await User.findById(userId);
+        }
 
     let cartItems = [];
     let subtotal = 0;
@@ -237,7 +254,7 @@ const loadPaymentPage = async(req,res)=>{
     
     
 
-     res.render("user/payment",{cartItems,subtotal,type,productId});
+     res.render("user/payment",{cartItems,subtotal,type,productId,user});
 
   } catch (error) {
     console.error("Error:",error.message);
@@ -380,6 +397,12 @@ const getConfirmOrderPage = async(req,res)=>{
      const skip = (page-1)*limit;
      const searchRegex = new RegExp(search,"i");
      const {type,product} = req.query;
+     const userId = req.session.user;
+
+     let user
+        if(userId){
+             user = await User.findById(userId);
+        }
 
      let itemsToShow = [];
      let cart;
@@ -391,8 +414,8 @@ const getConfirmOrderPage = async(req,res)=>{
      }
      else{
     
-      cart = await Cart.findOne({userId:req.session.user}).populate("items.productId");
-      if(!cart||!cart.items.length){
+      cart = await Cart.findOne({userId:userId}).populate("items.productId");
+      if(!cart||cart.items.length===0){
       return res.redirect("/cart");
      }
      itemsToShow = cart.items;
@@ -437,7 +460,8 @@ const getConfirmOrderPage = async(req,res)=>{
       currentPage:page,
       search,
       type,
-      product
+      product,
+      user
      })
 
 
@@ -528,12 +552,12 @@ const postConfirmation = async (req, res) => {
     }
 
     for (const item of orderedItems) {
-      console.log(item);
+      
       // Update stock by subtracting ordered quantity
      const updatedProduct = await Product.findByIdAndUpdate(item.product, {
         $inc: { quantity: -item.quantity },
       });
-      console.log(updatedProduct)
+      
     }
 
     // Discount logic (optional)
@@ -597,8 +621,13 @@ const buyNowSingleProduct = async(req,res)=>{
 
 const loadSuccessPage = async (req,res)=>{
   try {
+    const id = req.session.user;
+    let user
+        if(id){
+             user = await User.findById(id);
+        }
 
-    res.render("user/orderSuccess");
+    res.render("user/orderSuccess",{user});
     
   } catch (error) {
     console.error("Error:",error.message);

@@ -3,6 +3,7 @@ const Address = require("../../models/addressSchema");
 const Wishlist = require("../../models/wishlistSchema");
 const mongoose = require("mongoose");
 const Product = require("../../models/productSchema");
+const User = require("../../models/userSchema");
 
 const loadWishlistPage = async(req,res)=>{
   try {
@@ -12,6 +13,12 @@ const loadWishlistPage = async(req,res)=>{
     const page = parseInt(req.query.page)||1;
     const limit = 3;
     const skip = (page-1)*3;
+
+    let user
+            if(userId){
+                 user = await User.findById(userId);
+            }        
+    
     
     const wishlist = await Wishlist.findOne({userId}).populate("products.productId");
 
@@ -40,6 +47,7 @@ const loadWishlistPage = async(req,res)=>{
       products:paginateItems,
       totalPages,
       currentPage:page,
+      user
     });
   } catch (error) {
     console.log(error.message);

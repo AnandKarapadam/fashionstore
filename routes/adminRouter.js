@@ -74,7 +74,7 @@ router.post("/coupon/delete/:id",adminAuth,couponController.deleteCoupon);
 router.get("/orders",adminAuth,orderController.loadOrderPage);
 router.post("/orders/update-status",orderController.updateOverallStatus);
 router.get("/orders/order-details/:orderId",orderController.loadOrderDetailsPage);
-router.get
+router.post("/orders/order-details/:orderId/update-status",orderController.postOrderItemStatus);
 
 
 //ADMIN LOGOUT//

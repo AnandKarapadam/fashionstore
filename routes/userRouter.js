@@ -108,9 +108,9 @@ router.get("/checkout/payment",cartController.loadPaymentPage);
 router.post("/checkout/payment",cartController.postPaymentMethod);
 router.get("/checkout/confirm",userAuth,cartController.getConfirmOrderPage);
 router.post("/checkout/confirm",userAuth,cartController.postConfirmation);
-router.post("/update-cart-quantity",cartController.updateCartQuantity);
-router.delete("/remove-from-cart/:cartItemId",cartController.removeCartItem);
-router.get("/order-success",cartController.loadSuccessPage);
+router.post("/update-cart-quantity",userAuth,cartController.updateCartQuantity);
+router.delete("/remove-from-cart/:cartItemId",userAuth,cartController.removeCartItem);
+router.get("/order-success",userAuth,cartController.loadSuccessPage);
 
 
 // Order Management

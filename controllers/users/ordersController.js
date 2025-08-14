@@ -3,6 +3,7 @@ const Order = require("../../models/orderSchema");
 const Address = require("../../models/addressSchema");
 const mongoose = require("mongoose");
 const PDFDocument = require("pdfkit");
+const User = require("../../models/userSchema");
 
 
 const loadOrderPage = async(req,res)=>{
@@ -13,6 +14,10 @@ const loadOrderPage = async(req,res)=>{
         const search = req.query.search||"";
         const limit = 2;
         const skip = (page-1)*limit;
+        let user
+        if(userId){
+             user = await User.findById(userId);
+        }
 
         const searchRegex = new RegExp(search,"i"); 
 
@@ -47,7 +52,8 @@ const loadOrderPage = async(req,res)=>{
             orders:paginateItems,
             currentPage:page,
             totalPages:Math.ceil(totalOrders/limit),
-            search
+            search,
+            user
         });
 
     } catch (error) {
@@ -60,7 +66,10 @@ const loadOrderDetails = async(req,res)=>{
         const {orderId} = req.params;
         const {productId} = req.query;
         const userId = req.session.user;
-                
+        let user
+        if(userId){
+             user = await User.findById(userId);
+        }        
 
         const order = await Order.findOne({orderId,userId}).populate("orderedItems.product")
 
@@ -96,7 +105,8 @@ const loadOrderDetails = async(req,res)=>{
         }
         
         res.render("user/orderDetails",{
-            orderItem:itemDetails
+            orderItem:itemDetails,
+            user
         });
         
     } catch (error) {

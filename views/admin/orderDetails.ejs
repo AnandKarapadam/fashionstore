@@ -64,7 +64,7 @@
             <th><%= product.quantity %></th>
             <td class="text-success fw-bold">₹<%= order.totalPrice %></td>
             <td>
-              <form method="POST" action="/admin/orders/order-details/<%= order.orderId %>/update-status" class="update-status-form d-flex justify-content-center align-items-center gap-2" data-item-id="<%= product.orderItemId %>">
+              <form  class="update-status-form d-flex justify-content-center align-items-center gap-2" data-order-id="<%= order.orderId %>" data-item-id="<%= product.orderItemId %>">
                 <input type="hidden" name="order_id" value="<%= product.productId %>">
                 <select name="status" class="form-select form-select-sm">
                   <option selected disabled><%= product.status %></option>
@@ -73,7 +73,7 @@
                   <option value="Out for Delivery" <%= product.status ==="Out for Delivery"?'selected':''%>>Out for Delivery</option>
                   <option value="Delivered" <%= product.status ==="Delivered"?'selected':''%>>Delivered</option>
                   <option value="Cancelled" <%= product.status ==="Cancelled"?'selected':''%>>Cancelled</option>
-                  <option value="Pending" <%= product.status ==="Returned"?'selected':''%>>Returned</option>
+                  <option value="Returned" <%= product.status ==="Returned"?'selected':''%>>Returned</option>
                 </select>
                 <button class="btn btn-sm btn-primary">Update</button>
               </form>
