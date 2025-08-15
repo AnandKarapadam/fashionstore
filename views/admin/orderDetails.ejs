@@ -62,7 +62,7 @@
             <td><%= product.orderDate.toLocaleDateString() %></td>
             <th><%= product.orderDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %></th>
             <th><%= product.quantity %></th>
-            <td class="text-success fw-bold">₹<%= order.totalPrice %></td>
+            <td class="text-success fw-bold">₹<%= product.totalPrice %></td>
             <td>
               <form  class="update-status-form d-flex justify-content-center align-items-center gap-2" data-order-id="<%= order.orderId %>" data-item-id="<%= product.orderItemId %>">
                 <input type="hidden" name="order_id" value="<%= product.productId %>">

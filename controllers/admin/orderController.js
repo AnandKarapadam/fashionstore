@@ -39,10 +39,10 @@ const loadOrderPage = async (req,res)=>{
 
       const totalOrders = await Order.countDocuments(query);
 
-      let sortOption = {createdOn:-1};
+      let sortOption = {createOn:-1};
 
-      if(sort=="newest") sortOption = {createdOn:-1};
-      if(sort=="oldest") sortOption = {createdOn:1};
+      if(sort=="newest") sortOption = {createOn:-1};
+      if(sort=="oldest") sortOption = {createOn:1};
       if(sort=="amountHigh") sortOption = {totalPrice:-1};
       if(sort==="amountLow") sortOption = {totalPrice:1};
 
@@ -95,7 +95,7 @@ const loadOrderDetailsPage = async(req,res)=>{
     const limit = 5;
     const skip = (page-1)*limit;
 
-    const order = await Order.findOne({orderId:orderId}).populate("orderedItems.product","productName").populate("address");
+    const order = await Order.findOne({orderId:orderId}).populate("orderedItems.product","productName price salePrice").populate("address");
 
     if(!order){
      return console.log("Error in finding order");
@@ -133,10 +133,10 @@ const loadOrderDetailsPage = async(req,res)=>{
     }
 
     switch (sort){
-      case "amountHigh":
+      case "amountLow":
         productDetails.sort((a,b)=>a.totalPrice-b.totalPrice);
         break;
-      case "amountLow":
+      case "amountHigh":
         productDetails.sort((a,b)=>b.totalPrice-a.totalPrice);  
         break;
       case "newest":

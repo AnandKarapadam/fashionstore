@@ -7,6 +7,7 @@ const Order = require("../../models/orderSchema");
 const { countDocuments, validate } = require("../../models/userSchema");
 const {v4:uuidv4} = require("uuid");
 const User = require("../../models/userSchema");
+const Coupon = require("../../models/couponSchema");
 
 const loadCartPage = async(req,res)=>{
   try {
@@ -252,9 +253,16 @@ const loadPaymentPage = async(req,res)=>{
       cartItems = validItems;
     }
     
+    let discount = 0;
+    let finalAmount = subtotal;
+
+    if(req.session.couponData){
+      discount = req.session.couponData.discount;
+      subtotal = req.session.couponData.finalAmount;
+    }
     
 
-     res.render("user/payment",{cartItems,subtotal,type,productId,user});
+     res.render("user/payment",{cartItems,discount,finalAmount,subtotal,type,productId,user});
 
   } catch (error) {
     console.error("Error:",error.message);
@@ -313,6 +321,8 @@ const postPaymentMethod = async(req,res)=>{
     }
 
     const {type,productId} = req.body;
+    let products = [];
+    let subtotal = 0;
 
     if(type==="single"&&productId){
         const cart = await Cart.findOne({userId}).populate("items.productId");
@@ -326,16 +336,9 @@ const postPaymentMethod = async(req,res)=>{
         if(!item){
           return res.json({success:false,message:"Product not available!"});
         }
-
-        const subtotal = item.totalPrice;
-
-        req.session.orderData = {
-          userId,
-          address:req.session.selectedAddress,
-          paymentMethod:method,
-          products:[item],
-          totalAmount:subtotal
-        }
+        
+        products = [item];
+        subtotal = item.totalPrice;
 
     }
     else{
@@ -345,21 +348,36 @@ const postPaymentMethod = async(req,res)=>{
       return res.json({success:false,message:"Your cart is empty"});
     }
 
-    const validItems = cart?cart.items.filter(item=>item.productId&&!item.productId.isBlocked):[];
+    products = cart?cart.items.filter(item=>item.productId&&!item.productId.isBlocked):[];
 
-      const subtotal = validItems.reduce((acc,item)=>
+       subtotal = products.reduce((acc,item)=>
       acc+item.totalPrice,0
     )
+  }
+
+  let discount = 0;
+  let finalAmount = subtotal;
+
+
+    if(req.session.couponData&&req.session.couponData.couponApplied){
+      discount = req.session.couponData.discount;
+      finalAmount = subtotal-discount;
+    }
+
 
     req.session.orderData = {
       userId,
       address:req.session.selectedAddress,
       paymentMethod:method,
-      products:cart.items,
-      totalAmount:subtotal
+      products,
+      discount,
+      finalAmount,
+      totalAmount:subtotal,
+      couponApplied:discount>0
     }
 
-    }
+    delete req.session.couponData;
+    
        
 
     if(method === "cod"){
@@ -385,6 +403,88 @@ const postPaymentMethod = async(req,res)=>{
 
   } catch (error) {
     console.error("Error: ",error.message);
+  }
+}
+
+const applyCoupon = async(req,res)=>{
+  try {
+
+    const userId = req.session.user;
+    const {couponCode} = req.body;
+    const type= req.query||null;
+    const productId = req.query||null;
+
+    const coupon = await Coupon.findOne({name:couponCode,isList:true});
+
+    if(!coupon){
+      return res.json({success:false,message:"Invalid Coupon Code"});
+    }
+
+    if(new Date()>coupon.expireOn){
+      return res.json({success:false,message:"Coupon has expired."})
+    }
+
+    if(coupon.userId.some(id=>id.toString()===userId.toString())){
+      return res.json({success:false,message:"You have already used this coupon."});
+    }
+
+    let subtotal = 0;
+
+    if(type==='single'&&productId){
+      const cart = await Cart.findOne({userId}).populate("items.productId");
+
+      if(!cart){
+        return res.json({success:false,message:'Your cart is empty.'});
+      }
+      const item = cart.items.find(
+        (i)=>i.productId&&i.productId._id.toString()===productId
+      );
+
+      if(!item){
+        return res.json({success:false,message:"Product not found"});
+      }
+
+      subtotal = item.totalPrice;
+
+    }
+    else{
+
+      const cart = await Cart.findOne({userId}).populate("items.productId");
+
+      if(!cart||cart.items.length===0){
+        return res.json({success:false,message:"Your cart is empty."});
+      }
+
+      subtotal = cart.items.filter(item=>item.productId&&!item.productId.isBlocked).reduce((acc,item)=>acc+item.totalPrice,0);
+    }
+      if(subtotal<coupon.minimumPrice){
+        return res.json({success:false,message:`Minimum purchase amount for this coupon is ${coupon.minimumPrice}`})
+      }
+
+      const discount = coupon.offerPrice;
+      const finalAmount = subtotal-discount;
+
+      coupon.userId.push(userId);
+      await coupon.save();
+
+      req.session.couponData = {
+        totalAmount:subtotal,
+        discount,
+        finalAmount,
+        couponApplied:true
+      }
+
+      return res.json({
+        success:true,
+        message:"Coupon applied successfully.",
+        finalAmount,
+        discount
+      })
+
+    
+    
+  } catch (error) {
+    console.log("Error:",error.message);
   }
 }
 
@@ -447,9 +547,19 @@ const getConfirmOrderPage = async(req,res)=>{
      }))
      
 
-     const totalAmount = filterItems.reduce(
+     let totalAmount = filterItems.reduce(
       (acc,item)=>acc+(item.productId.salePrice*item.quantity),0
      )
+
+     let discount = 0;
+     let finalAmount = totalAmount;
+
+     if (orderData && typeof orderData.finalAmount === "number" && typeof orderData.discount === "number") {
+        discount = orderData.discount;
+       finalAmount = orderData.finalAmount;
+       totalAmount = finalAmount;
+      } 
+
 
      res.render("user/orderConfirmation",{
       address:orderData.address,
@@ -461,7 +571,9 @@ const getConfirmOrderPage = async(req,res)=>{
       search,
       type,
       product,
-      user
+      user,
+      finalAmount,
+      discount
      })
 
 
@@ -481,7 +593,10 @@ const postConfirmation = async (req, res) => {
     let orderedItems = [];
     let totalPrice = 0;
      
-    
+    const orderData = req.session.orderData;
+    if (!orderData) {
+      return res.status(400).json({ message: "Order expired" });
+    }
     
     if (type === "single" && product) {
       const cart = await Cart.findOne(
@@ -568,17 +683,20 @@ const postConfirmation = async (req, res) => {
     const newOrder = new Order({
       userId,
       orderedItems,
-      totalPrice,
-      discount,
-      finalAmount,
+      totalPrice:orderData.totalAmount,
+      discount:orderData.discount,
+      finalAmount:orderData.finalAmount,
       address: addressId,
       invoiceDate: new Date(),
-      couponApplied: discount > 0,
+      couponApplied: orderData.couponApplied,
       paymentMethod:paymentMethod,
-      overAllStatus:"Processing"
+      overAllStatus:"Processing",
+
     });
 
     await newOrder.save();
+
+    delete req.session.orderData;
 
     res.status(200).json({
       message: "Order placed successfully",
@@ -646,5 +764,6 @@ module.exports = {
     getConfirmOrderPage,
     buyNowSingleProduct,
     postConfirmation,
-    loadSuccessPage
+    loadSuccessPage,
+    applyCoupon
 }

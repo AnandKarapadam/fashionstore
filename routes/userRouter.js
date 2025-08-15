@@ -111,6 +111,7 @@ router.post("/checkout/confirm",userAuth,cartController.postConfirmation);
 router.post("/update-cart-quantity",userAuth,cartController.updateCartQuantity);
 router.delete("/remove-from-cart/:cartItemId",userAuth,cartController.removeCartItem);
 router.get("/order-success",userAuth,cartController.loadSuccessPage);
+router.post("/apply-coupon",userAuth,cartController.applyCoupon);
 
 
 // Order Management

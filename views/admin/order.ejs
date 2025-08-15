@@ -21,6 +21,7 @@
         <option value="Cancelled" <%= status === 'Cancelled'?'selected':'' %>>Cancelled</option>
         <option value="Processing" <%= status === 'Processing'?'selected':'' %>>Processing</option>
         <option value="Return Request" <%= status === 'Return Request'?'selected':'' %>>Return Request</option>
+        <option value="Returned" <%= status === 'Returned'?'selected':'' %>>Returned</option>
       </select>
     </div>
     <div class="col-md-3">
@@ -60,7 +61,7 @@
             <td><%= order.userId.name %><br><small><%= order.userId.email %></small></td>
             <td><%= order.createOn.toLocaleDateString() %></td>
             <th><%= order.createOn.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %></th>
-            <td class="text-success fw-bold">₹<%= order.totalPrice %></td>
+            <td class="text-success fw-bold">₹<%= order.finalAmount||order.totalPrice %></td>
             <td>
               <form method="POST" action="/admin/orders/update-status" class="update-status-form d-flex justify-content-center align-items-center gap-2" data-order-id="<%= order.orderId %>">
                 <input type="hidden" name="order_id" value="<%= order._id %>">

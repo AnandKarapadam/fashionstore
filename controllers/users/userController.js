@@ -349,6 +349,11 @@ const loadAllProductsPage = async (req, res) => {
     let page = parseInt(req.query.page) || 1;
     let limit = 4;
     let skip = (page - 1) * limit;
+    const userId = req.session.user;
+    let user 
+    if(userId){
+      user = await User.findById(userId);
+    }
 
     const {
       search = "",
@@ -405,6 +410,7 @@ const loadAllProductsPage = async (req, res) => {
       totalPages,
       categories,
       categoryName,
+      user
     });
   } catch (error) {
     console.error("Cannot render all products page", error.message);
