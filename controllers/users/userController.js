@@ -399,7 +399,7 @@ const loadAllProductsPage = async (req, res) => {
     const matchedProducts = await Product.countDocuments(query);
     const totalPages = Math.ceil(matchedProducts / limit);
 
-    res.render("user/allproducts", {
+    res.render("user/allProducts", {
       products,
       search,
       category,
