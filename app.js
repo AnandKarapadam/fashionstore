@@ -20,7 +20,7 @@ app.use(session({
     resave:false,
     saveUninitialized:false,
     store:MongoStore.create({
-        mongoUrl:'mongodb://127.0.0.1:27017/session-storage',
+        mongoUrl: process.env.MONGODB_URI,
         collectionName:"sessions"
     }),
     cookie:{

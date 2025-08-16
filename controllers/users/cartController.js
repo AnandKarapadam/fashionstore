@@ -24,6 +24,7 @@ const loadCartPage = async(req,res)=>{
         }
     const cart  = await Cart.findOne({userId:id}).populate("items.productId");
             
+    
 
 
     if(!cart || cart.items.length === 0){
@@ -47,7 +48,7 @@ const loadCartPage = async(req,res)=>{
     const totalPages = Math.ceil(totalItems/limit);
 
     const paginateItems = filterItems.slice(skip,skip+limit);
-
+    
     const subtotal = filterItems.reduce((acc,item)=>{
 
       if(item.productId && !item.productId.isBlocked ){
