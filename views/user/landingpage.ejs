@@ -129,10 +129,11 @@
       </ul>
     </div>
   </nav>
-
+<% if(banner) {%>
   <div class="container-fluid mb-4">
     <a href="/all-products"><img class="img-fluid banner" src="/uploads/re-image/<%= banner.image %>" alt=""></a>
   </div>
+  <% } %>
 
   <div class="container text-center">
     <h2 class="explore">EXPLORE BY CATEGORY</h2>
