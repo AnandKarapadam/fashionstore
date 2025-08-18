@@ -1,0 +1,123 @@
+ body {
+     margin: 0;
+     padding: 0;
+     overflow-x: hidden;
+ }
+
+ .navbar {
+     z-index: 1050;
+ }
+
+ .sidebar {
+     position: fixed;
+     top: 100px;
+     left: 0;
+     height: 100%;
+     background-color: #ffffff;
+     border-right: 1px solid #ccc;
+     transition: width 0.3s ease;
+     overflow: hidden;
+     z-index: 1040;
+ }
+
+ .sidebar.expanded {
+     width: 300px;
+ }
+
+ .sidebar.collapsed {
+     width: 0;
+ }
+
+ .sidebar-content {
+     padding: 1rem;
+     transition: opacity 0.3s ease;
+ }
+
+ .sidebar.collapsed .sidebar-content {
+     opacity: 0;
+     pointer-events: none;
+ }
+
+ .main-content {
+     margin-top: 100px;
+     /* below navbar */
+     margin-left: 250px;
+     transition: margin-left 0.3s ease;
+ }
+
+ .main-content.full {
+     margin-left: 0;
+     width: 100%;
+ }
+
+ .toggle-btn {
+     position: fixed;
+     top: 50%;
+     left: 0;
+     transform: translate(-50%, -50%);
+     z-index: 1060;
+     background-color: #343a40;
+     color: white;
+     border-radius: 50%;
+     width: 30px;
+     height: 30px;
+     text-align: center;
+     cursor: pointer;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+ }
+
+ .navbar .dropdown:hover .dropdown-menu {
+     display: block;
+ }
+
+ .navbar .dropdown-toggle::after {
+     display: inline-block;
+     margin-left: 0.3em;
+     vertical-align: middle;
+     transition: transform 0.3s ease;
+     content: "";
+     border-top: 0.4em solid;
+     border-right: 0.4em solid transparent;
+     border-left: 0.4em solid transparent;
+ }
+
+ .navbar .dropdown:hover .dropdown-toggle::after {
+     transform: rotate(180deg);
+ }
+
+ .nav-link {
+     font-weight: 500;
+     font-size: 17px;
+     color: black;
+ }
+
+ .nav-icon {
+     font-size: 23px;
+     font-weight: 700;
+     color: black;
+ }
+
+ .main-nav {
+     border-bottom: 2px solid rgb(63, 61, 61);
+     border-color: #ccc;
+ }
+
+ .navbar-brand {
+     font-size: 40px;
+     font-family: 'Times New Roman', Times, serif;
+     color: rgb(74, 74, 74);
+ }
+
+ @media (max-width: 768px) {
+
+
+
+     .main-content {
+         margin-left: 0 !important;
+         width: 100% !important;
+     }
+
+
+ }

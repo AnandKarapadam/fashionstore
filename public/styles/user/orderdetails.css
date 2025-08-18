@@ -1,0 +1,57 @@
+.tracking-wrapper {
+    position: relative;
+    margin-left: 40px;
+    padding-left: 30px;
+  }
+
+  .tracking-line {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    background-color: #ccc; /* grey base line */
+    z-index: 1;
+  }
+
+  .tracking-line-progress {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3px;
+    background-color: green; /* green overlay */
+    z-index: 2;
+  }
+  
+
+  .tracking-step {
+    position: relative;
+    margin-bottom: 40px;
+  }
+
+  .tracking-step:last-child {
+    margin-bottom: 0;
+  }
+
+  .tracking-step .circle {
+    position: absolute;
+    left: -8.5px; /* centers the circle on 3px line */
+    top: 0;
+    width: 15px;
+    height: 15px;
+    background-color: white;
+    border: 3px solid #ccc; /* grey by default */
+    border-radius: 50%;
+    z-index: 3;
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+
+  .tracking-step.completed .circle {
+    border-color: green;
+    background-color: green;
+  }
+
+  .tracking-step .label {
+    margin-left: 15px;
+    font-weight: 500;
+  }

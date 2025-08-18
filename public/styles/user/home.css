@@ -1,0 +1,56 @@
+.explore {
+    font-size: 23px;
+    font-weight: 500;
+}
+
+.banner {
+    height: 400px;
+    width: 100%;
+}
+
+.scroll-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 1rem;
+    padding: 1rem 0;
+}
+
+.product-card {
+    flex: 0 0 auto;
+    width: 150px;
+}
+
+.scroll-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.scroll-buttons button {
+    border: none;
+    background-color: transparent;
+    font-size: 1.5rem;
+}
+
+.scroll-buttons button:hover {
+    color: #007bff;
+}
+
+/* Optional: hide scrollbar */
+.scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+.scroll-container {
+    -ms-overflow-style: none;
+    /* scrollbar-width: none; */
+}
+
+.pro-card {
+    height: 200px;
+}
+
+.pro-card img {
+    height: 150px;
+}

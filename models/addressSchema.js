@@ -43,6 +43,11 @@ const addressSchema = new mongoose.Schema({
                 type:String,
                 required:true
             },
+            countryCode:{
+                type:String,
+                required:false,
+                default:"+91"
+            },
             altPhone:{
                 type:String,
                 required:true

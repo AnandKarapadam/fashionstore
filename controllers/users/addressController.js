@@ -53,7 +53,7 @@ const loadAddressPage = async(req,res)=>{
 const loadNewAddressPage = async(req,res)=>{
     try {
 
-        res.render("user/addAddress",{})
+        res.render("user/addAddress")
         
     } catch (error) {
         console.error("Error: ",error.message);
@@ -75,7 +75,8 @@ const postAddress = async(req,res)=>{
             phone,
             altPhone,
             locality,
-            address
+            address,
+            countryCode
         } = req.body;
 
 
@@ -91,7 +92,8 @@ const postAddress = async(req,res)=>{
             phone,
             altPhone:altPhone||"",
             locality:locality||"",
-            address
+            address,
+            countryCode
         }
 
         if(userAddressDoc){
@@ -119,7 +121,7 @@ const loadEditAddressPage = async(req,res)=>{
 
         const addressDoc = await Address.findOne({userId})
         
-        const selectedAddress =await addressDoc.address.find(a=>a._id.toString() === addressId);
+        const selectedAddress = addressDoc.address.find(a=>a._id.toString() === addressId);
 
         if(!selectedAddress){
             return res.redirect("/manage-address");
@@ -146,7 +148,8 @@ const postEditAddress = async(req,res)=>{
             state,
             landMark,
             altPhone,
-            addressType
+            addressType,
+            countryCode
         } = req.body;
 
         const updated  = await Address.updateOne(
@@ -161,7 +164,8 @@ const postEditAddress = async(req,res)=>{
                     "address.$.state":state,
                     "address.$.landMark":landMark,
                     "address.$.altPhone":altPhone,
-                    "address.$.addressType":addressType
+                    "address.$.addressType":addressType,
+                    "address.$.countryCode":countryCode
                 }
             }
         )

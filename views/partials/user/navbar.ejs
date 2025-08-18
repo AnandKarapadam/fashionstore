@@ -1,0 +1,59 @@
+<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-white px-3 mb-4">
+    <a class="navbar-brand" href="/">RORITO</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <!-- Push everything to the right -->
+      <ul class="navbar-nav ms-auto gap-lg-5 mb-2 mb-lg-0">
+        <li class="nav-item active">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/all-products">All products</a>
+        </li>
+        <% if(typeof user !== "undefined") {%>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <%= user.name.split(' ')[0] %>
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="/profile">Profile</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+          </ul>
+        </li>
+        <% } %>
+        <li class="nav-item d-lg-flex gap-5 align-items-center">
+  <a class="nav-icon position-relative" href="/cart">
+    <i class="bi bi-cart4"></i>
+    
+      <span class="position-absolute start-90 translate-middle badge rounded-pill bg-danger " style=" height: 17px; font-size: 0.6rem;top: 10px;">
+        <%= cartCount=0||0 %>
+        <span class="visually-hidden">items in cart</span>
+      </span>
+   
+  </a>
+
+  <a href="/wishlist" class="nav-icon">
+    <i class="bi bi-handbag"></i>
+  </a>
+</li>
+
+        <li class="nav-item d-flex align-items-center">
+          <form action="/all-products" method="get" class="d-flex ms-lg-3 mt-2 mt-lg-0" role="search">
+            
+            <input class="form-control border border-1 border-dark me-2 form-control-sm rounded-4" name="search" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-dark btn-sm rounded-4 " type="submit">Search</button>
+            <a href="/" class="btn btn-dark rounded-5 btn-sm ms-1"><i class="bi bi-x-circle"></i></a>
+                       
+          </form>
+        </li>
+      </ul>
+    </div>
+  </nav>

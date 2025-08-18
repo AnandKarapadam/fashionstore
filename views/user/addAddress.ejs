@@ -1,116 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <title>Document</title>
-    <style>
-        body {
-            overflow-x: hidden;
-        }
-
-        .navbar .dropdown:hover .dropdown-menu {
-            display: block;
-        }
-
-        .navbar .dropdown-toggle::after {
-            display: inline-block;
-            margin-left: 0.3em;
-            vertical-align: middle;
-            transition: transform 0.3s ease;
-            content: "";
-            border-top: 0.4em solid;
-            border-right: 0.4em solid transparent;
-            border-left: 0.4em solid transparent;
-        }
-
-        .navbar .dropdown:hover .dropdown-toggle::after {
-            transform: rotate(180deg);
-        }
-
-        .nav-link {
-            font-weight: 500;
-            font-size: 17px;
-            color: black;
-        }
-
-        .nav-icon {
-            font-size: 23px;
-            font-weight: 700;
-            color: black;
-        }
-
-        .main-nav {
-            border-bottom: 2px solid rgb(63, 61, 61);
-            border-color: #ccc;
-        }
-
-        .navbar-brand {
-            font-size: 40px;
-            font-family: 'Times New Roman', Times, serif;
-            color: rgb(74, 74, 74);
-        }
-
-        .nav-item:hover {
-            background-color: gainsboro;
-        }
-        .label{
-            font-size: 14px;
-        }
-    </style>
-</head>
-
-<body>
-    <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-white px-3 mb-4">
-        <a class="navbar-brand" href="/">RORITO</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <!-- Push everything to the right -->
-            <ul class="navbar-nav ms-auto gap-lg-5 mb-2 mb-lg-0">
-                <li class="nav-item active">
-                    <a class="nav-link" href="/">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/all-products">All products</a>
-                </li>
-                <% if(typeof user !=="undefined" ) {%>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <%= user.name.split(' ')[0] %>
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="/profile">Profile</a></li>
-              <li>
-                <hr class="dropdown-divider">
-              </li>
-              <li><a class="dropdown-item" href="/logout">Logout</a></li>
-            </ul>
-          </li>
-          <% } %>
-          <li class="nav-item d-lg-flex gap-5 align-items-center ">
-            <a class="nav-icon" href="/cart"><i class="bi bi-cart4"></i></a>
-            <a href="/wishlist" class="nav-icon"><i class="bi bi-handbag"></i></a>
-          </li>
-          <li class="nav-item d-flex align-items-center">
-            <form action="/all-products" method="get" class="d-flex ms-lg-3 mt-2 mt-lg-0" role="search">
-              
-              <input class="form-control border border-1 border-dark me-2 form-control-sm rounded-4" name="search" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-dark btn-sm rounded-4 " type="submit">Search</button>
-              <a href="/" class="btn btn-dark rounded-5 btn-sm ms-1"><i class="bi bi-x-circle"></i></a>
-                        
-            </form>
-          </li>
-        </ul>
-      </div>
-    </nav>
+<%- include("../partials/user/header.ejs") %>
+<%- include("../partials/user/navbar.ejs") %>
 
     <div class="row mt-5 pt-5">
         <div class="col-md-3 mt-5 d-none d-lg-block">
@@ -139,16 +28,30 @@
             <input type="text" id="name" name="name" class="form-control bg-light form-control-sm" placeholder="Enter name">
             <div class="text-danger small" id="nameError"></div>
         </div>
-        <div class="col-md-6">
-            <label for="phone" class="fw-bold label">Mobile Number</label>
-            <input type="text" id="phone" name="phone" class="form-control bg-light form-control-sm" placeholder="Enter Phone">
-             <div class="text-danger small" id="phoneError"></div>
-        </div>
+    <div class="col-md-6">
+         <label for="phone" class="fw-bold label">Mobile Number</label>
+         <div class="input-group">
+      <!-- Country Code Dropdown -->
+    <select id="countryCode" name="countryCode" class="form-select form-select-sm bg-light no-arrow fw-semibold"  style="max-width:50px; -webkit-appearance:none; -moz-appearance:none; appearance:none; background-image:none; padding-right:6px;border-right: 2px solid rgb(167, 167, 167);border: 2px solid rgb(208, 208, 208) ;">
+      <option value="+91" selected>+91</option>
+      <option value="+1">+1</option>
+      <option value="+44">+44</option>
+      <option value="+61">+61</option>
+      <option value="+971">+971</option>
+      <!-- You can add more country codes -->
+    </select>
+
+    <!-- Phone Number Input -->
+    <input type="text" id="phone" name="phone" class="form-control bg-light form-control-sm" placeholder="Enter Phone">
+  </div>
+  <div class="text-danger small" id="phoneError"></div>
+</div>
       </div>
       <div class="row mb-2">
         <div class="col-md-6">
             <label for="pin" class="fw-bold label">PIN Code</label>
             <input type="text" id="pin" name="pincode" class="form-control bg-light form-control-sm" placeholder="Enter PIN code">
+            <div id="pincodeSuggestion" class="list-group position-absolute" style="z-index:1000; max-height:200px ;overflow-y:auto;margin-top: 10px;"></div>
              <div class="text-danger small" id="pinError"></div>
         </div>
         <div class="col-md-6">
@@ -161,7 +64,8 @@
       <div class="row mb-2">
         <div class="col-md-12 d-flex flex-column">
             <label for="address" class="fw-bold label">Address</label>
-            <textarea name="address" id="address" name="address" rows="3" formnoValidate placeholder="Your address" class="form-control bg-light"></textarea>
+            <textarea name="address" id="address" rows="3" formnoValidate placeholder="Your address" class="form-control bg-light"  style="position: relative;"></textarea>
+            <div id="addressSuggestions" class="list-group position-absolute" style="z-index:1000; max-height:200px ;overflow-y:auto;margin-top: 50px;"></div>
              <div class="text-danger small" id="addressError"></div>
         </div>
       </div>
@@ -169,6 +73,7 @@
         <div class="col-md-6">
             <label for="city" class="fw-bold label">City/Dist/Town</label>
             <input type="text" id="city" name="city" class="form-control bg-light form-control-sm" placeholder="Enter city/dist/town">
+              <div id="citySuggestions" class="list-group position-absolute" style="z-index:1000; max-height:150px; overflow-y:auto;"></div>
              <div class="text-danger small" id="cityError"></div>
         </div>
         <div class="col-md-6">
@@ -234,26 +139,155 @@
             <input type="radio" name="addressType" id="work" class="margin-right" value="work">
             <label for="home" class="fw-bold label">Home</label>
             <input type="radio" name="addressType" id="home" value="home">
-            <div class="text-danger" id="addressTypeError"></div>
+            <div class="text-danger small" id="addressTypeError"></div>
         </div>
         <div class="col-sm-6 text-end">
             <button type="submit" class="btn btn-dark btn-sm" >Save</button>
             <a href="/address" class="btn btn-outline-dark btn-sm">Cancel</a>
         </div>
       </div>
+      
     </form>
     </div>
     </div>
     </div>
     </div>
+   
+
     <%- include("../partials/user/footer.ejs") %>
+        
+<script>
+
+const pinInput = document.getElementById("pin");
+const cityInput = document.getElementById("city");
+const stateInput = document.getElementById("state");
+const localityInput = document.getElementById("locality");
+const pinSuggestionBox = document.getElementById("pincodeSuggestion");
+
+pinInput.addEventListener("input", async () => {
+  const pin = pinInput.value.trim();
+
+  // Clear old suggestions
+  pinSuggestionBox.innerHTML = "";
+
+  if (pin.length === 6) {
+    try {
+      const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+      const data = await res.json();
+
+      if (data[0].Status === "Success" && data[0].PostOffice.length > 0) {
+        // Create suggestion buttons
+        pinSuggestionBox.innerHTML = data[0].PostOffice.map(po => `
+          <button type="button" 
+                  class="list-group-item list-group-item-action"
+                  data-locality="${po.Name}"
+                  data-city="${po.District}"
+                  data-state="${po.State}">
+            ${po.Name}, ${po.District}, ${po.State}
+          </button>
+        `).join("");
+
+        // Attach click handlers
+        pinSuggestionBox.querySelectorAll("button").forEach(btn => {
+          btn.addEventListener("click", () => {
+            cityInput.value = btn.dataset.city;
+            stateInput.value = btn.dataset.state;
+            localityInput.value = btn.dataset.locality;
+            pinSuggestionBox.innerHTML = ""; // hide suggestions
+            document.getElementById("pinError").textContent = ""
+          });
+        });
+
+      } else {
+        cityInput.value = "";
+        stateInput.value = "";
+        localityInput.value = "";
+        document.getElementById("pinError").textContent = " Invalid Pincode";
+      }
+    } catch (err) {
+      console.error("Error fetching pincode", err);
+    }
+  } else {
+    cityInput.value = "";
+    stateInput.value = "";
+    localityInput.value = "";
+  }
+});
+
+// Close suggestions if clicked outside
+document.addEventListener("click", e => {
+  if (!pinInput.contains(e.target) && !suggestionBox.contains(e.target)) {
+    pinSuggestionBox.innerHTML = "";
+  }
+});
+
+
+
+  function debounce(func, delay) {
+  let timeout;
+  return function(...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), delay);
+  };
+}
+
+const addressInput = document.getElementById('address');
+const suggestionBox = document.getElementById('addressSuggestions');
+
+// Make parent relative to position suggestions correctly
+addressInput.parentElement.style.position = 'relative';
+
+const fetchSuggestions = async()=>{
+
+    const query = addressInput.value.trim();
+    if (!query) {
+        suggestionBox.innerHTML = '';
+        return;
+    }
+
+    // Call Nominatim API
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=10`);
+    const data = await res.json();
+
+    // Display suggestions
+    suggestionBox.innerHTML = data.map(place => `
+        <button type="button" class="list-group-item list-group-item-action" 
+            data-display="${place.display_name}" 
+            data-lat="${place.lat}" 
+            data-lon="${place.lon}">
+            ${place.display_name}
+        </button>
+    `).join('');
+
+    // Click on suggestion
+    document.querySelectorAll('#addressSuggestions button').forEach(btn => {
+        btn.addEventListener('click', () => {
+            addressInput.value = btn.dataset.display;
+            suggestionBox.innerHTML = '';
+            console.log('Selected coordinates:', btn.dataset.lat, btn.dataset.lon);
+        });
+    });
+
+}
+addressInput.addEventListener('input', debounce(fetchSuggestions, 300));
+
+// Close suggestions if clicked outside
+document.addEventListener('click', e => {
+    if (!addressInput.contains(e.target) && !suggestionBox.contains(e.target)) {
+        suggestionBox.innerHTML = '';
+    }
+});
+</script>
+
+
+
 
     <script>
 
       document.getElementById("addressForm").addEventListener("submit",(e)=>{
         let hasError = false;
 
-        const fields = ['name','phone','pin','locality','adderss','city','state','landmark','alt-number','addressType'];
+        const fields = ['name','phone','pin','locality','address','city','state','landmark','alt-number','addressType'];
 
         fields.forEach((id)=>{
           const errorDiv =  document.getElementById(id+'Error')||document.getElementById("altPhoneError")||document.getElementById("addressTypeError");

@@ -1,0 +1,147 @@
+.navbar-brand {
+      font-size: 40px;
+      font-family: 'Times New Roman', Times, serif;
+      color: rgb(74, 74, 74);
+    }
+
+    
+    html {
+  scroll-behavior: smooth;
+}
+
+
+    .scroll-container {
+      display: flex;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      gap: 1rem;
+      padding: 1rem 0;
+    }
+
+    .product-card {
+      flex: 0 0 auto;
+      width: 150px;
+    }
+
+    .scroll-buttons {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .scroll-buttons button {
+      border: none;
+      background-color: transparent;
+      font-size: 1.5rem;
+    }
+
+    .scroll-buttons button:hover {
+      color: #007bff;
+    }
+
+    /* Optional: hide scrollbar */
+    .scroll-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .scroll-container {
+      -ms-overflow-style: none;
+      /* scrollbar-width: none; */
+    }
+
+    .navbar .dropdown:hover .dropdown-menu {
+      display: block;
+      margin-top: 0;
+    }
+
+    /* Add arrow manually */
+    .navbar .dropdown-toggle::after {
+      display: inline-block;
+      margin-left: 0.3em;
+      vertical-align: middle;
+      transition: transform 0.3s ease;
+      content: "";
+      border-top: 0.4em solid;
+      border-right: 0.4em solid transparent;
+      border-left: 0.4em solid transparent;
+    }
+
+    /* Rotate arrow on hover */
+    .navbar .dropdown:hover .dropdown-toggle::after {
+      transform: rotate(180deg);
+    }
+
+    .nav-link {
+      font-weight: 500;
+      font-size: 17px;
+    }
+
+    .nav-icon {
+      font-size: 23px;
+      font-weight: 700;
+      color: black;
+    }
+
+    .main-image {
+      width: 100%;
+      max-height: 400px;
+      object-fit: contain;
+      border: 1px solid #ddd;
+      padding: 6px;
+      background-color: #f9f9f9;
+    }
+
+    .thumb-img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border: 1px solid #ccc;
+      padding: 2px;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .thumb-img:hover {
+      border-color: #000;
+      transform: scale(1.1);
+    }
+
+    .zoom-lens {
+      position: absolute;
+      border: 2px solid #ddd;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      pointer-events: none;
+      display: none;
+      background-repeat: no-repeat;
+      background-size: 300% 300%;
+      z-index: 10;
+    }
+
+    .image-zoom-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .product-card {
+      height: 100%;
+      min-height: 300px;
+      display: flex;
+      min-width: 200px;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: center;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+
+    .product-img {
+      height: 200px;
+      min-width: 100px;
+      width: 100%;
+      object-fit: contain;
+      border-radius: 4px;
+    }
