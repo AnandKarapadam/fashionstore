@@ -25,7 +25,7 @@
       <div class="row mb-2">
         <div class="col-md-6">
             <label for="name" class="fw-bold label">Name</label>
-            <input type="text" name="name" id="name" value="<%= address.name%>" class="form-control bg-light form-control-sm" placeholder="Enter name">
+            <input type="text" name="name" id="name" value="<%= address.name %>" class="form-control bg-light form-control-sm" placeholder="Enter name">
             <div class="text-danger small" id="nameError"></div>
         </div>
         <div class="col-md-6">
@@ -38,11 +38,10 @@
       <option value="+44">+44</option>
       <option value="+61">+61</option>
       <option value="+971">+971</option>
-      <!-- You can add more country codes -->
     </select>
 
     <!-- Phone Number Input -->
-    <input type="text" id="phone" name="phone" class="form-control bg-light form-control-sm" placeholder="Enter Phone">
+    <input type="text" id="phone" name="phone" class="form-control bg-light form-control-sm" value="<%= address.phone %>" placeholder="Enter Phone">
   </div>
             <div class="text-danger small" id="phoneError"></div>
         </div>
@@ -51,6 +50,7 @@
         <div class="col-md-6">
             <label for="pin" class="fw-bold label">PIN Code</label>
             <input type="text" name="pincode" id="pin" class="form-control bg-light form-control-sm" value="<%= address.pincode %>" placeholder="Enter PIN code">
+            <div id="pincodeSuggestion" class="list-group position-absolute" style="z-index:1000; max-height:200px ;overflow-y:auto;margin-top: 10px;"></div>
             <div class="text-danger small" id="pinError"></div>
         </div>
         <div class="col-md-6">
@@ -63,7 +63,8 @@
       <div class="row mb-2">
         <div class="col-md-12 d-flex flex-column">
             <label for="address" class="fw-bold label">Address</label>
-            <textarea name="address" name="address" id="address" rows="3" placeholder="Your address" class="form-control bg-light"><%= address.address %></textarea>
+            <textarea name="address" name="address" id="address" rows="3" placeholder="Your address" class="form-control bg-light" style="position: relative;"><%= address.address %></textarea>
+            <div id="addressSuggestions" class="list-group position-absolute" style="z-index:1000; max-height:200px ;overflow-y:auto;margin-top: 50px;"></div>
             <div class="text-danger small" id="addressError"></div>
         </div>
       </div>
@@ -176,6 +177,125 @@
       <% } %>
     
     <script>
+
+
+    const pinInput = document.getElementById("pin");
+const cityInput = document.getElementById("city");
+const stateInput = document.getElementById("state");
+const localityInput = document.getElementById("locality");
+const pinSuggestionBox = document.getElementById("pincodeSuggestion");
+
+pinInput.addEventListener("input", async () => {
+  const pin = pinInput.value.trim();
+
+  // Clear old suggestions
+  pinSuggestionBox.innerHTML = "";
+
+  if (pin.length === 6) {
+    try {
+      const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+      const data = await res.json();
+
+      if (data[0].Status === "Success" && data[0].PostOffice.length > 0) {
+        // Create suggestion buttons
+        pinSuggestionBox.innerHTML = data[0].PostOffice.map(po => `
+          <button type="button" 
+                  class="list-group-item list-group-item-action"
+                  data-locality="${po.Name}"
+                  data-city="${po.District}"
+                  data-state="${po.State}">
+            ${po.Name}, ${po.District}, ${po.State}
+          </button>
+        `).join("");
+
+        // Attach click handlers
+        pinSuggestionBox.querySelectorAll("button").forEach(btn => {
+          btn.addEventListener("click", () => {
+            cityInput.value = btn.dataset.city;
+            stateInput.value = btn.dataset.state;
+            localityInput.value = btn.dataset.locality;
+            pinSuggestionBox.innerHTML = ""; // hide suggestions
+            document.getElementById("pinError").textContent = ""
+          });
+        });
+
+      } else {
+        cityInput.value = "";
+        stateInput.value = "";
+        localityInput.value = "";
+        document.getElementById("pinError").textContent = " Invalid Pincode";
+      }
+    } catch (err) {
+      console.error("Error fetching pincode", err);
+    }
+  } else {
+    cityInput.value = "";
+    stateInput.value = "";
+    localityInput.value = "";
+  }
+});
+
+// Close suggestions if clicked outside
+document.addEventListener("click", e => {
+  if (!pinInput.contains(e.target) && !suggestionBox.contains(e.target)) {
+    pinSuggestionBox.innerHTML = "";
+  }
+});
+
+function debounce(func, delay) {
+  let timeout;
+  return function(...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), delay);
+  };
+}
+
+const addressInput = document.getElementById('address');
+const suggestionBox = document.getElementById('addressSuggestions');
+
+// Make parent relative to position suggestions correctly
+addressInput.parentElement.style.position = 'relative';
+
+const fetchSuggestions = async()=>{
+
+    const query = addressInput.value.trim();
+    if (!query) {
+        suggestionBox.innerHTML = '';
+        return;
+    }
+
+    // Call Nominatim API
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=10`);
+    const data = await res.json();
+
+    // Display suggestions
+    suggestionBox.innerHTML = data.map(place => `
+        <button type="button" class="list-group-item list-group-item-action" 
+            data-display="${place.display_name}" 
+            data-lat="${place.lat}" 
+            data-lon="${place.lon}">
+            ${place.display_name}
+        </button>
+    `).join('');
+
+    // Click on suggestion
+    document.querySelectorAll('#addressSuggestions button').forEach(btn => {
+        btn.addEventListener('click', () => {
+            addressInput.value = btn.dataset.display;
+            suggestionBox.innerHTML = '';
+            console.log('Selected coordinates:', btn.dataset.lat, btn.dataset.lon);
+        });
+    });
+
+}
+addressInput.addEventListener('input', debounce(fetchSuggestions, 300));
+
+// Close suggestions if clicked outside
+document.addEventListener('click', e => {
+    if (!addressInput.contains(e.target) && !suggestionBox.contains(e.target)) {
+        suggestionBox.innerHTML = '';
+    }
+});
 
       document.getElementById("addressForm").addEventListener("submit",(e)=>{
         let hasError = false;

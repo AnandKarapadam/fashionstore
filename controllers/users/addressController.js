@@ -173,7 +173,7 @@ const postEditAddress = async(req,res)=>{
         if(updated.modifiedCount === 0){
         const addressDoc = await Address.findOne({userId})
         
-        const selectedAddress =await addressDoc.address.find(a=>a._id.toString() === addressId);
+        const selectedAddress = addressDoc.address.find(a=>a._id.toString() === addressId);
 
         return res.render("user/editAddress",{address:selectedAddress,message:"Address Not found!"});
         }
