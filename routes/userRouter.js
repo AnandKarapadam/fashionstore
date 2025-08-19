@@ -60,7 +60,6 @@ router.get("/auth/google/callback", passport.authenticate("google", { failureRed
 
 
 router.get("/all-products",userController.loadAllProductsPage);
-router.get("/product_details",userController.loadProductdetails);
 router.get("/pageNotFound",userController.loadPageNotFound);
 router.get("/logout",userController.logout);
 router.get("/product-details/:id",userController.getProductDetails);

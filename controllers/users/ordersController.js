@@ -106,7 +106,8 @@ const loadOrderDetails = async(req,res)=>{
         
         res.render("user/orderDetails",{
             orderItem:itemDetails,
-            user
+            user,
+            cssFile:"orderdetails.css"
         });
         
     } catch (error) {

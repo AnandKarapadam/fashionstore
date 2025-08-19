@@ -9,10 +9,14 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   
   <link rel="stylesheet" href="/styles/user/navbar.css">
-  <link rel="stylesheet" href="/styles/user/allproducts.css">
+  <!-- <link rel="stylesheet" href="/styles/user/allproducts.css">
   <link rel="stylesheet" href="/styles/user/home.css">
   <link rel="stylesheet" href="/styles/user/orderdetails.css">
-  <link rel="stylesheet" href="/styles/user/productdetails.css">
+  <link rel="stylesheet" href="/styles/user/productdetails.css"> -->
+
+<% if (cssFile) { %>
+    <link rel="stylesheet" href="/styles/user/<%= cssFile %>">
+<% } %>
  
 </head> 
 <body>

@@ -43,6 +43,7 @@ let loadHomepage = async (req, res) => {
           user: userData,
           banner: findBanner,
           products,
+          cssFile:"home.css"
         });
       } else {
         req.session.destroy(() => {
@@ -222,14 +223,6 @@ let loadOtp = async (req, res) => {
   }
 };
 
-let loadProductdetails = async (req, res) => {
-  try {
-    return res.render("user/product_details", { product: "hello" });
-  } catch (error) {
-    console.log(error.message);
-    res.status(500).send("Server Error");
-  }
-};
 let loadPageNotFound = async (req, res) => {
   try {
     return res.render("user/pageNotFound");
@@ -410,7 +403,8 @@ const loadAllProductsPage = async (req, res) => {
       totalPages,
       categories,
       categoryName,
-      user
+      user,
+      cssFile:"allproducts.css"
     });
   } catch (error) {
     console.error("Cannot render all products page", error.message);
@@ -449,7 +443,7 @@ const getProductDetails = async (req, res) => {
       .populate("category")
       .lean();
 
-    res.render("user/product_details", { product, relatedProducts, reviews});
+    res.render("user/product_details", { product, relatedProducts, reviews,cssFile:"productdetails.css"});
   } catch (error) {
     res.redirect("/pageNotFound");
     console.error("Error while rendering product details:", error.message);
@@ -540,7 +534,6 @@ module.exports = {
   loadLogin,
   loadSignup,
   loadOtp,
-  loadProductdetails,
   loadPageNotFound,
   signup,
   verifyOTP,

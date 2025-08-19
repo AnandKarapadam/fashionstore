@@ -41,7 +41,8 @@ const loadAddressPage = async(req,res)=>{
             totalPages,
             search,
             addresses:paginated,
-            userId
+            userId,
+            
         });
         
     } catch (error) {

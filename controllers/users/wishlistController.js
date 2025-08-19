@@ -47,7 +47,8 @@ const loadWishlistPage = async(req,res)=>{
       products:paginateItems,
       totalPages,
       currentPage:page,
-      user
+      user,
+      cssFile:"wishlist.css"
     });
   } catch (error) {
     console.log(error.message);
