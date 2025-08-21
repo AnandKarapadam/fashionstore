@@ -81,7 +81,7 @@ const addToCart = async(req,res)=>{
     let product = await Product.findById({_id:productId})
 
     if(!product||product.isBlocked||product.quantity<=0){
-      return res.render("user/product_details",{error:"Product is not available"});
+      return res.json({success:false,message:"Product not found!"});
     }
 
     const price = product.salePrice || product.regularPrice;
@@ -111,9 +111,8 @@ const addToCart = async(req,res)=>{
       { userId:id },
       { $pull: { products: { productId:productId } } }
     );
-    
-    res.redirect("/cart");
-
+      
+  res.json({success:true,message:"Product added successfully"});
 
   } catch (error) {
     console.error("Error :",error.message);
@@ -166,7 +165,7 @@ const loadSelectAddress = async(req,res)=>{
       userId,
       addresses,
       cartItems,
-      subtotal,type,productId,user});
+      subtotal,type,productId,user,cssFile:"selectaddress.css"});
 
   } catch (error) {
     console.error("Error",error.message);
@@ -584,6 +583,12 @@ const getConfirmOrderPage = async(req,res)=>{
   }
 }
 
+function generateOrderItemId() {
+  const randomNum = Math.floor(1000 + Math.random() * 9000); // 4-digit random number
+  return `OIID${randomNum}`;
+}
+
+
 const postConfirmation = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -613,7 +618,7 @@ const postConfirmation = async (req, res) => {
       const price = singleItem.productId.salePrice || singleItem.productId.price;
 
       orderedItems.push({
-        orderItemId: uuidv4(),
+        orderItemId:generateOrderItemId(),
         product: singleItem.productId._id,
         quantity: singleItem.quantity,
         price: price,
@@ -652,7 +657,7 @@ const postConfirmation = async (req, res) => {
   orderedItems = validCartItems.map(item => {
     const price = item.productId.salePrice || item.productId.price;
     return {
-      orderItemId: uuidv4(),
+      orderItemId:generateOrderItemId(),
       product: item.productId._id,
       quantity: item.quantity,
       price: price,

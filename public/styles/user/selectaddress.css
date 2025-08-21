@@ -1,0 +1,59 @@
+ body {
+     overflow-x: hidden;
+ }
+
+ .navbar .dropdown:hover .dropdown-menu {
+     display: block;
+ }
+
+ .navbar .dropdown-toggle::after {
+     display: inline-block;
+     margin-left: 0.3em;
+     vertical-align: middle;
+     transition: transform 0.3s ease;
+     content: "";
+     border-top: 0.4em solid;
+     border-right: 0.4em solid transparent;
+     border-left: 0.4em solid transparent;
+ }
+
+ .navbar .dropdown:hover .dropdown-toggle::after {
+     transform: rotate(180deg);
+ }
+
+ .nav-link {
+     font-weight: 500;
+     font-size: 17px;
+     color: black;
+ }
+
+ .nav-icon {
+     font-size: 23px;
+     font-weight: 700;
+     color: black;
+ }
+
+ .main-nav {
+     border-bottom: 2px solid rgb(63, 61, 61);
+     border-color: #ccc;
+ }
+
+ .navbar-brand {
+     font-size: 40px;
+     font-family: 'Times New Roman', Times, serif;
+     color: rgb(74, 74, 74);
+ }
+
+ .nav-item:hover {
+     background-color: gainsboro;
+ }
+
+ .label {
+     font-size: 14px;
+ }
+
+ .address-card.selected {
+     border: 2px solid #0d6efd;
+     /* Bootstrap primary color */
+     background-color: #e7f1ff;
+ }

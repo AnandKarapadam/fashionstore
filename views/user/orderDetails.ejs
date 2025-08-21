@@ -1,4 +1,5 @@
-
+<%- include("../partials/user/header.ejs") %>
+<%- include("../partials/user/navbar.ejs") %>
 
   <!-- Updated Row -->
   <!-- Bootstrap CSS & Icons -->
@@ -75,8 +76,13 @@
     <div class="tracking-step">
       <div class="circle"></div>
       <div class="label">Delivered</div>
-    </div>xx
+    </div>
   </div>
+  <% if(orderItem.status === "Cancelled"){%>
+    <div><p class="d-flex align-items-start mt-2 fw-bold text-danger"><span>cancelled</span></p></div>
+  <%}else if(orderItem.status === "Return Request") {%>
+    <div><p class="d-flex align-items-start mt-2 fw-bold text-danger"><span>Return Requested</span></p></div>
+  <%}%>    
 </div>
     </div>
   </div>
@@ -142,8 +148,8 @@ document.addEventListener("DOMContentLoaded", () => {
     "Shipped": 1,
     "Out for Delivery": 2,
     "Delivered": 3,
-    "Cancelled": 0,
-    "Return Request": 0,
+    // "Cancelled": 0,
+    // "Return Request": 0,
     "Returned": 3
   };
 

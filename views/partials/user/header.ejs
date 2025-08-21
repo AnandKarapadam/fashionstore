@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="/styles/user/orderdetails.css">
   <link rel="stylesheet" href="/styles/user/productdetails.css"> -->
 
-<% if (cssFile) { %>
+<% if ( typeof cssFile !== "undefined") { %>
     <link rel="stylesheet" href="/styles/user/<%= cssFile %>">
 <% } %>
  

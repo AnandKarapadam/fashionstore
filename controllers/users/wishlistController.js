@@ -164,11 +164,63 @@ const removeWishlistItem = async (req,res)=>{
   }
 }
 
+const toggleAddToWishlist = async(req,res)=>{
+  try {
+    const userId = req.session.user;
+    const {productId} = req.body;
 
+    if(!userId){
+      return res.json({success:false,message:"Please login to your account"});
+    }
+    let wishlist = await Wishlist.findOne({userId});
 
+    if(!wishlist){
+      wishlist = new Wishlist({userId,products:[{productId}]});
+    }
+    else{
+      if(!wishlist.products.includes(productId)){
+        wishlist.products.push({productId});
+      }
+    }
+
+    await wishlist.save();
+    res.json({success:true,message:"Added"});
+    
+  } catch (error) {
+    console.log("Error:",error.message);
+  }
+}
+const toggleRemoveFromWishlist = async (req,res)=>{
+  try {
+
+    const userId = req.session.user;
+    const {productId} = req.body;
+
+    if(!userId){
+      return res.json({success:false,message:"Please login to your account"});
+    }
+
+    let wishlist = await Wishlist.findOne({userId});
+    if(!wishlist){
+      return res.json({success:false,message:"Wishlist not found"});
+    }
+
+    wishlist.products = wishlist.products.filter(
+      (item)=>item.productId.toString()!==productId
+    )
+    await wishlist.save();
+
+    res.json({success:true,message:"Product removed form wishlist"})
+    
+  } catch (error) {
+    console.log("Error:",error.message);
+  }
+}
 module.exports = {
     loadWishlistPage,
     addToWishlist,
     moveToCart,
-    removeWishlistItem
+    removeWishlistItem,
+    toggleAddToWishlist,
+    toggleRemoveFromWishlist
 }

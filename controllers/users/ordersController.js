@@ -4,6 +4,7 @@ const Address = require("../../models/addressSchema");
 const mongoose = require("mongoose");
 const PDFDocument = require("pdfkit");
 const User = require("../../models/userSchema");
+const Wishlist = require("../../models/wishlistSchema");
 
 
 const loadOrderPage = async(req,res)=>{
@@ -23,29 +24,9 @@ const loadOrderPage = async(req,res)=>{
 
         let orders = await Order.find({userId}).populate({path:"orderedItems.product",match:{productName:searchRegex}}).populate("address").sort({createOn:-1});
 
-        let allItems = [];
+        const totalOrders = orders.length;
 
-        orders.forEach(order=>{
-            order.orderedItems.forEach(item=>{
-                if(item.product){
-                    allItems.push({
-                        orderId:order.orderId,
-                        orderItemId:item.orderItemId,
-                        product:item.product,
-                        quantity:item.quantity,
-                        status:item.status,
-                        orderDate:order.createOn,
-                        address:order.address
-                    })
-                }
-            })
-        })
-        
-        
-
-        const totalOrders = allItems.length;
-
-        const paginateItems = allItems.slice(skip,skip+limit);
+        const paginateItems = orders.slice(skip,skip+limit);
 
       
         res.render("user/orders",{
@@ -53,7 +34,8 @@ const loadOrderPage = async(req,res)=>{
             currentPage:page,
             totalPages:Math.ceil(totalOrders/limit),
             search,
-            user
+            user,
+            cssFile:"orders.css"
         });
 
     } catch (error) {
@@ -92,6 +74,8 @@ const loadOrderDetails = async(req,res)=>{
 
         const address = userAddress ? userAddress.address[0] : null;
 
+        
+
         const itemDetails = {
             order_id:order._id,
             orderId:order.orderId,
@@ -101,7 +85,8 @@ const loadOrderDetails = async(req,res)=>{
             returnReason:orderItem.returnReason,
             orderDate:order.createOn,
             status:orderItem.status,
-            address
+            address,
+            
         }
         
         res.render("user/orderDetails",{
@@ -167,54 +152,67 @@ const invoiceDownload = async (req,res)=>{
     }
 }
 
-const postReturnRequest = async(req,res)=>{
-    try {
+const postReturnRequest = async (req, res) => {
+  try {
+    const { orderId, productId, returnReason } = req.body;
+    const userId = req.session.user;
 
-        const {orderId,productId,reason} = req.body;
-        const userId = req.session.user;
-
-        const order = await Order.findOne({orderId,userId}).populate("orderedItems.product");
-
-        if(!order){
-            return console.log("Order not found");
-        }
-
-
-        const item = order.orderedItems.find(
-            (i)=>i.product._id.toString()===productId
-        )
-        
-        if(item.status!== "Delivered"){
-            return console.log("Cannot return delivered product");
-        }
-
-        item.returnReason = reason.trim();
-        item.status = "Return Request";
-        order.overAllStatus = "Return Request";
-        
-
-        await Product.findByIdAndUpdate(
-      productId,
-      { $inc: { quantity: item.quantity } }
-      
-    );
+   
+    if (!orderId || !productId || !returnReason) {
+      return res.status(400).json({ success: false, message: "All fields are required" });
+    }
 
     
-        await order.save();
-
-        console.log("order saved");
-
-        res.redirect("/orders");
-
-        
-    } catch (error) {
-        console.log("Error:",error.message);
+    const order = await Order.findOne({ orderId, userId }).populate("orderedItems.product");
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
     }
-}
+
+    
+    const item = order.orderedItems.find(i => i.product._id.toString() === productId);
+    if (!item) {
+      return res.status(404).json({ success: false, message: "Product not found in order" });
+    }
+
+   
+    if (item.status !== "Delivered") {
+      return res.status(400).json({ success: false, message: "Only delivered items can be returned" });
+    }
+
+   
+    item.status = "Return Request";
+    item.returnReason = returnReason.trim();
+
+   if(order.orderedItems.length===1){
+    order.overAllStatus = "Cancelled";
+    order.returnReason = returnReason;
+   }
+   else{
+    const allReturned = order.orderedItems.every((i)=>i.status === "Return Request");
+    if(allReturned){
+        order.overAllStatus = "Return Request";
+        order.returnReason = "Returned the whole products by user";
+    }
+   }
+   
+    await Product.findByIdAndUpdate(productId, { $inc: { quantity: item.quantity } });
+
+    
+    await order.save();
+
+  
+    return res.status(200).json({ success: true, message: "Return request submitted successfully" });
+
+  } catch (error) {
+    console.error("Error:", error.message);
+    return res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+};
+
 
 const postCancelOrder = async(req,res)=>{
     try {
-        const {orderId,productId} = req.body;
+        const {orderId,productId,reason} = req.body;
         const userId = req.session.user;
 
         const order = await Order.findOne({orderId,userId});
@@ -234,7 +232,20 @@ const postCancelOrder = async(req,res)=>{
         }
 
         item.status = "Cancelled";
-        order.overAllStatus = "Cancelled";
+        item.cancelReason = reason;
+
+        if(order.orderedItems.length === 1){
+            order.overAllStatus = "Cancelled";
+            order.cancelReason = reason;
+        }
+        else{
+            const allCancelled = order.orderedItems.every((i)=>i.status==="Cancelled");
+            if(allCancelled){
+                order.overAllStatus = "Cancelled";
+                order.cancelReason = "All products are cancelled by user";
+            }
+        }
+
         await order.save();
 
         await Product.findByIdAndUpdate(productId,{$inc:{quantity:item.quantity}});
@@ -246,10 +257,70 @@ const postCancelOrder = async(req,res)=>{
         console.log("Error:",error.message);
     }
 }
+
+const postCancelWholeOrder = async(req,res)=>{
+    try {
+
+        const {orderId} = req.params;
+        const {cancelReason} = req.body;
+
+        const order = await Order.findOne({orderId});
+
+        if(order.overAllStatus !== "Processing" && order.overAllStatus !== "Pending"){
+            return res.json({success:false,message:"Cannot cancel this order at this stage"});
+        }
+
+        order.overAllStatus = "Cancelled";
+        order.cancelReason = cancelReason;
+
+        order.orderedItems.forEach(item => {
+            item.status = "Cancelled";
+            item.cancelReason = cancelReason;
+        });
+
+        await order.save();
+
+        res.json({success:true,message:"Order and all items have been successfully cancelled!"});
+
+        
+    } catch (error) {
+        console.log("Error:",error.message);
+    }
+}
+
+const postWholeReturnOrder = async(req,res)=>{
+    try {
+
+        const {orderId} = req.params;
+        const {returnReason} = req.body;
+
+        const order = await Order.findOne({orderId});
+
+        if(order.overAllStatus!=="Delivered"){
+            return res.json({success:false,message:"Cannot return at this stage"});
+        }
+        order.overAllStatus= "Return Request";
+        order.returnReason = returnReason;
+
+        order.orderedItems.forEach(item=>{
+            item.status = "Return Request";
+            item.returnReason = returnReason;
+        })
+
+        await order.save();
+
+        res.json({success:true,message:"Return request send successfully"});
+        
+    } catch (error) {
+        console.log("Error:",error.message)
+    }
+}
 module.exports = {
     loadOrderPage,
     loadOrderDetails,
     invoiceDownload,
     postReturnRequest,
-    postCancelOrder
+    postCancelOrder,
+    postCancelWholeOrder,
+    postWholeReturnOrder
 }

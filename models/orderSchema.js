@@ -5,7 +5,6 @@ const {v4:uuidv4} = require("uuid");
 let orderSchema = new Schema({
     orderId:{
         type:String,
-        default:()=>uuidv4(),
         unique:true
     },
     userId: {
@@ -40,7 +39,12 @@ let orderSchema = new Schema({
         type:String,
         required:true,
         enum:["Pending","Processing","Shipped","Delivered","Cancelled","Return Request","Returned"]
-    }
+        },
+        cancelReason:{
+            type:String,
+            trim:true,
+            default:null
+        }
     }],
     totalPrice:{
         type:Number,
@@ -56,6 +60,16 @@ let orderSchema = new Schema({
     },
     overAllStatus:{
         type:String,
+    },
+    cancelReason:{
+        type:String,
+        trim:true,
+        default:null
+    },
+    returnReason:{
+        type:String,
+        trim:true,
+        default:null
     },
     address:{
         type:Schema.Types.ObjectId,
@@ -77,9 +91,20 @@ let orderSchema = new Schema({
     paymentMethod:{
         type:String,
         enum:['cod', 'wallet', 'razorpay', 'card','upi'],
-    }
+    },
+    
     
 })
+
+orderSchema.pre("save", function (next) {
+
+  if (!this.orderId) {
+    const randomNum = Math.floor(1000000 + Math.random() * 9000000); 
+    this.orderId = `ORID${randomNum}`;
+  }
+  next();
+});
+
 
 
 let Order = mongoose.model("Order",orderSchema);

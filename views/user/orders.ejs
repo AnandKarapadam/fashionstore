@@ -1,310 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Responsive Sidebar</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-    }
-
-    .navbar {
-      z-index: 1050;
-    }
-
-    .sidebar {
-      position: fixed;
-      top: 100px;
-      left: 0;
-      height: 100%;
-      background-color: #ffffff;
-      border-right: 1px solid #ccc;
-      transition: width 0.3s ease;
-      overflow: hidden;
-      z-index: 1040;
-    }
-
-    .sidebar.expanded {
-      width: 300px;
-    }
-
-    .sidebar.collapsed {
-      width: 0;
-    }
-
-    .sidebar-content {
-      padding: 1rem;
-      transition: opacity 0.3s ease;
-    }
-
-    .sidebar.collapsed .sidebar-content {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .main-content {
-      margin-top: 100px;
-      /* below navbar */
-      margin-left: 250px;
-      transition: margin-left 0.3s ease;
-    }
-
-    .main-content.full {
-      margin-left: 0;
-      width: 100%;
-    }
-
-    .toggle-btn {
-      position: fixed;
-      top: 50%;
-      left: 0;
-      transform: translate(-50%, -50%);
-      z-index: 1060;
-      background-color: #343a40;
-      color: white;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      text-align: center;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .navbar .dropdown:hover .dropdown-menu {
-      display: block;
-    }
-
-    .navbar .dropdown-toggle::after {
-      display: inline-block;
-      margin-left: 0.3em;
-      vertical-align: middle;
-      transition: transform 0.3s ease;
-      content: "";
-      border-top: 0.4em solid;
-      border-right: 0.4em solid transparent;
-      border-left: 0.4em solid transparent;
-    }
-
-    .navbar .dropdown:hover .dropdown-toggle::after {
-      transform: rotate(180deg);
-    }
-
-    .nav-link {
-      font-weight: 500;
-      font-size: 17px;
-      color: black;
-    }
-
-    .nav-icon {
-      font-size: 23px;
-      font-weight: 700;
-      color: black;
-    }
-
-    .main-nav {
-      border-bottom: 2px solid rgb(63, 61, 61);
-      border-color: #ccc;
-    }
-
-    .navbar-brand {
-      font-size: 40px;
-      font-family: 'Times New Roman', Times, serif;
-      color: rgb(74, 74, 74);
-    }
-
-    @media (max-width: 768px) {
-      .main-content {
-        margin-left: 0 !important;
-        width: 100% !important;
-      }
-    }
-  </style>
-</head>
-
-<body>
-
-  <!-- Navbar -->
-  <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-white px-3 mb-4">
-    <a class="navbar-brand" href="/">RORITO</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <!-- Push everything to the right -->
-      <ul class="navbar-nav ms-auto gap-lg-5 mb-2 mb-lg-0">
-        <li class="nav-item active">
-          <a class="nav-link" href="/">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/all-products">All products</a>
-        </li>
-        <% if(typeof user !=="undefined" ) {%>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-              aria-expanded="false">
-              <%= user.name.split(' ')[0] %>
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="/profile">Profile</a></li>
-              <li>
-                <hr class="dropdown-divider">
-              </li>
-              <li><a class="dropdown-item" href="/logout">Logout</a></li>
-            </ul>
-          </li>
-          <% } %>
-<li class="nav-item d-lg-flex gap-5 align-items-center">
-  <a class="nav-icon position-relative" href="/cart">
-    <i class="bi bi-cart4"></i>
-    
-      <span class="position-absolute start-90 translate-middle badge rounded-pill bg-danger " style=" height: 17px; font-size: 0.6rem;top: 10px;">
-        <%= cartCount=0||0 %>
-        <span class="visually-hidden">items in cart</span>
-      </span>
-   
-  </a>
-
-  <a href="/wishlist" class="nav-icon">
-    <i class="bi bi-handbag"></i>
-  </a>
-</li>
-          <li class="nav-item d-flex align-items-center">
-            <form action="/orders?<%= search %>" method="get" class="d-flex ms-lg-3 mt-2 mt-lg-0" role="search">
-              
-              <input class="form-control border border-1 border-dark me-2 form-control-sm rounded-4" name="search" type="search" placeholder="Search order" aria-label="Search">
-              <button class="btn btn-outline-dark btn-sm rounded-4 " type="submit">Search</button>
-              <a href="/orders" class="btn btn-dark rounded-5 btn-sm ms-1"><i class="bi bi-x-circle"></i></a>
-                        
-            </form>
-          </li>
-        </ul>
-      </div>
-    </nav>
+<%- include("../partials/user/header.ejs") %>
+<%- include("../partials/user/navbar.ejs") %>
 
     
     
-      <div class="container mt-5 pt-5 px-5 mb-4">
-        <% orders.forEach(order=>{ %>
-          
-            
-        <div class="row mt-5 px-3 px-md-5 py-3 border rounded-3 shadow-sm"  >
-  <!-- Image Column -->
-   
-  <div onclick="orderDetails(' <%=order.product._id %>','<%= order.orderId %>')" class="col-12 col-md-2 d-flex
-                  align-items-center justify-content-center mb-3 mb-md-0" style="width: 120px; height: 150px;cursor:
-                  pointer;">
+  <% if(orders.length>0){%>
+      <div class="container mt-5 pt-4">
+  <% orders.forEach(order=>{%>
+    <div class="container my-5">
 
-                  <img src="/uploads/re-image/<%= order.product.productImage[0] %>" class="img-fluid rounded"
-                    alt="Product Image" style="width: 100%; height: 100%; object-fit: contain;">
+      <div class="row g-4">
+        <!-- Order 1 -->
+        <div class="col-12">
+          <div class="card shadow-sm order-card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+                <h6 class="card-title">Order ID: <span class="text-muted"><%= order.orderId %></span></h6>
+                <span class="badge bg-primary"><%= order.overAllStatus || "Pending" %></span>
+              </div>
+              <% order.orderedItems.forEach(item=> { %>
+              <div class="row mx-2 mx-md-5 mb-5 product-card bg-light">
+                <div class="col-md-4 d-flex order-details">
+                  <div class="order-img d-flex align-items-center justify-content-center me-md-3" style="width: 120px; height: 150px;">
+                    <img src="/uploads/re-image/<%= item.product.productImage[0] %>" class="img-fluid" alt="" style="object-fit: contain;width: 100%;height: 100%;">
+                  </div>
+                  <div class="d-flex flex-column justify-content-between">
+                    <div class="d-flex flex-column">
+                      <p class="mb-0"><span class="fw-bold"><%= item.product.productName %></span></p>
+                      <p class="mb-0"><span class="fw-semibold" style="font-size: 14px;">Color: <%= item.product.color ||"N/A"%></span></p>
+                      <!-- <p class="mb-0"><span class="fw-normal text-muted text-sm"><%= item.product.category %></span></p> -->
+                      <p class="mb-0"><span class="text-sm fw-bold" style="font-size: 12px;">QTY: <%= item.quantity %></span></p>
+                    </div>
+                    <div>
+                      <a href="/order-details/<%= order.orderId %>?productId=<%= item.product._id %>" class="btn btn-outline-dark btn-sm">View Details</a>
+                    </div>
+                  </div>
+                </div>
 
-    </div>
+                <div class="col-md-4 d-flex align-items-center justify-content-center flex-column  order-actions">
+                  
+                    <p class="mb-0"><span class="text-muted">Status</span></p>
+                    <% if(item.status === "Processing"||item.status==="Shipped"||item.status==="Delivered") {%>
+                      <p class="mb-0"><span class="fw-bold text-success"><%= item.status %></span></p>
+                    <%} else if(item.status){%>
+                      <p class="mb-0"><span class="fw-bold text-danger"><%= item.status %></span></p>
+                      <% } %>  
+                  
+                </div>
 
-
-
-    <!-- Info Column -->
-    <div class="col-12 col-md-10">
-      <div class="d-flex flex-column flex-md-row justify-content-md-between align-items-md-start gap-3">
-
-        <!-- Product Info -->
-        <div>
-          <p class="fw-bold mb-1">
-            <%= order.product.productName %>
-          </p>
-          <p class="fw-semibold mb-2">
-            <%= order.product.description.split(" ").slice(0,8).join(" ") %>...</p>
-        <p class=" text-muted small mb-0">Order ID : <%= order.orderId %>
-          </p>
-
-          <a href="/order-details/<%= order.orderId %>?productId=<%= order.product._id %>"
-            class="btn btn-outline-secondary btn-sm mt-2 mt-md-4">Order Details</a>
-        </div>
-
-        <!-- Price -->
-        <div class="mt-2 mt-md-5">
-          <p class="text-success fw-bold mb-0">₹<%= order.product.salePrice %>
-          </p>
-        </div>
-
-        <!-- Status & Actions -->
-        <div class="text-md-end mt-2 mt-md-0">
-          <% if(["Processing","Shipped","Pending"].includes(order.status)){ %>
-            <!-- Cancel Order Button -->
-            <button type="button" class="btn btn-danger btn-sm fw-semibold mb-1 cancel-order-btn" data-bs-toggle="modal"
-              data-bs-target="#cancelModal" data-order-id="<%= order.orderId %>"
-              data-product-id="<%= order.product._id %>">
-
-              Cancel Order
-            </button>
-            <% } else if(order.status==="Delivered" ){ %>
-              <!-- Return Order Button -->
-              <button type="button" class="btn btn-danger btn-sm fw-semibold mb-1" data-bs-toggle="modal"
-                data-bs-target="#returnModal" data-order-id="<%= order.orderId %>"
-                data-product-id="<%= order.product._id %>">
-                Return Order
-              </button>
-              <% } else if(order.status==="Return Request" ){ %>
-                <p class="border text-center border-secondary rounded-4 text-muted shadow-sm small">Return Request Send
-                </p>
-
-                <% } else if(order.status==="Returned" ){ %>
-                  <p class="border text-center border-secondary rounded-4 text-muted shadow-sm small">Returned</p>
-                  <% } else if(order.status==="Cancelled" ){ %>
-                    <p class="border text-center border-secondary rounded-4 text-muted shadow-sm small">Cancelled</p>
-                    <% } %>
-                      <div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="returnModalLabel"
-                        aria-hidden="true">
-                        <div class="modal-dialog">
-                          <form id="returnForm" method="POST">
-                            <input type="hidden" id="returnOrderId" name="orderId">
-                            <input type="hidden" id="returnProductId" name="productId">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <h5 class="modal-title" id="returnModalLabel">Return Order</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                              </div>
-                              <div class="modal-body">
-                                <label for="returnReason" class="form-label">Reason for return <span
-                                    class="text-danger">*</span></label>
-                                <textarea id="returnReason" name="reason" class="form-control" rows="3"
-                                  required></textarea>
-                              </div>
-                              <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-warning">Submit Return Request</button>
-                              </div>
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                      <p class="fw-semibold small mb-1">Ordered Date: <%= new
-                          Date(order.orderDate).toLocaleDateString("en-GB", { day: "2-digit" , month: "short" ,
-                          year: "numeric" })%>
-                      </p>
-                      <p class="fw-semibold small mb-1">
-                        Order Time: <%= new Date(order.orderDate).toLocaleTimeString("en-GB", { hour: "2-digit" ,
-                          minute: "2-digit" , hour12: true }) %>
-                      </p>
-                      <p class="text-muted small mb-0">Status: <span class="fw-bold">
-                          <%= order.status %>
-                        </span></p>
+                <div class="col-md-4 order-meta">
+                  <div class="d-flex flex-column align-items-md-end justify-content-md-between">
+                    <div class="d-flex flex-column align-items-md-end">
+                      <p class="mb-1">
+                        <% if(item.status === "Cancelled") {%>
+                          <button class="btn-outline-secondary" disabled>Cancelled</button>
+                        <%}else if(item.status === "Processing"){%>
+                          <button type="button" 
+                        data-order-id="<%= order.orderId %>"
+                        data-product-id="<%= item.product._id %>"
+                         class="btn btn-danger cancel-order-btn btn-sm">Cancel item</button>
+                          <%} else if(item.status === "Delivered"){%>
+                            <button type="button" 
+                              data-bs-toggle="modal"
+                              data-bs-target="#returnModal"
+                              data-order-id="<%= order.orderId %>"
+                              data-product-id="<%= item.product._id %>" 
+                              class="btn btn-danger  btn-sm">Return item</button>
+                          <%} else if(item.status === "Return Request"){%>
+                            <button class="btn-outline-secondary" disabled>Return Requested</button>
+                          <% } else if(item.status === "Returned"){ %>
+                            <button class="btn-outline-secondary" disabled>Returned</button>
+                          <%}%>  
+                        </p>
+                    <p class="fw-semibold" style="font-size: 13px;">Ordered Date: <span><%= order.createOn.toDateString() %></span></p>
+                    </div>
+                    <div>
+                      <p class="mb-0 text-sm fw-semibold">Price: <span class="fw-bold text-success">₹<%= item.price %></span></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <%})%>
+              <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap">
+                  <% if(order.overAllStatus === "Delivered") {%>
+                    <button data-order-id="<%= order.orderId %>" class="btn btn-outline-dark btn-sm mb-2 mb-md-0 order-return-btn">Return Order</button>
+                  <% } else if(order.overAllStatus === "Processing" || order.overAllStatus === "Pending") {%>
+                    <button data-order-id="<%= order.orderId %>" class="btn btn-outline-dark btn-sm mb-2 mb-md-0 order-cancel-btn">Cancel order</button>
+                  <%} else{ %>  
+                    <a href="/all-products" class="btn btn-outline-dark btn-sm mb-2 mb-md-0">Shop</a>
+                    <%}%>
+                  <span class="fw-bold text-end ms-auto">Total: ₹<%= order.finalAmount %></span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    </div>
-
-    <% }) %>
-
-      <div class="container mt-3" id="paginationSection">
+    </div> 
+    
+    <% }) %> 
+        <div class="container mt-3" id="paginationSection">
         <nav aria-label="Page navigation">
           <ul class="pagination justify-content-center mb-4" style="margin-right: -50px;">
             <% const maxVisiblePages=3; let startPage=Math.max(1, currentPage - 1); let endPage=startPage +
@@ -336,28 +129,268 @@
         </nav>
       </div>
       </div>
+      <!-- Return Modal -->
+      <div class="modal fade" id="returnModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="returnForm" method="POST">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Return Product</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="returnOrderId" name="orderId">
+          <input type="hidden" id="returnProductId" name="productId">
+
+          <div class="mb-3">
+            <label for="returnReason" class="form-label">Select Return Reason</label>
+            <select name="returnReason" id="returnReason" class="form-select" required>
+              <option value="">Select a reason</option>
+              <option value="Damaged Product">Damaged Product</option>
+              <option value="Wrong Item Delivered">Wrong Item Delivered</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="mb-3" id="otherReasonDiv" style="display:none;">
+            <label for="otherReason" class="form-label">Describe the reason</label>
+            <textarea id="otherReason" class="form-control" rows="3" placeholder="Enter your reason"></textarea>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Submit Return</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+    <% }else{ %>
+      <div class="container d-flex align-items-center justify-content-center">
+        <div class="row d-flex flex-column justify-content-center align-items-center">
+          <p>No Items found</p>
+          <a href="/all-products">Explore Products</a>
+        </div>
+      </div>
+    <% } %>
+
 
 
       <!-- Scripts -->
 
+      <%- include("../partials/user/footer.ejs") %>
 
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
       <script>
-        document.addEventListener("DOMContentLoaded", function () {
-          const returnModal = document.getElementById("returnModal");
-          const returnForm = document.getElementById("returnForm");
 
-          returnModal.addEventListener("show.bs.modal", function (event) {
-            const button = event.relatedTarget;
-            const orderId = button.getAttribute("data-order-id");
-            const productId = button.getAttribute("data-product-id");
-            document.getElementById("returnOrderId").value = orderId;
-            document.getElementById("returnProductId").value = productId;
-            returnForm.action = `/orders/return`;
+document.addEventListener("DOMContentLoaded", function () {
+  const returnButtons = document.querySelectorAll(".order-return-btn");
+
+  returnButtons.forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const orderId = btn.getAttribute("data-order-id");
+
+      const { value: reason } = await Swal.fire({
+        title: "Return Order",
+        input: "select",
+        inputOptions: {
+          "Damaged Product": "Damaged Product",
+          "Wrong Item Delivered": "Wrong Item Delivered",
+          "Not as Described": "Not as Described",
+          "Other": "Other"
+        },
+        inputPlaceholder: "Select a reason",
+        showCancelButton: true,
+        inputValidator: (value) => {
+          if (!value) return "You need to select a reason";
+        }
+      });
+
+      if (reason) {
+        let finalReason = reason;
+
+        if (reason === "Other") {
+          const { value: otherReason } = await Swal.fire({
+            title: "Enter return reason",
+            input: "textarea",
+            inputPlaceholder: "Type your reason here...",
+            inputAttributes: {
+              'aria-label': "Type your reason here"
+            },
+            showCancelButton: true,
+            inputValidator: (value) => {
+              if (!value) return "You have to type a reason!";
+            }
           });
-        });
+
+          if (!otherReason) return; // user canceled
+          finalReason = otherReason;
+        }
+
+        try{
+          const res = await fetch(`/orders/return/${orderId}`,{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({returnReason:finalReason})
+          })
+
+          const data = await res.json();
+
+          if(data.success){
+            Swal.fire("Returned",data.message,'success').then(()=>location.reload());
+          }
+          else{
+            Swal.fire("Error",data.message,"error");
+          }
+        }
+        catch(error){
+          console.log("Error",error.message);
+          Swal.fire("Error","Something Went Wrong","error");
+        }
+       
+      }
+    });
+  });
+});
+       
+document.addEventListener("DOMContentLoaded",function(){
+  const cancelButtons = document.querySelectorAll(".order-cancel-btn");
+
+  cancelButtons.forEach(btn=>{
+    btn.addEventListener("click",async()=>{
+      const orderId = btn.getAttribute("data-order-id");
+
+      const {value:reason} = await Swal.fire({
+        title:"Cancel Order",
+        input:'select',
+        inputOptions:{
+          "Changed my mind": "Changed my mind",
+          "Found a better price": "Found a better price",
+          "Ordered by mistake": "Ordered by mistake",
+          "Other": "Other"
+        },
+        inputPlaceholder:"Select a reason",
+        showCancelButton:true,
+        inputValidator:(value)=>{
+          if(!value)return "You need to select a reason!"
+        }
+      })
+
+      if(reason){
+        let finalReason = reason;
+        if(reason==="Other"){
+          const {value:otherReason} =await Swal.fire({
+            title:"Enter cancellation reason",
+            input:"textarea",
+            inputPlaceholder:"Type your reason here...",
+            inputAttributes:{
+              'aria-label':'Type your reason here'
+            },
+            showCancelButton:true,
+            inputValidator:(value)=>{
+              if(!value)return "Please enter a reason!"
+            }
+          });
+          if(!otherReason) return;
+          finalReason = otherReason
+        }
+
+        try {
+
+           const res = await fetch(`/orders/cancel/${orderId}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cancelReason: finalReason })
+          });
+
+          const data = await res.json();
+
+          if (data.success) {
+            Swal.fire("Cancelled!", data.message, "success").then(() => location.reload());
+          } else {
+            Swal.fire("Error", data.message, "error");
+          }
+          
+        } catch (error) {
+          console.error(error.message);
+          Swal.fire("Error", "Something went wrong", "error");
+        }
+
+      }
+
+    })
+  })
+
+})
+
+
+
+
+       document.addEventListener("DOMContentLoaded", function () {
+  const returnModal = document.getElementById("returnModal");
+  const returnForm = document.getElementById("returnForm");
+  const returnReasonSelect = document.getElementById("returnReason");
+  const otherReasonDiv = document.getElementById("otherReasonDiv");
+  const otherReasonTextarea = document.getElementById("otherReason");
+
+  // Populate hidden fields when modal opens
+  returnModal.addEventListener("show.bs.modal", function (event) {
+    const button = event.relatedTarget;
+    const orderId = button.getAttribute("data-order-id");
+    const productId = button.getAttribute("data-product-id");
+    document.getElementById("returnOrderId").value = orderId;
+    document.getElementById("returnProductId").value = productId;
+  });
+
+  // Show/hide textarea based on select
+  returnReasonSelect.addEventListener("change", () => {
+    if (returnReasonSelect.value === "Other") {
+      otherReasonDiv.style.display = "block";
+      otherReasonTextarea.required = true;
+    } else {
+      otherReasonDiv.style.display = "none";
+      otherReasonTextarea.required = false;
+    }
+  });
+
+  // Handle form submission via fetch (AJAX)
+  returnForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const orderId = document.getElementById("returnOrderId").value;
+    const productId = document.getElementById("returnProductId").value;
+    let returnReason = returnReasonSelect.value;
+
+    // If "Other" is selected, use textarea value
+    if (returnReason === "Other") {
+      returnReason = otherReasonTextarea.value.trim();
+      if (!returnReason) {
+        Swal.fire("Info", "Please describe the reason for return", "info");
+        return;
+      }
+    }
+
+    try {
+      const res = await fetch("/orders/return", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, productId, returnReason })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        Swal.fire("Success", data.message, "success").then(() => location.reload());
+      } else {
+        Swal.fire("Error", data.message, "error");
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Something went wrong", "error");
+    }
+  });
+});
 
         document.addEventListener("DOMContentLoaded", function () {
           document.querySelectorAll(".cancel-order-btn").forEach(btn => {
@@ -377,6 +410,30 @@
                 cancelButtonText: "No, keep it"
               })
 
+              if(!result.isConfirmed)return;
+
+              const {value:reason} = await Swal.fire({
+                title:"Select a reason for cancellation",
+                input:"select",
+                inputOptions:{
+                  'Changed my mind': 'Changed my mind',
+                  'Ordered by mistake': 'Ordered by mistake',
+                  'Found a better price': 'Found a better price',
+                  'Other': 'Other'
+                },
+                inputPlaceholder:"Select a reason",
+                showCancelButton:true
+              })
+
+              if(!reason){
+                Swal.fire({
+                  icon:"info",
+                  title:"Cancelled",
+                  text:"You need to select a reason to cancel",
+                })
+                return;
+              }
+
               if (result.isConfirmed) {
                 try {
 
@@ -385,7 +442,7 @@
                     headers: {
                       "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ orderId, productId })
+                    body: JSON.stringify({ orderId, productId,reason})
                   })
 
                   const data = await res.json();

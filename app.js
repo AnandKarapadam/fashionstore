@@ -9,6 +9,7 @@ const MongoStore = require("connect-mongo");
 
 const userRouter = require("./routes/userRouter")
 const adminRouter = require("./routes/adminRouter");
+const Cart = require("./models/cartSchema");
 
 db()
 
@@ -34,6 +35,20 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use((req, res, next) => {
+  res.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  res.set("Pragma", "no-cache");
+  res.set("Expires", "0");
+  res.set("Surrogate-Control", "no-store");
+  next();
+});
+
+app.get("/cart/count", async (req, res) => {
+  if (!req.session.user) return res.json({ count: 0 });
+
+  const cart = await Cart.findOne({ userId: req.session.user });
+  res.json({ count: cart ? cart.items.length : 0 });
+});
 
 app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"views"));;

@@ -71,9 +71,9 @@
           
             <button type="button" onclick="addToWishlist('<%= product._id %>',event)" class="btn btn-danger mb-3 rounded-4 fw-semibold w-50">Add to Wishlist</button>
           
-          <form id="cartForm" action="/cart/add/<%= product._id %>" method="POST">
+          <form id="cartForm" >
             <input type="hidden" id="hiddenQuantity" name="quantity">
-            <button type="submit"  class="btn btn-primary rounded-4 fw-semibold w-50">Add to Cart</button>
+            <button type="submit" id="addToCartBtn" data-product-id="<%= product._id %>"  class="btn btn-primary rounded-4 fw-semibold w-50">Add to Cart</button>
           </form>
         <% } else { %>
           <button class="btn btn-secondary" disabled>Unavailable</button>
@@ -184,6 +184,48 @@
 
 
       <script>
+
+        document.getElementById("addToCartBtn").addEventListener("click",async function(e){
+          e.preventDefault();
+
+          const productId = this.getAttribute("data-product-id");
+          const quantity = document.getElementById("hiddenQuantity")?.value||1;
+
+          try{
+
+            const res = await fetch(`/cart/add/${productId}`,{
+              method:"POST",
+              headers:{
+                "Content-Type":"application/json"
+              },
+              body:JSON.stringify({quantity})
+            })
+
+            const data = await res.json();
+
+            if(data.success){
+              Swal.fire({
+                icon:"success",
+                title:"Product added successfully",
+                text:data.message,
+                timer:1000
+              }).then(()=>location.reload());
+            }
+            else{
+              Swal.fire({
+                icon:"error",
+                title:"Error",
+                text:data.message
+              })
+            }
+
+          }catch(error){
+            console.log("Error:",error.message);
+            Swal.fire("Error", "Something went wrong!", "error");
+          }
+
+        })
+        
         const mainImage = document.getElementById("mainImage");
         const lens = document.getElementById("lens");
         const result = document.getElementById("zoomResult");

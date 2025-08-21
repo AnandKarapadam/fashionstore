@@ -386,9 +386,19 @@ const loadAllProductsPage = async (req, res) => {
       .populate("category")
       .sort(sortOption)
       .skip(skip)
-      .limit(limit);
-    const categories = await Category.find({ isListed: true });
+      .limit(limit).lean();
 
+      if(userId){
+        const wishlist = await Wishlist.findOne({userId:userId}).lean();
+        if(wishlist){
+          const wishlistProductsId = wishlist.products.map(p=>p.productId.toString());
+          products.forEach(product=>{
+            product.isWishlisted = wishlistProductsId.includes(product._id.toString());
+          })
+        }
+      }
+
+    const categories = await Category.find({ isListed: true });
     const matchedProducts = await Product.countDocuments(query);
     const totalPages = Math.ceil(matchedProducts / limit);
 
@@ -415,8 +425,12 @@ const loadAllProductsPage = async (req, res) => {
 const getProductDetails = async (req, res) => {
   try {
     const id = req.params.id;
-   
+    const userId = req.session.user;
+    let userdata = await User.findById(userId);
+    
+    let user = userdata?userdata:"";
 
+   
     const product = await Product.findOne({
       _id: id,
       isBlocked: false,
@@ -443,7 +457,7 @@ const getProductDetails = async (req, res) => {
       .populate("category")
       .lean();
 
-    res.render("user/product_details", { product, relatedProducts, reviews,cssFile:"productdetails.css"});
+    res.render("user/product_details", { product, relatedProducts, reviews,cssFile:"productdetails.css",user});
   } catch (error) {
     res.redirect("/pageNotFound");
     console.error("Error while rendering product details:", error.message);

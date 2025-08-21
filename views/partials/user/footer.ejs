@@ -57,3 +57,23 @@
     </div>
   
 </footer>
+<script>
+  async function updateCartCount() {
+    try {
+      const response = await fetch("/cart/count");
+      const data = await response.json();
+      const cartBadge = document.getElementById("cart-count");
+      if (cartBadge) {
+        cartBadge.textContent = data.count;
+      }
+    } catch (err) {
+      console.error("Error fetching cart count:", err);
+    }
+  }
+
+  // Run once when page loads
+  updateCartCount();
+
+  // Optional: keep refreshing
+  setInterval(updateCartCount, 30000);
+</script>

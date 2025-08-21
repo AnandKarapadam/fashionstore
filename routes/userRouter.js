@@ -118,13 +118,17 @@ router.get("/orders",userAuth,orderController.loadOrderPage);
 router.get("/order-details/:orderId",userAuth,orderController.loadOrderDetails);
 router.get("/invoice/download/:orderId/:productId",userAuth,orderController.invoiceDownload);
 router.post("/orders/return",userAuth,orderController.postReturnRequest);
-router.post("/orders/cancel",userAuth,orderController.postCancelOrder)
+router.post("/orders/cancel",userAuth,orderController.postCancelOrder);
+router.post("/orders/cancel/:orderId",userAuth,orderController.postCancelWholeOrder);
+router.post("/orders/return/:orderId",userAuth,orderController.postWholeReturnOrder);
 
 
 // Wishlist Management
 router.get("/wishlist",userAuth,wishlistController.loadWishlistPage);
 router.post("/wishlist/add/:productId",userAuth,wishlistController.addToWishlist);
 router.post("/wishlist/move-to-cart/:id",userAuth,wishlistController.moveToCart);
-router.delete("/remove-from-wishlist/:id",userAuth,wishlistController.removeWishlistItem)
+router.delete("/remove-from-wishlist/:id",userAuth,wishlistController.removeWishlistItem);
+router.post("/wishlist/add",userAuth,wishlistController.toggleAddToWishlist);
+router.post("/wishlist/remove",userAuth,wishlistController.toggleRemoveFromWishlist);
 
 module.exports = router
