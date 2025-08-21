@@ -22,7 +22,7 @@ window.addEventListener("DOMContentLoaded", () => {
 function clearSearch() {
   document.querySelector('input[name="search"]').value = "";
   document.getElementById("searchForm").submit();
-  window.location.href = "/admin/brands";
+  window.location.href = "/admin/coupon";
 }
 
 function confirmDelete(event) {

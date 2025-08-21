@@ -11,7 +11,7 @@
                     <div class="card shadow-sm">
                         <div class="card-header bg-primary text-white">Add Category</div>
                         <div class="card-body">
-                            <form action="/admin/addCategory" method="POST" onsubmit="return handleFormSubmit(event)">
+                            <form action="/admin/category/add" method="POST" onsubmit="return handleFormSubmit(event)">
                                 <div class="mb-3">
                                     <label class="form-label">Category Name</label>
                                     <input type="text" class="form-control" name="name" required>
@@ -34,7 +34,8 @@
                         <input type="text" name="search" value="<%= search?search:''%>" placeholder="Search..."
                             class="form-control me-2" style="max-width: 300px;">
                         <button class="btn btn-outline-primary me-1">Search</button>
-                        <button class="btn btn-dark" onclick="clearSearch()">Clear</button>
+                        <a href="/admin/category" class="btn btn-dark">Clear</a>
+                        
                     </form>
 
                     <div class="table-responsive shadow-sm">
@@ -66,12 +67,12 @@
                                             </td>
                                             <td>
                                                 <% if (cat.categoryOffer>0) { %>
-                                                    <form action="/admin/addCategory/remove-offer/<%= cat._id %>"
+                                                    <form action="/admin/category/remove-offer/<%= cat._id %>"
                                                         method="POST">
                                                         <button class="btn btn-sm btn-danger">Remove</button>
                                                     </form>
                                                     <% } else { %>
-                                                        <form action="/admin/addCategory/add-offer/<%= cat._id %>"
+                                                        <form action="/admin/category/add-offer/<%= cat._id %>"
                                                             method="POST" class="d-flex">
                                                             <input type="number" name="offerPrice"
                                                                 class="form-control form-control-sm me-2" required>

@@ -82,7 +82,7 @@
         </form>
       </div>
       </div>
-        
+
       <!-- Products -->
       <div class="col-md-9 pt-4 ps-4">
         <div class="row g-4">
@@ -91,7 +91,7 @@
               <div class="product-card shadow-sm position-relative" >
                 <i  class="bi <%= product.isWishlisted ? 'bi-heart-fill text-danger' : 'bi-heart' %> wishlist-icon position-absolute rounded-circle bg-light shadow-sm px-1 top-0 end-0 m-2 fs-7 text-secondary"
    onclick="toggleWishlist(this, '<%= product._id %>' )"></i>
-                <a href="/product-details/<%= product._id %>" class="text-decoration-none text-dark">
+                <a href="/product/details/<%= product._id %>" class="text-decoration-none text-dark">
                   <img src="/uploads/re-image/<%= product.productImage[0] %>?/uploads/re-image/<%= product.productImage[0] %>:/uploads/product-images/<%= product.productImage[0] %>"  alt="<%= product.productName %>">
                    
                   <% if (product.productOffer && product.productOffer > 0) { %>

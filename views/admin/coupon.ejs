@@ -13,7 +13,7 @@
                     <div class="card shadow-sm">
                         <div class="card-header bg-primary text-white">Add Brand</div>
                         <div class="card-body">
-                            <form action="/admin/createCoupon" method="POST">
+                            <form action="/admin/coupon/createCoupon" method="POST">
                                 <div class="mb-3">
                                     <label class="form-label">Coupon Name</label>
                                     <input type="text" class="form-control" name="name" required />
@@ -46,7 +46,8 @@
                         <input type="text" name="search" value="<%= search %>" placeholder="Search..."
                             class="form-control me-2" style="max-width: 300px;">
                         <button class="btn btn-outline-primary">Search</button>
-                        <button type="button" class="btn btn-outline-secondary" onclick="clearSearch()">Clear</button>
+                        <a href="/admin/coupon" class="btn btn-outline-secondary">clear</a>
+                        <!-- <button type="button" class="btn btn-outline-secondary" onclick="clearSearch()">Clear</button> -->
                     </form>
 
                     <div class="table-responsive shadow-sm">

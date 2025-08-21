@@ -7,8 +7,22 @@ const session = require("express-session");
 const passport = require("./config/passport");
 const MongoStore = require("connect-mongo");
 
-const userRouter = require("./routes/userRouter")
-const adminRouter = require("./routes/adminRouter");
+const userRouter = require("./routes/users/userRouter")
+const productRouter = require("./routes/users/productRouter");
+const addressRouter = require("./routes/users/addressRouter");
+const cartRouter = require("./routes/users/cartRouter");
+const orderRouter = require("./routes/users/orderRouter");
+const wishlistRouter = require("./routes/users/wishlistRouter");
+
+const adminRouter = require("./routes/admin/adminRouter");
+const adminProductRouter = require("./routes/admin/productRouter");
+const adminCouponRouter = require("./routes/admin/couponRouter");
+const adminCategoryRouter = require("./routes/admin/categoryRouter");
+const adminBrandRouter = require("./routes/admin/brandRouter");
+const adminBannerRouter = require("./routes/admin/bannerRouter");
+const adminUserRouter = require("./routes/admin/userRouter");
+const adminOrderRouter = require("./routes/admin/orderRouter");
+
 const Cart = require("./models/cartSchema");
 
 db()
@@ -60,8 +74,24 @@ app.use((req, res, next) => {
   res.set('Cache-Control', 'no-store');
   next();
 });
+
+
 app.use("/",userRouter);
+app.use("/product",productRouter);
+app.use("/address",addressRouter);
+app.use("/cart",cartRouter);
+app.use("/orders",orderRouter);
+app.use("/wishlist",wishlistRouter);
+
 app.use("/admin",adminRouter);
+app.use("/admin/products",adminProductRouter);
+app.use("/admin/coupon",adminCouponRouter);
+app.use("/admin/category",adminCategoryRouter);
+app.use("/admin/brands",adminBrandRouter);
+app.use("/admin/banner",adminBannerRouter);
+app.use("/admin/users",adminUserRouter);
+app.use("/admin/orders",adminOrderRouter);
+
 
 app.listen(process.env.PORT,(err)=>{
     console.log("Server running port:",process.env.PORT);

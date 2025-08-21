@@ -13,7 +13,7 @@
                     <div class="card shadow-sm">
                         <div class="card-header bg-primary text-white">Add Brand</div>
                         <div class="card-body">
-                            <form action="/admin/addBrand" method="POST" enctype="multipart/form-data">
+                            <form action="/admin/brands/add" method="POST" enctype="multipart/form-data">
                                 <div class="mb-3">
                                     <label class="form-label">Brand Name</label>
                                     <input type="text" class="form-control" name="name" required />
@@ -34,7 +34,7 @@
                         <input type="text" name="search" value="<%= search %>" placeholder="Search..."
                             class="form-control me-2" style="max-width: 300px;">
                         <button class="btn btn-outline-primary">Search</button>
-                        <button type="button" class="btn btn-outline-secondary" onclick="clearSearch()">Clear</button>
+                        <a href="/admin/brands" class="btn btn-outline-secondary">Clear</a>
                     </form>
 
                     <div class="table-responsive shadow-sm">
@@ -66,16 +66,16 @@
                                                 <%= brand.isBlocked ? "Blocked" : "UnBlocked" %>
                                             </td>
                                             <td>
-                                                <form action="/admin/brand/toggle-status/<%= brand._id %>" method="POST"
+                                                <form action="/admin/brands/toggle-status/<%= brand._id %>" method="POST"
                                                     class="d-inline">
                                                     <button
                                                         class="btn btn-sm <%= brand.isListed ? 'btn-warning' : 'btn-success' %>">
                                                         <%= brand.isBlocked ? "UnBlock" : "Block" %>
                                                     </button>
                                                 </form>
-                                                <a href="/admin/brand/edit/<%= brand._id %>"
+                                                <a href="/admin/brands/edit/<%= brand._id %>"
                                                     class="btn btn-sm btn-primary">Edit</a>
-                                                <form action="/admin/brand/delete/<%= brand._id %>" method="POST"
+                                                <form action="/admin/brands/delete/<%= brand._id %>" method="POST"
                                                     class="d-inline" onsubmit="return confirmDelete(event)">
                                                     <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                                                 </form>
@@ -128,6 +128,6 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <!-- <script src="/script/admin/brands.js"></script> -->
-
+        
+        <script src="/script/admin/brands.js"></script>
         <%- include("../partials/admin/footer.ejs") %>

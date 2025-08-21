@@ -23,7 +23,7 @@
 
     <!-- Edit icon (right) -->
     <div class="pt-1 ps-2">
-      <i class="bi bi-pencil-square fs-5 text-secondary" role="button"></i>
+      <a href="/address/edit/<%= address._id %>"><i class="bi bi-pencil-square fs-5 text-secondary" role="button"></i></a>
     </div>
 
   </div>
@@ -32,7 +32,7 @@
 
 
 <div class="bg-white shadow-sm border border-1 border-secondary p-2 text-center rounded-3 mt-5">
-    <a href="/add-address" class="text-decoration-none text-dark fw-semibold"><i class="bi bi-plus-lg fw-semibold"></i> add new address</a>
+    <a href="/address/add" class="text-decoration-none text-dark fw-semibold"><i class="bi bi-plus-lg fw-semibold"></i> add new address</a>
 </div>
 </div>
 
@@ -123,7 +123,7 @@
   }
   try {
 
-    const res = await fetch("/select-address",{
+    const res = await fetch("/cart/select-address",{
       method:"POST",
       headers:{
         'Content-Type':'application/json'

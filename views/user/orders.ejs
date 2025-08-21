@@ -31,7 +31,7 @@
                       <p class="mb-0"><span class="text-sm fw-bold" style="font-size: 12px;">QTY: <%= item.quantity %></span></p>
                     </div>
                     <div>
-                      <a href="/order-details/<%= order.orderId %>?productId=<%= item.product._id %>" class="btn btn-outline-dark btn-sm">View Details</a>
+                      <a href="/orders/order-details/<%= order.orderId %>?productId=<%= item.product._id %>" class="btn btn-outline-dark btn-sm">View Details</a>
                     </div>
                   </div>
                 </div>
@@ -86,7 +86,7 @@
                   <% } else if(order.overAllStatus === "Processing" || order.overAllStatus === "Pending") {%>
                     <button data-order-id="<%= order.orderId %>" class="btn btn-outline-dark btn-sm mb-2 mb-md-0 order-cancel-btn">Cancel order</button>
                   <%} else{ %>  
-                    <a href="/all-products" class="btn btn-outline-dark btn-sm mb-2 mb-md-0">Shop</a>
+                    <a href="/product/all" class="btn btn-outline-dark btn-sm mb-2 mb-md-0">Shop</a>
                     <%}%>
                   <span class="fw-bold text-end ms-auto">Total: ₹<%= order.finalAmount %></span>
               </div>
@@ -170,7 +170,7 @@
       <div class="container d-flex align-items-center justify-content-center">
         <div class="row d-flex flex-column justify-content-center align-items-center">
           <p>No Items found</p>
-          <a href="/all-products">Explore Products</a>
+          <a href="/product/all">Explore Products</a>
         </div>
       </div>
     <% } %>

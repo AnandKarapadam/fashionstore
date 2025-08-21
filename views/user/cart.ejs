@@ -78,7 +78,7 @@
       Buy Now
     </a>
   <% } else { %>
-    <a href="/buy-now/<%= item.productId._id %>" class="btn btn-sm btn-primary">
+    <a href="/cart/buy-now/<%= item.productId._id %>" class="btn btn-sm btn-primary">
       Buy Now
     </a>
   <% } %>
@@ -128,7 +128,7 @@
 
   <div class="text-center h-100 d-flex flex-column align-items-center justify-content-center">
     <p class="fw-semibold">No items found in cart</p>
-    <a class="btn btn-outline-secondary" href="/all-products">Explore Products</a>
+    <a class="btn btn-outline-secondary" href="/product/all">Explore Products</a>
   </div>
 
   <% } %>
@@ -176,7 +176,7 @@
     </div>
 
     <!-- 6. Continue Button -->
-    <a href="/select-address" class="btn btn-dark w-100 fw-semibold">Select Address</a>
+    <a href="/cart/select-address" class="btn btn-dark w-100 fw-semibold">Select Address</a>
   </div>
 </div> 
     </div>
@@ -193,12 +193,11 @@
     const productId = btn.getAttribute("data-product-id");
     const input = parent.querySelector(".quantity-input");
 
-    let newQty = parseInt(input.value) +delta ;
-
+    let newQty = parseInt(input.value) +delta;
 
     if (newQty < 1) newQty = 1;
     
-    fetch('/update-cart-quantity',{
+    fetch('/cart/update-quantity',{
       method:"Post",
       headers:{
         'Content-Type':'application/json'
@@ -230,7 +229,7 @@
       confirmButtonText:"Yes, remove it!"
     }).then(res=>{
       if(res.isConfirmed){
-        fetch(`/remove-from-cart/${cartItemId}`,{
+        fetch(`/cart/remove/${cartItemId}`,{
           method:"DELETE",
         }).then(res=>res.json())
         .then(data=>{

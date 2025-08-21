@@ -293,7 +293,7 @@ const postSelectedAddress = async (req,res)=>{
 
     req.session.selectedAddress = selected;
     
-    let redirectUrl = `/checkout/payment?addressId=${selected._id}`;
+    let redirectUrl = `/cart/checkout/payment?addressId=${selected._id}`;
     if(type === "single" && productId){
       redirectUrl += `&type=single&productId=${productId}`;
     }
@@ -383,9 +383,9 @@ const postPaymentMethod = async(req,res)=>{
     if(method === "cod"){
 
       if(type==="single"&&productId){
-         return res.json({success:true,redirectUrl:`/checkout/confirm?type=${type}&product=${productId}`})
+         return res.json({success:true,redirectUrl:`/cart/checkout/confirm?type=${type}&product=${productId}`})
       }else{
-        return res.json({success:true,redirectUrl:"/checkout/confirm"})
+        return res.json({success:true,redirectUrl:"/cart/checkout/confirm"})
       }
       
     }

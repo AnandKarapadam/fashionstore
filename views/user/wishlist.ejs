@@ -11,7 +11,7 @@
     <div class="d-flex flex-row align-items-start justify-content-between px-sm-5 py-4 gap-2">
       
       <!-- Product Image -->
-       <a href="/product-details/<%= item.product._id %>" class="text-decoration-none">
+       <a href="/product/details/<%= item.product._id %>" class="text-decoration-none">
       <div style="width: 120px;height: 150px;">
         <img src="/uploads/re-image/<%= item.product.productImage[0] %>" alt="Product Image" style="object-fit: contain;width: 100%;height: 100%;" class="img-fluid rounded">
       </div>
@@ -101,7 +101,7 @@
             <div class="container" style="height: 60vh;" >
             <div class="text-center h-100 d-flex flex-column align-items-center bg-light justify-content-center">
               <p class="fw-semibold">No items found in wishlist</p>
-              <a class="btn btn-outline-secondary" href="/all-products">Explore Products</a>
+              <a class="btn btn-outline-secondary" href="/product/all">Explore Products</a>
             </div>
             </div>
           <% } %>  
@@ -131,7 +131,7 @@
             confirmButtonText:"Yes, remove it!"
         }).then((res)=>{
             if(res.isConfirmed){
-                fetch(`/remove-from-wishlist/${productId}`,{
+                fetch(`/wishlist/remove-from-wishlist/${productId}`,{
                     method:"DELETE"
                 }).then(res=>res.json())
                 .then(data=>{

@@ -13,7 +13,7 @@ function handleFormSubmit(event) {
   const description = document.getElementById("descriptionId").value;
   if (name && description) {
     
-    fetch("/admin/addCategory", {
+    fetch("/admin/category/add", {
       method: "POST",
       headers: {
         "content-type": "application/json",

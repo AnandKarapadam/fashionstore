@@ -3,14 +3,14 @@ function clearSearch() {
   document.getElementById("searchForm").submit();
   window.location.href = "/admin/brands";
 }
-const toggleButton = document.getElementById("menu-toggle");
-const sidebar = document.getElementById("sidebar");
-const content = document.getElementById("content");
+// const toggleButton = document.getElementById("menu-toggle");
+// const sidebar = document.getElementById("sidebar");
+// const content = document.getElementById("content");
 
-toggleButton.addEventListener("click", () => {
-  sidebar.classList.toggle("collapsed");
-  content.classList.toggle("expanded");
-});
+// toggleButton.addEventListener("click", () => {
+//   sidebar.classList.toggle("collapsed");
+//   content.classList.toggle("expanded");
+// });
 
 function confirmDelete(event) {
   event.preventDefault();

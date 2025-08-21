@@ -54,13 +54,13 @@
                                         </td>
                                         <td class="d-flex gap-2">
                                             <% if (!user.isBlocked) { %>
-                                                <a href="/admin/block-customer?id=<%= user._id %>"
+                                                <a href="/admin/users/block?id=<%= user._id %>"
                                                     class="btn btn-danger btn-sm confirm-link"
                                                     data-action ="block"
                                                     data-id = "<%= user._id %>"
                                                     style="width: 80px; text-decoration: none;">Block</a>
                                                 <% } else { %>
-                                                    <a href="/admin/unblock-customer?id=<%= user._id %>"
+                                                    <a href="/admin/users/unblock?id=<%= user._id %>"
                                                         class="btn btn-success btn-sm confirm-link"
                                                         data-action = "unblock"
                                                         data-id = "<%= user._id %>"

@@ -185,7 +185,7 @@
 
     try {
 
-      const res = await fetch("/checkout/payment",{
+      const res = await fetch("/cart/checkout/payment",{
         method:"POST",
         headers:{
           "Content-Type":"application/json"
@@ -231,7 +231,7 @@
 
     try {
 
-      const res = await fetch(`/apply-coupon${queryString}`,{
+      const res = await fetch(`/cart/apply-coupon${queryString}`,{
         method:"POST",
         headers:{
           "Content-Type":"application/json"

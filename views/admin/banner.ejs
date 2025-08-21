@@ -14,7 +14,7 @@
                         <input type="text" name="search" value="<%= search %>" placeholder="Search..."
                             class="form-control me-2" style="max-width: 300px;">
                         <button class="btn btn-outline-primary">Search</button>
-                        <button type="button" class="btn btn-outline-secondary" onclick="clearSearch()">Clear</button>
+                        <a href="/admin/banner" class="btn btn-outline-secondary">clear</a>
                     </form>
 
                     <div class="table-responsive shadow-sm">
@@ -60,7 +60,7 @@
                                                         <%}%>
                                             </td>
                                             <td>
-                                                <a href="/admin/deleteBanner?id=<%= banner._id %>"
+                                                <a href="/admin/banner/deleteBanner?id=<%= banner._id %>"
                                                     class="text-decoration-none fs-5 text-success"><i
                                                         class="bi bi-trash3-fill"></i></a>
                                             </td>
@@ -76,7 +76,7 @@
                     </div>
                 </div>
                 <div class="container d-flex justify-content-center mt-3">
-                    <form action="/admin/add-banner">
+                    <form action="/admin/banner/add">
                         <button class="btn btn-outline-primary mx-auto">Add Banner</button>
                     </form>
                 </div>

@@ -477,7 +477,7 @@ const postReview = async (req, res) => {
 
 
       if(existingReview){
-        return res.redirect(`/product-details/${id}`);
+        return res.redirect(`/product/details/${id}`);
       }
 
     const { rating, comment } = req.body;
@@ -533,14 +533,6 @@ const postReview = async (req, res) => {
     console.error("Error in adding Review: ", error.message);
   }
 }
-
-
-
-
-
-
-
-
 
 
 module.exports = {

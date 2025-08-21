@@ -123,7 +123,7 @@
     async function postOrders(paymentMethod,addressId,type,product) {
       try {
 
-        const res =await fetch("/checkout/confirm",{
+        const res =await fetch("/cart/checkout/confirm",{
           method:"POST",
           headers:{
             'Content-Type':"application/json"
@@ -133,7 +133,7 @@
         
         if(res.ok){
           const data = await res.json();
-          window.location.href = "/order-success"
+          window.location.href = "/cart/order-success"
         }
         else{
           const data = await res.json();
