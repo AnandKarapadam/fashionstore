@@ -5,7 +5,8 @@ const mongoose = require("mongoose");
 const PDFDocument = require("pdfkit");
 const User = require("../../models/userSchema");
 const Wishlist = require("../../models/wishlistSchema");
-
+const path = require("path");
+const PdfPrinter = require("pdfmake");
 
 const loadOrderPage = async(req,res)=>{
     try {
@@ -100,57 +101,128 @@ const loadOrderDetails = async(req,res)=>{
     }
 }
 
-const invoiceDownload = async (req,res)=>{
-    try {
-        const {orderId,productId} = req.params;
-        const userId = req.session.user;
+const fonts = {
+  Roboto: {
+    normal: path.join(__dirname, "../../fonts/Roboto-Regular.ttf"),
+    bold: path.join(__dirname, "../../fonts/Roboto-Medium.ttf"),
+    italics: path.join(__dirname, "../../fonts/Roboto-Italic.ttf"),
+    bolditalics: path.join(__dirname, "../../fonts/Roboto-MediumItalic.ttf"),
+  },
+};
 
-        if (!mongoose.Types.ObjectId.isValid(productId)) {
+const printer = new PdfPrinter(fonts);
+
+const invoiceDownload = async (req, res) => {
+  try {
+    const { orderId, productId } = req.params;
+    const userId = req.session.user;
+
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
       return res.status(400).send("Invalid ID format");
     }
 
-    const order = await Order.findOne({_id:orderId,userId}).populate("orderedItems.product");
+    const order = await Order.findOne({ _id: orderId, userId }).populate("orderedItems.product").populate("userId");
 
     if (!order) {
-        console.log("order not found")
-  return res.status(404).send("Order not found");
-}
-
-    const productItem = order.orderedItems.find(item=>{
-       return item.product._id.toString()===productId;
-    })
-
-    if(!productItem){
-        return console.log("No product found");
+      return res.status(404).send("Order not found");
     }
 
-    const doc = new PDFDocument();
-    res.setHeader("Content-Type","application/pdf");
-    res.setHeader("Content-Disposition",`attachment;filename=invoice=${productItem.product._id}.pdf`);
+    const productItem = order.orderedItems.find(
+      (item) => item.product._id.toString() === productId
+    );
 
-    doc.pipe(res);
-
-    doc.fontSize(14).text(`Invoice Date: ${new Date(order.invoiceDate).toLocaleDateString()}`);
-    doc.text(`Order ID:${order.orderId}`);
-    doc.text(`Customer ID:${order.userId}`);
-    doc.moveDown();
-
-    doc.fontSize(16).text("Product Details:");
-    doc.fontSize(14).text(`Name:${productItem.product.productName}`);
-    doc.text(`Quantity:${productItem.quantity}`);
-    doc.text(`Price:${productItem.product.salePrice}`);
-    doc.text(`Total:${productItem.quantity * productItem.product.salePrice}`);
-    doc.moveDown();
-
-    doc.fontSize(12).text("Thank you for shopping with us!",{align:"center"});
-    
-    doc.end()
-
-        
-    } catch (error) {
-        console.error("Error:",error.message);
+    if (!productItem) {
+      return res.status(404).send("Product not found in this order");
     }
-}
+
+    // Define the document
+    const docDefinition = {
+  pageSize: "A4",
+  pageMargins: [40, 60, 40, 60], // left, top, right, bottom
+  content: [
+    {
+      table: {
+        widths: ["*"],
+        body: [
+          [
+            {
+              stack: [
+                { text: "INVOICE", style: "header" },
+                "\n",
+                {
+                  columns: [
+                    { text: `Invoice Date: ${new Date(order.invoiceDate).toLocaleDateString()}` },
+                    { text: `Order ID: ${order.orderId}`, alignment: "right" },
+                  ],
+                },
+                { text: `User Name: ${order.userId.name}`, margin: [0, 5, 0, 15] },
+                {
+                  table: {
+                    widths: [40, "*", 80, 80, 80],
+                    body: [
+                      [
+                        { text: "Sl. No", bold: true },
+                        { text: "Item Name", bold: true },
+                        { text: "Quantity", bold: true },
+                        { text: "Price", bold: true },
+                        { text: "Total", bold: true },
+                      ],
+                      [
+                        "1",
+                        productItem.product.productName,
+                        productItem.quantity.toString(),
+                        `₹${productItem.product.salePrice}`,
+                        `₹${productItem.quantity * productItem.product.salePrice}`,
+                      ],
+                    ],
+                  },
+                  layout: "lightHorizontalLines",
+                },
+                "\n",
+                { text: `Order Status: ${order.overAllStatus}`, margin: [0, 10, 0, 0] },
+                "\n",
+                { text: "Thank you for shopping with us!", alignment: "center", margin: [0, 20, 0, 0] },
+              ],
+              margin: [10, 10, 10, 10], // inner padding
+            },
+          ],
+        ],
+      },
+      layout:{
+    hLineWidth: function (i, node) {
+      return 1; // ✅ horizontal line thickness
+    },
+    vLineWidth: function (i, node) {
+      return 1; // ✅ vertical line thickness
+    },
+    hLineColor: function (i, node) {
+      return '#000000'; // black lines
+    },
+    vLineColor: function (i, node) {
+      return '#000000';
+    },
+  },
+    },
+  ],
+  styles: {
+    header: { fontSize: 20, bold: true, alignment: "center", margin: [0, 0, 0, 20] },
+  },
+  defaultStyle: { font: "Roboto" },
+};
+
+    // Generate PDF
+    const pdfDoc = printer.createPdfKitDocument(docDefinition);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename=invoice-${productItem.product._id}.pdf`);
+    pdfDoc.pipe(res);
+    pdfDoc.end();
+
+  } catch (error) {
+    console.error("Error:", error.message);
+    res.status(500).send("Could not generate invoice");
+  }
+};
+
 
 const postReturnRequest = async (req, res) => {
   try {
