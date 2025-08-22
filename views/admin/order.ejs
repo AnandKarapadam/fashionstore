@@ -50,7 +50,9 @@
           <th>Time</th>
           <th>Total</th>
           <th>Status</th>
+          <th>Update</th>
           <th>Return Request</th>
+          <th>Reason</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -62,26 +64,40 @@
             <td><%= order.createOn.toLocaleDateString() %></td>
             <th><%= order.createOn.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %></th>
             <td class="text-success fw-bold">₹<%= order.finalAmount||order.totalPrice %></td>
+            <td><%= order.overAllStatus %></td>
             <td>
               <form method="POST" action="/admin/orders/update-status" class="update-status-form d-flex justify-content-center align-items-center gap-2" data-order-id="<%= order.orderId %>">
                 <input type="hidden" name="order_id" value="<%= order._id %>">
                 <select name="status" class="form-select form-select-sm">
                   <option selected disabled><%= order.overAllStatus %></option>
-                  <option value="Pending" <%= order.overAllStatus ==="Pending"?'selected':''%>>Pending</option>
                   <option value="Shipped" <%= order.overAllStatus ==="Shipped"?'selected':''%>>Shipped</option>
                   <option value="Out for Delivery" <%= order.overAllStatus ==="Out for Delivery"?'selected':''%>>Out for Delivery</option>
                   <option value="Delivered" <%= order.overAllStatus ==="Delivered"?'selected':''%>>Delivered</option>
-                  <option value="Cancelled" <%= order.overAllStatus ==="Cancelled"?'selected':''%>>Cancelled</option>
+                  <option value="Returned" <%= order.overAllStatus ==="Returned"?'selected':''%>>Returned</option>
                 </select>
-                <button class="btn btn-sm btn-primary">Update</button>
+                <% if(order.overAllStatus !== "Returned"){ %>
+                  <button class="btn btn-sm btn-primary">Update</button>
+                <% }%>  
               </form>
             </td> 
             <td>
+              <% const hasItemReturnRequest = order.orderedItems.some(item => item.status === "Return Request");%>
               <% if (order.overAllStatus === 'Return Request') { %>
-                <span class="badge bg-danger">Return Requested</span>
+                <span class="badge bg-danger" title="<%= order.returnReason || 'No reason provided' %>" >Return Requested</span>
+                <% } else if(hasItemReturnRequest) {%>
+                  <span class="badge bg-danger">Return Requested/Item</span>
               <% } else { %>
                 <span class="badge bg-secondary">None</span>
               <% } %>
+            </td>
+            <td>
+              <% if(order.cancelReason){ %>
+                <span class="text-dark text-sm fw-semibold" style="font-size: 12px;"><%= order.cancelReason %></span>
+              <%} else if(order.returnReason){%>
+                <span class="text-dark text-sm fw-semibold" style="font-size: 12px;" ><%= order.returnReason %></span>
+              <%}else{%>
+                <span class="badge bg-secondary">none</span>
+               <%}%>     
             </td>
             <td>
               <a href="/admin/orders/order-details/<%= order.orderId %>" class="btn btn-sm btn-outline-dark">

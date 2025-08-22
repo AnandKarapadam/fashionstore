@@ -1,0 +1,46 @@
+<%- include("../partials/admin/header.ejs") %>
+<%- include("../partials/admin/sidebar.ejs") %>
+
+<div class="container d-flex align-items-center justify-content-center">
+    <div class="row align-items-center justify-content-center border w-75 mt-3 pt-2 shadow-sm rounded-4">
+      <div class="row align-items-center justify-content-center mb-1" >
+        <h4 class="text-center">PRODUCT DETAILS</h4>
+        <hr>
+        <div class="col-12 d-flex align-items-center justify-content-center">
+          
+          <div class="d-flex align-items-center justify-content-center" style="width: 150px;height: 190px;overflow: hidden;">
+        <img src="/uploads/re-image/<%= orderItem.product.productImage[0] %>" class="" style="object-fit: contain;max-width: 100%;max-height: 100%;" alt="">
+        </div>
+      </div>
+      </div>
+      <div class="row px-5 mb-3">
+        <div class="col-6 px-5 py-2 border">
+          <h5 class="text-center">Details</h5>
+          <hr>
+          <p class="d-flex mb-1 fw-bold">Product Id: <span class="text-muted ms-auto fw-normal"><%= orderItem.orderItemId %></span> </p>
+          <p class="d-flex mb-1 fw-bold">Product Name <span class="text-muted  fw-normal ms-auto"><%= orderItem.product.productName %></span> </p>
+          <p class="d-flex mb-1 fw-bold">Quantity <span class="text-muted fw-normal ms-auto"><%= orderItem.quantity %></span> </p>
+          <p class="d-flex mb-1 fw-bold">product status <span class="text-muted fw-normal  ms-auto"><%= orderItem.status %></span> </p>
+          <p class="d-flex mb-1 fw-bold">Product Price <span class="text-muted fw-normal ms-auto">₹<%= orderItem.price %></span> </p>
+          <p class="d-flex mb-1 fw-bold">User Name:<span class="text-muted fw-semibold ms-auto"><%= order.userId.name %></span> </p>
+          <p class="d-flex mb-1 fw-bold">Email: <span class="text-muted fw-normal ms-auto"><%= order.userId.email %></span> </p>
+        </div>
+        <div class="col-6 px-5 border py-2"  >
+          <h5 class="text-center">Address</h5>
+          <hr>
+          <p class="d-flex mb-1 fw-bold">Address <span class="text-muted fw-normal text-break ms-4 "><%= address.address %></span> </p>
+          <p class="d-flex mb-1 fw-bold">Name <span class="text-muted fw-normal  ms-auto"><%= address.name %></span> </p>
+          <p class="d-flex mb-1 fw-bold">city <span class="text-muted fw-normal ms-auto"><%= address.city%></span> </p>
+          <p class="d-flex mb-1 fw-bold">phone <span class="text-muted fw-normal ms-auto"><%= address.phone %></span> </p>
+          <p class="d-flex mb-1 fw-bold">Type:<span class="text-muted fw-normal ms-auto"><%= address.addressType.toUpperCase() %></span> </p>
+          <p class="d-flex mb-1 fw-bold">OrderId: <span class="text-muted fw-bold text-break ms-auto"><%= order.orderId %></span> </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+<%- include("../partials/admin/footer.ejs") %>

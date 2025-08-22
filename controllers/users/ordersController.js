@@ -184,7 +184,7 @@ const postReturnRequest = async (req, res) => {
     item.returnReason = returnReason.trim();
 
    if(order.orderedItems.length===1){
-    order.overAllStatus = "Cancelled";
+    order.overAllStatus = "Return Request";
     order.returnReason = returnReason;
    }
    else{
