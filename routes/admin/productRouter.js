@@ -16,7 +16,7 @@ router.post("/toggle-status/:id",adminAuth,productController.toggleIsBlocked);
 router.post("/delete/:id",adminAuth,productController.productDelete);
 router.get("/edit/:id",adminAuth,productController.loadEditProduct);
 router.post("/edit/:id",adminAuth,uploads.array("images",4),productController.editProduct);
-
+router.delete("/:id/delete-image",adminAuth,productController.deleteImage);
 
 
 

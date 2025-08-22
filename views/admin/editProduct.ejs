@@ -133,17 +133,27 @@
             <% for(let i=0; i < 4; i++) { %>
               <div class="row col-12 col-sm-3">
 
-                <div class="image-preview">
+                <div class="image-preview position-relative d-inline-block">
                   <% if (product.productImage[i]) { %>
                     <img src="/uploads/product-images/<%= product.productImage[i] %>" class="img-thumbnail w-50"
                       alt="Product Image <%= i + 1 %>">
+
+                      
+
+                      <button type="button" 
+                         class="btn btn-sm btn-danger delete-image-btn position-absolute top-0 end-0"
+                         data-image="<%= product.productImage[i] %>" data-product="<%= product._id %>">
+                         &times;
+                     </button>
                     <% } %>
+                    
                 </div>
                 <label class="form-label text-muted mb-2 col-12">Leave Blank to keep current Image</label>
                 <input class="crop-image-input form-control col-12 border border-1 border-secondary rounded-3 mb-3"
                   name="images" type="file">
               </div>
               <% } %>
+              <input type="hidden" name="deletedImages" id="deletedImages">
                 <div id="imageerror" class="text-danger small text-center"></div>
           </div>
 
@@ -173,6 +183,7 @@
       </div>
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
       <script src="/script/admin/editproduct.js"></script>
 
     </body>

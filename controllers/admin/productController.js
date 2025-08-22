@@ -230,7 +230,7 @@ const loadEditProduct = async(req,res)=>{
 
 
 const editProduct = async (req, res) => {
-      try {
+  try {
     const productId = req.params.id;
     const existingProduct = await Product.findById(productId);
 
@@ -238,7 +238,7 @@ const editProduct = async (req, res) => {
       return res.redirect("/admin/pageerror");
     }
 
-    // Update basic fields
+    // ✅ Update basic fields
     existingProduct.productName = req.body.name;
     existingProduct.description = req.body.description;
     existingProduct.brand = req.body.brand;
@@ -248,36 +248,43 @@ const editProduct = async (req, res) => {
     existingProduct.salePrice = req.body.discountPrice;
     existingProduct.quantity = req.body.quantity;
     existingProduct.status = req.body.status;
-   
 
-    // Process uploaded images
+    // ✅ Handle deleted images (hidden input with names of deleted ones)
+    if (req.body.deletedImages) {
+      const deleted = req.body.deletedImages.split(",");
+      existingProduct.productImage = existingProduct.productImage.filter(img => {
+        if (deleted.includes(img)) {
+          const oldPath = path.join("public", "uploads", "product-images", img);
+          if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath); // delete file
+          return false; // remove from DB array
+        }
+        return true;
+      });
+    }
+
+    // ✅ Process newly uploaded images
     if (req.files && req.files.length > 0) {
       const uploadedImages = [];
 
       for (let i = 0; i < req.files.length; i++) {
         const file = req.files[i];
-        const tempPath = file.path; // re-image path
+        const tempPath = file.path;
         const finalPath = path.join("public", "uploads", "product-images", file.filename);
 
-        // Resize & move to product-images folder
-        await sharp(tempPath).resize({ width: 440, height: 440 }).toFile(finalPath);
-
-      
+        await sharp(tempPath)
+          .resize({ width: 440, height: 440 })
+          .toFile(finalPath);
 
         uploadedImages.push(file.filename);
       }
 
-      // Replace existing images or append if more
-      uploadedImages.forEach((img, index) => {
-        if (existingProduct.productImage[index]) {
-          // Delete old image
-          const oldImagePath = path.join("public", "uploads", "product-images", existingProduct.productImage[index]);
-          if (fs.existsSync(oldImagePath)) {
-            fs.unlinkSync(oldImagePath);
-          }
-          existingProduct.productImage[index] = img;
+      // ✅ Fill empty slots first, then append
+      uploadedImages.forEach(img => {
+        const emptyIndex = existingProduct.productImage.findIndex(x => !x || x.trim() === "");
+        if (emptyIndex !== -1) {
+          existingProduct.productImage[emptyIndex] = img; // fill empty slot
         } else {
-          existingProduct.productImage.push(img);
+          existingProduct.productImage.push(img); // append if no empty slot
         }
       });
     }
@@ -289,10 +296,34 @@ const editProduct = async (req, res) => {
     console.error("Error while editing product:", error.message);
     return res.redirect("/admin/pageerror");
   }
+};
+
+
+
+
+const deleteImage = async (req,res)=>{
+    try {
+        const productId = req.params.id;
+    const { image } = req.body;
+
+    const product = await Product.findById(productId);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    // Remove from array
+    product.productImage = product.productImage.filter(img => img !== image);
+
+    // Delete files
+    ["product-images", "re-image"].forEach(folder => {
+      const filePath = path.join("public", "uploads", folder, image);
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    });
+
+    await product.save();
+    res.json({ success: true, message: "Image deleted" });
+    } catch (error) {
+        console.log("Error:",error.message);
+    }
 }
-
-
-
 
 module.exports = {
     getProductAddPage,
@@ -304,4 +335,5 @@ module.exports = {
     productDelete,
     loadEditProduct,
     editProduct,
+    deleteImage
 }
