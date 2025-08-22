@@ -94,13 +94,19 @@ const toggleCategoryStatus = async(req,res)=>{
     try {
         const categoryId = req.params.id;
         const category = await Category.findById(categoryId);
+        
+
 
         if(!category){
             return res.redirect("/admin/categroy");
         }
-
         category.isListed = !category.isListed;
         await category.save();
+
+        await Product.updateMany(
+            {category:categoryId},
+            {$set:{isBlocked:!category.isListed}}
+        )
 
         res.redirect("/admin/category");
 

@@ -65,6 +65,11 @@ const toggleBrandStatus = async(req,res)=>{
 
         findBrand.isBlocked = !findBrand.isBlocked;
         await findBrand.save();
+
+        await Product.updateMany(
+            {brand:id},
+            {$set:{isBlocked:findBrand.isBlocked}}
+        )
         res.redirect("/admin/brands");
 
     } catch (error) {
