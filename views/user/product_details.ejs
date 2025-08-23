@@ -322,7 +322,8 @@
               Swal.fire("error!", data.message||"Error in adding product", "warning")
             }
             else{
-                window.location.href = "/wishlist";
+                
+                window.location.reload();
             }
 
           } catch (error) {
