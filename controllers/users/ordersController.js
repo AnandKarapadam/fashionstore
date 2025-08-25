@@ -25,11 +25,20 @@ const loadOrderPage = async(req,res)=>{
 
         let orders = await Order.find({userId}).populate({path:"orderedItems.product",match:{productName:searchRegex}}).populate("address").sort({createOn:-1});
 
+        
+        orders = orders.map(order => {
+         order.orderedItems = order.orderedItems.filter(item => item.product !== null);
+        return order;
+        });
+
+         orders = orders.filter(order => {
+      return searchRegex.test(order.orderId) || order.orderedItems.length > 0;
+    });
         const totalOrders = orders.length;
 
         const paginateItems = orders.slice(skip,skip+limit);
 
-      
+        
         res.render("user/orders",{
             orders:paginateItems,
             currentPage:page,
