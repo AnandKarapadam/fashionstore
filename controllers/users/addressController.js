@@ -1,6 +1,8 @@
 const Address = require("../../models/addressSchema");
 const Cart = require("../../models/cartSchema");
 const Wishlist = require("../../models/wishlistSchema");
+const logger = require("../../utils/logger");
+const User = require("../../models/userSchema");
 
 
 
@@ -13,6 +15,7 @@ const loadAddressPage = async(req,res)=>{
         const skip = (page-1)*limit;
         const userId = req.session.user;
         const regex = new RegExp(search,"i");
+        const user = await User.findById(userId);
 
         const addressDoc = await Address.findOne({userId});
 
@@ -22,7 +25,8 @@ const loadAddressPage = async(req,res)=>{
                totalPages: 1,
                search,
             addresses: [{ address: [] }],
-            userId
+            userId,
+            user
             });
         }
 
@@ -42,19 +46,21 @@ const loadAddressPage = async(req,res)=>{
             search,
             addresses:paginated,
             userId,
-            
+            user
         });
         
     } catch (error) {
-        console.error(error.message);
-    
+  
+        logger.error("Error:",error.message);
     }
 }
 
 const loadNewAddressPage = async(req,res)=>{
     try {
+        const userId = req.session.user;
+        const user = await User.findById(userId);
 
-        res.render("user/addAddress")
+        res.render("user/addAddress",{user})
         
     } catch (error) {
         console.error("Error: ",error.message);
@@ -120,6 +126,8 @@ const loadEditAddressPage = async(req,res)=>{
         const userId = req.session.user;
         const addressId = req.params.id;
 
+        const user = await User.findById(userId);
+
         const addressDoc = await Address.findOne({userId})
         
         const selectedAddress = addressDoc.address.find(a=>a._id.toString() === addressId);
@@ -128,7 +136,7 @@ const loadEditAddressPage = async(req,res)=>{
             return res.redirect("/manage-address");
         }
 
-        res.render("user/editAddress",{address:selectedAddress});
+        res.render("user/editAddress",{address:selectedAddress,user});
     } catch (error) {
         console.error("Error:",error.message);
     }
@@ -138,6 +146,8 @@ const postEditAddress = async(req,res)=>{
     try {
         const addressId = req.params.id;
         const userId  = req.session.user;
+
+        const user = await User.findById(userId);
 
         const {
             name,
@@ -176,7 +186,7 @@ const postEditAddress = async(req,res)=>{
         
         const selectedAddress = addressDoc.address.find(a=>a._id.toString() === addressId);
 
-        return res.render("user/editAddress",{address:selectedAddress,message:"Address Not found!"});
+        return res.render("user/editAddress",{address:selectedAddress,message:"Address Not found!",user});
         }
         
         res.redirect("/address");

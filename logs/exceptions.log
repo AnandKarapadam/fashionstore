@@ -1,0 +1,667 @@
+2025-08-23 15:59:25 [error] : Error: Cannot find module '../../utils'
+Require stack:
+- C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\addressController.js
+- C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\addressRouter.js
+- C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\app.js
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1401:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Function._load (node:internal/modules/cjs/loader:1211:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\addressController.js:4:16)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-23 16:01:32 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\addressController.js:19
+        const addressDoc = await Address.findOne({userId});
+        ^^^^^
+
+SyntaxError: Unexpected token 'const'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\addressRouter.js:3:27)
+2025-08-23 16:01:34 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\addressController.js:19
+        const addressDoc = await Address.findOne({userId});
+        ^^^^^
+
+SyntaxError: Unexpected token 'const'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\addressRouter.js:3:27)
+2025-08-23 16:01:41 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\addressController.js:19
+        const addressDoc = await Address.findOne({userId});
+        ^^^^^
+
+SyntaxError: Unexpected token 'const'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\addressRouter.js:3:27)
+2025-08-23 16:01:43 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\addressController.js:19
+        const addressDoc = await Address.findOne({userId});
+        ^^^^^
+
+SyntaxError: Unexpected token 'const'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\addressRouter.js:3:27)
+2025-08-23 16:02:53 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\addressController.js:63
+        res.render("user/addAddress")
+        ^^^
+
+SyntaxError: Missing initializer in const declaration
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\addressRouter.js:3:27)
+2025-08-23 17:01:29 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\cartController.js:27
+    if(cart.items.length === )
+                             ^
+
+SyntaxError: Unexpected token ')'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\cartRouter.js:3:24)
+2025-08-23 17:01:51 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\cartController.js:94
+    if(cart.items.length==)
+                          ^
+
+SyntaxError: Unexpected token ')'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\cartRouter.js:3:24)
+2025-08-23 17:01:54 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\cartController.js:94
+    if(cart.items.length===)
+                           ^
+
+SyntaxError: Unexpected token ')'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\cartRouter.js:3:24)
+2025-08-23 17:03:05 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\cartController.js:94
+    if(cart.items.length===){
+                           ^
+
+SyntaxError: Unexpected token ')'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\cartRouter.js:3:24)
+2025-08-25 14:29:57 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\cartController.js:157
+    }
+    ^
+
+SyntaxError: Unexpected token '}'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\cartRouter.js:3:24)
+2025-08-25 14:30:29 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\cartController.js:157
+    }
+    ^
+
+SyntaxError: Unexpected token '}'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\cartRouter.js:3:24)
+2025-08-25 14:34:34 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\cartController.js:56
+      if(item.productId && !item.productId.isBlocked&&item. ){
+                                                            ^
+
+SyntaxError: Unexpected token ')'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\cartRouter.js:3:24)
+2025-08-25 14:45:58 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\cartController.js:153
+        if(cart.)
+                ^
+
+SyntaxError: Unexpected token ')'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\cartRouter.js:3:24)
+2025-08-25 14:45:59 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\cartController.js:153
+        if(cart.)
+                ^
+
+SyntaxError: Unexpected token ')'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\cartRouter.js:3:24)
+2025-08-25 14:58:52 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\cartController.js:166
+    const validItems =cart ? cart.items.filter(item=>item.productId&& !item.productId.isBlocked&&):[];
+                                                                                                 ^
+
+SyntaxError: Unexpected token ')'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\cartRouter.js:3:24)
+2025-08-25 14:59:00 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\cartController.js:166
+    const validItems =cart ? cart.items.filter(item=>item.productId&& !item.productId.isBlocked&&item.productId.):[];
+                                                                                                                ^
+
+SyntaxError: Unexpected token ')'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\cartRouter.js:3:24)
+2025-08-25 14:59:06 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\cartController.js:166
+    const validItems =cart ? cart.items.filter(item=>item.productId&& !item.productId.isBlocked&&item.productId.quantity<):[];
+                                                                                                                         ^
+
+SyntaxError: Unexpected token ')'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\cartRouter.js:3:24)
+2025-08-25 15:04:34 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\cartController.js:252
+        if(item.productId&&!item.productId.isBlocked&&){
+                                                      ^
+
+SyntaxError: Unexpected token ')'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\cartRouter.js:3:24)
+2025-08-25 15:10:32 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\cartController.js:540
+      if(!product||product.isBlocked||product.status == "out of stock"||product.quantity<){
+                                                                                         ^
+
+SyntaxError: Unexpected token ')'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\cartRouter.js:3:24)
+2025-08-25 15:15:28 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\cartController.js:662
+  );
+  ^
+
+SyntaxError: Unexpected token ')'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\cartRouter.js:3:24)
+2025-08-25 15:15:32 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\cartController.js:662
+  );
+  ^
+
+SyntaxError: Unexpected token ')'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\cartRouter.js:3:24)
+2025-08-25 15:21:41 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:6
+const PDFDocument = require("pdfkit");
+      ^
+
+SyntaxError: Identifier 'PDFDocument' has already been declared
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 15:21:46 [error] : Error: Cannot find module 'pdfkit-table'
+Require stack:
+- C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js
+- C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js
+- C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\app.js
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1401:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Function._load (node:internal/modules/cjs/loader:1211:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:6:18)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-25 15:22:10 [error] : Error: Cannot find module 'pdfkit-table'
+Require stack:
+- C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js
+- C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js
+- C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\app.js
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1401:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Function._load (node:internal/modules/cjs/loader:1211:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:6:18)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-25 15:22:53 [error] : Error: Cannot find module 'pdfkit-table'
+Require stack:
+- C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js
+- C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js
+- C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\app.js
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1401:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Function._load (node:internal/modules/cjs/loader:1211:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:6:18)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+2025-08-25 15:31:59 [error] : ReferenceError: c is not defined
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:104:1)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 15:36:59 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:104
+const PDFDocument = require("pdfkit");
+      ^
+
+SyntaxError: Identifier 'PDFDocument' has already been declared
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 15:37:42 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:104
+const PDFDocument = require("pdfkit");
+      ^
+
+SyntaxError: Identifier 'PDFDocument' has already been declared
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 15:37:50 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:104
+const PDFDocument = require("pdfkit");
+      ^
+
+SyntaxError: Identifier 'PDFDocument' has already been declared
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 15:51:16 [error] : TypeError: Cannot read properties of undefined (reading 'vfs')
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:107:42)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 15:51:21 [error] : TypeError: Cannot read properties of undefined (reading 'vfs')
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:107:42)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 15:51:26 [error] : TypeError: Cannot read properties of undefined (reading 'vfs')
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:107:42)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 15:51:38 [error] : TypeError: Cannot read properties of undefined (reading 'vfs')
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:107:42)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 15:51:48 [error] : TypeError: Cannot read properties of undefined (reading 'vfs')
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:107:42)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 15:52:03 [error] : TypeError: Cannot read properties of undefined (reading 'vfs')
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:107:42)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 15:52:27 [error] : ReferenceError: invoiceDownload is not defined
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:276:5)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 15:52:56 [error] : ReferenceError: invoiceDownload is not defined
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:276:5)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 15:53:19 [error] : TypeError: Cannot read properties of undefined (reading 'vfs')
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:107:42)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 15:53:34 [error] : TypeError: Cannot read properties of undefined (reading 'vfs')
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:107:42)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 15:54:55 [error] : TypeError: Cannot read properties of undefined (reading 'vfs')
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:107:42)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 15:55:48 [error] : TypeError: Cannot read properties of undefined (reading 'vfs')
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:107:42)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 16:03:51 [error] : ReferenceError: fonts is not defined
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:106:32)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 16:04:08 [error] : ReferenceError: invoiceDownload is not defined
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:274:5)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 16:04:15 [error] : ReferenceError: fonts is not defined
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:106:32)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 16:04:54 [error] : ReferenceError: fonts is not defined
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:105:32)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 16:07:43 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:7
+const User = require("../../models/userSchema");
+^^^^^
+
+SyntaxError: Unexpected token 'const'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 16:08:33 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:106
+const PdfPrinter = require("pdfmake");
+      ^
+
+SyntaxError: Identifier 'PdfPrinter' has already been declared
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)
+2025-08-25 16:10:49 [error] : C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\controllers\users\ordersController.js:155
+                `₹${productItem.}`,
+                                ^
+
+SyntaxError: Unexpected token '}'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\kvana\OneDrive\Desktop\week 8\Fashion Store\routes\users\orderRouter.js:3:25)

@@ -2,7 +2,8 @@ const Product = require("../../models/productSchema");
 const Order = require("../../models/orderSchema");
 const Address = require("../../models/addressSchema");
 const mongoose = require("mongoose");
-const PDFDocument = require("pdfkit");
+const PdfPrinter = require("pdfmake");
+const path = require("path");
 const User = require("../../models/userSchema");
 const Wishlist = require("../../models/wishlistSchema");
 
@@ -100,57 +101,89 @@ const loadOrderDetails = async(req,res)=>{
     }
 }
 
-const invoiceDownload = async (req,res)=>{
-    try {
-        const {orderId,productId} = req.params;
-        const userId = req.session.user;
+const fonts = {
+  Roboto: {
+    normal: path.join(__dirname, "../../fonts/Roboto-Regular.ttf"),
+    bold: path.join(__dirname, "../../fonts/Roboto-Medium.ttf"),
+    italics: path.join(__dirname, "../../fonts/Roboto-Italic.ttf"),
+    bolditalics: path.join(__dirname, "../../fonts/Roboto-MediumItalic.ttf"),
+  },
+};
 
-        if (!mongoose.Types.ObjectId.isValid(productId)) {
-      return res.status(400).send("Invalid ID format");
-    }
+const printer = new PdfPrinter(fonts);
 
-    const order = await Order.findOne({_id:orderId,userId}).populate("orderedItems.product");
+const invoiceDownload = async (req, res) => {
+  try {
+    const { orderId, productId } = req.params;
+    const userId = req.session.user;
+
+    const order = await Order.findOne({ _id: orderId, userId }).populate(
+      "orderedItems.product"
+    );
 
     if (!order) {
-        console.log("order not found")
-  return res.status(404).send("Order not found");
-}
-
-    const productItem = order.orderedItems.find(item=>{
-       return item.product._id.toString()===productId;
-    })
-
-    if(!productItem){
-        return console.log("No product found");
+      return res.status(404).send("Order not found");
     }
 
-    const doc = new PDFDocument();
-    res.setHeader("Content-Type","application/pdf");
-    res.setHeader("Content-Disposition",`attachment;filename=invoice=${productItem.product._id}.pdf`);
+    const productItem = order.orderedItems.find(
+      (item) => item.product._id.toString() === productId
+    );
 
-    doc.pipe(res);
-
-    doc.fontSize(14).text(`Invoice Date: ${new Date(order.invoiceDate).toLocaleDateString()}`);
-    doc.text(`Order ID:${order.orderId}`);
-    doc.text(`Customer ID:${order.userId}`);
-    doc.moveDown();
-
-    doc.fontSize(16).text("Product Details:");
-    doc.fontSize(14).text(`Name:${productItem.product.productName}`);
-    doc.text(`Quantity:${productItem.quantity}`);
-    doc.text(`Price:${productItem.product.salePrice}`);
-    doc.text(`Total:${productItem.quantity * productItem.product.salePrice}`);
-    doc.moveDown();
-
-    doc.fontSize(12).text("Thank you for shopping with us!",{align:"center"});
-    
-    doc.end()
-
-        
-    } catch (error) {
-        console.error("Error:",error.message);
+    if (!productItem) {
+      return res.status(404).send("Product not found");
     }
-}
+
+   
+    const docDefinition = {
+      content: [
+        { text: "RORITO", style: "header" },
+        { text: "Official Invoice\n\n", style: "subheader" },
+
+        { text: `Invoice Date: ${new Date().toLocaleDateString()}` },
+        { text: `Order ID: ${order.orderId}` },
+        { text: `Customer ID: ${userId}\n\n` },
+
+        {
+          table: {
+            widths: ["*", "auto", "auto", "auto"],
+            body: [
+              ["Product Name", "Quantity", "Unit Price", "Total"],
+              [
+                productItem.product.productName,
+                productItem.quantity,
+                `₹${productItem.product.salePrice}`,
+                `₹${productItem.price}`,
+              ],
+            ],
+          },
+        },
+
+        { text: "\nThank you for shopping with us!", alignment: "center" },
+      ],
+      styles: {
+        header: { fontSize: 22, bold: true, alignment: "center" },
+        subheader: { fontSize: 14, italics: true, alignment: "center" },
+      },
+    };
+
+    const pdfDoc = printer.createPdfKitDocument(docDefinition);
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment;filename=invoice-${productItem.product._id}.pdf`
+    );
+
+    pdfDoc.pipe(res);
+    pdfDoc.end();
+  } catch (error) {
+    console.error("Error generating invoice:", error.message);
+    res.status(500).send("Error generating invoice");
+  }
+};
+
+
+
 
 const postReturnRequest = async (req, res) => {
   try {

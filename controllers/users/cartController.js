@@ -24,7 +24,7 @@ const loadCartPage = async(req,res)=>{
         }
     const cart  = await Cart.findOne({userId:id}).populate("items.productId");
             
-    
+ 
 
 
     if(!cart || cart.items.length === 0){
@@ -37,6 +37,8 @@ const loadCartPage = async(req,res)=>{
         subtotal:0,
       user});
     }
+
+
 
     const filterItems = search?cart.items.filter(item=>{
        const name = item.productId.productName.toLowerCase();
@@ -51,7 +53,7 @@ const loadCartPage = async(req,res)=>{
     
     const subtotal = filterItems.reduce((acc,item)=>{
 
-      if(item.productId && !item.productId.isBlocked ){
+      if(item.productId && !item.productId.isBlocked&&item.productId.quantity>0 ){
       return acc+item.totalPrice;
       }
       return acc;
@@ -88,6 +90,10 @@ const addToCart = async(req,res)=>{
     const totalPrice = price*quantity;
 
     let cart = await Cart.findOne({userId:id})
+
+    if(cart.items.length===3){
+      return res.json({success:false,message:"Cart if full"});
+    }
 
     if(!cart){
       cart = new Cart({
@@ -144,6 +150,12 @@ const loadSelectAddress = async(req,res)=>{
           {"items.$":1}
         ).populate("items.productId");
 
+       if (cart && cart.items.length > 0) {
+         if (cart.items[0].productId.quantity < 1) {
+         return res.redirect("/cart");
+          }
+        }
+
         cartItems = cart?cart.items:[];
         subtotal = cart.items[0].totalPrice;
         
@@ -151,11 +163,11 @@ const loadSelectAddress = async(req,res)=>{
     else{
     const cart = await Cart.findOne({userId}).populate("items.productId");
 
-    const validItems =cart ? cart.items.filter(item=>item.productId&& !item.productId.isBlocked):[];
+    const validItems =cart ? cart.items.filter(item=>item.productId&& !item.productId.isBlocked&&item.productId.quantity>0):[];
       cartItems = validItems;
 
       if(validItems.length===0){
-        return res.redirect("cart");
+        return res.redirect("/cart");
       }
    subtotal = validItems.reduce((acc,item)=>acc+item.totalPrice,0);
   }
@@ -237,7 +249,7 @@ const loadPaymentPage = async(req,res)=>{
 
       if(cart){
         const item = cart.items[0];
-        if(item.productId&&!item.productId.isBlocked){
+        if(item.productId&&!item.productId.isBlocked&&item.productId.quantity>0){
           cartItems = [item];
           subtotal = item.totalPrice;
         }
@@ -247,7 +259,7 @@ const loadPaymentPage = async(req,res)=>{
     else{
       const cart = await Cart.findOne({userId}).populate("items.productId");
 
-    const validItems = cart?cart.items.filter(item=>item.productId && !item.productId.isBlocked):[];
+    const validItems = cart?cart.items.filter(item=>item.productId && !item.productId.isBlocked&&item.productId.quantity>0):[];
 
     subtotal = validItems.reduce((acc,item)=>acc+item.totalPrice,0);
       cartItems = validItems;
@@ -348,7 +360,7 @@ const postPaymentMethod = async(req,res)=>{
       return res.json({success:false,message:"Your cart is empty"});
     }
 
-    products = cart?cart.items.filter(item=>item.productId&&!item.productId.isBlocked):[];
+    products = cart?cart.items.filter(item=>item.productId&&!item.productId.isBlocked&&item.productId.quantity>0):[];
 
        subtotal = products.reduce((acc,item)=>
       acc+item.totalPrice,0
@@ -455,7 +467,7 @@ const applyCoupon = async(req,res)=>{
         return res.json({success:false,message:"Your cart is empty."});
       }
 
-      subtotal = cart.items.filter(item=>item.productId&&!item.productId.isBlocked).reduce((acc,item)=>acc+item.totalPrice,0);
+      subtotal = cart.items.filter(item=>item.productId&&!item.productId.isBlocked&&item.productId.quantity>0).reduce((acc,item)=>acc+item.totalPrice,0);
     }
       if(subtotal<coupon.minimumPrice){
         return res.json({success:false,message:`Minimum purchase amount for this coupon is ${coupon.minimumPrice}`})
@@ -646,7 +658,7 @@ const postConfirmation = async (req, res) => {
 
   // Filter out blocked products
   const validCartItems = cart.items.filter(item => 
-    item.productId && item.productId.isBlocked === false
+    item.productId && item.productId.isBlocked === false && item.productId.quantity>0
   );
 
   

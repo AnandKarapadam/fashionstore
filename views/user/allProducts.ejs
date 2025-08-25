@@ -44,7 +44,7 @@
           <!-- Sort -->
           <div>
             <label class="form-label">Sort By</label>
-            <select class="form-select" name="sort" onchange="this.form.submit()">
+            <select class="form-select border border-dark" name="sort" onchange="this.form.submit()">
               <option value="">Select</option>
               <option value="priceLowHigh" <%= sort === 'priceLowHigh' ? 'selected' : '' %>>Price: Low to High</option>
               <option value="priceHighLow" <%= sort === 'priceHighLow' ? 'selected' : '' %>>Price: High to Low</option>
@@ -56,7 +56,7 @@
           <!-- Category -->
           <div>
             <label class="form-label">Category</label>
-            <select class="form-select" name="category" onchange="this.form.submit()">
+            <select class="form-select border border-dark" name="category" onchange="this.form.submit()">
               <option value="">All</option>
               <% categories.forEach(cat =>{%>
                 <option value="<%= cat._id %>" <%category == cat._id.toString() ?"selected":""%> ><%= cat.name %></option>
@@ -66,7 +66,7 @@
 
           <!-- Price Range -->
           <div>
-            <button type="button" class="btn btn-link p-0" onclick="togglePriceRange()">Price Range ▼</button>
+            <button type="button" class="btn btn-link p-0" style="color: black;" onclick="togglePriceRange()">Price Range ▼</button>
             <div id="priceRangeBox" style="display: none;">
               <label class="mt-2">Min: ₹<span id="minVal"><%= minPrice || 0 %></span></label>
               <input type="range" class="form-range " name="minPrice" min="0" max="10000" step="100"
@@ -78,7 +78,7 @@
             </div>
           </div>
 
-          <button type="submit" class="btn btn-outline-primary">Apply Filters</button>
+          <button type="submit" class="btn btn-outline-dark">Apply Filters</button>
         </form>
       </div>
       </div>

@@ -249,9 +249,11 @@ const postEmailForOtp = async (req,res)=>{
 
         if(findUser){
             const otp = generateOtp();
+            console.log(otp);
             const emailSend = await sendVerificationEmail(email,otp);
             if(emailSend){
                 req.session.userOtp = otp;
+                console.log(otp);
                 req.session.email = email;
                 res.render('user/changeOTP');
                 console.log(otp);
@@ -372,6 +374,7 @@ const varifyEmailChangeOTP = async(req,res)=>{
         }
         else{
             const otp = generateOtp();
+            console.log(otp)
             const emailSend = await sendVerificationEmail(newEmail,otp);
             if(emailSend){
                 req.session.userOtp = otp;

@@ -45,16 +45,16 @@
 <div class="row mb-2">
   <div class="col-3 fw-bold">Address:</div>
   <div class="col-9">
-    <%= address.address[0].city %> ,
-    LandMark:<%= address.address[0].landMark %>,
-    <%= address.address[0].state %>,
-    pin: <%= address.address[0].pincode %>
+    <%= address?.address[0].city %> ,
+    LandMark:<%= address?.address[0].landMark %>,
+    <%= address?.address[0].state %>,
+    pin: <%= address?.address[0].pincode %>
   </div>
 </div>
 
 <div class="row mb-2">
   <div class="col-3 fw-bold">Gender:</div>
-  <div class="col-9"><%= user.gender.toUpperCase() %></div>
+  <div class="col-9"><%= user.gender?.toUpperCase() %></div>
 </div>
 <div class=" d-flex justify-content-center mt-3 align-items-center">
     <a href="/edit-profile" class="btn btn-dark "><i class="bi bi-pencil-square mx-2"></i>Edit Profile</a>

@@ -70,7 +70,7 @@
       <%} %>  
     </div>
     <div class="col-md-6 text-end">
-      <% if (item.productId.isBlocked) { %>
+      <% if (item.productId.isBlocked || item.productId.quantity<1) { %>
     <a class="btn btn-sm btn-secondary disabled"
        onclick="return false;"
        style="pointer-events: none; cursor: not-allowed; opacity: 0.6;"
@@ -147,8 +147,13 @@
       <div style="max-height: 200px;overflow-y: scroll;">
     <% (cartItems||[]).slice().reverse().forEach(item=>{ %>
     <div class="d-flex justify-content-between mb-2">
+      <% if(item.productId.quantity>0){ %>
       <div><span class="fw-semibold"><%= item.quantity %> × <%= item.productId.productName %></span></div>
       <div><span class="fw-semibold text-success <%= item.productId.isBlocked ? 'text-decoration-line-through text-danger' : '' %>">₹<%= item.quantity * item.productId.salePrice %></span></div>
+      <% } else { %>
+        <div><span class="fw-semibold text-muted text-decoration-line-through" ><%= item.quantity %> × <%= item.productId.productName %></span></div>
+        <div><span class="fw-semibold text-muted text-decoration-line-through <%= item.productId.isBlocked ? 'text-decoration-line-through text-danger' : '' %>">₹0</span></div>
+      <% } %>  
     </div>
     <% }) %>
     </div>
