@@ -4,6 +4,7 @@ const Wishlist = require("../../models/wishlistSchema");
 const mongoose = require("mongoose");
 const Product = require("../../models/productSchema");
 const User = require("../../models/userSchema");
+const logger = require("../../utils/logger");
 
 const loadWishlistPage = async(req,res)=>{
   try {
@@ -61,8 +62,13 @@ const addToWishlist = async(req,res)=>{
     const productId = req.params.productId;
     const userId = req.session.user;
 
+    if(!userId){
+      logger.warn("Wishlist add attempt without login");
+      return res.status(401).json({message:"Please login to your account"})
+    }
+
     if(!mongoose.Types.ObjectId.isValid(productId)){
-      return res.json({message:"Invalid Product ID!"});
+      return res.status(401).json({message:"Invalid Product ID!"});
     }
 
     let wishlist = await Wishlist.findOne({userId});
@@ -79,6 +85,7 @@ const addToWishlist = async(req,res)=>{
         return item.productId.toString() === productId;
       })
       if(alreadyExists){
+        logger.error("product is already in wishlist.")
       return res.status(409).json({message:"Product is already in wishlist."});
     }
       wishlist.products.push({productId});
@@ -91,7 +98,9 @@ const addToWishlist = async(req,res)=>{
     
     
   } catch (error) {
-    console.error("Error:",error.message);
+    logger.error(`Error in addToWishlist: ${error.message}`, { stack: error.stack });
+    res.status(500).json({ success: false, message: "Server error" });
+
   }
 }
 const moveToCart = async(req,res)=>{
@@ -154,6 +163,7 @@ const removeWishlistItem = async (req,res)=>{
     const result = await Wishlist.updateOne({userId},{$pull:{products:{productId}}})
 
     if(result.modifiedCount === 0){
+      logger.error("Cannot find the product from wishlist!");
       return res.status(404).json({success:false,message:"Cannot find the product from wishlist!"});
     }
 
@@ -170,6 +180,7 @@ const toggleAddToWishlist = async(req,res)=>{
     const {productId} = req.body;
 
     if(!userId){
+      logger.warn("Please login to your accout");
       return res.json({success:false,message:"Please login to your account"});
     }
     let wishlist = await Wishlist.findOne({userId});

@@ -57,14 +57,14 @@
                           <button type="button" 
                         data-order-id="<%= order.orderId %>"
                         data-product-id="<%= item.product._id %>"
-                         class="btn btn-danger cancel-order-btn btn-sm">Cancel item</button>
+                         class="btn btn-danger cancel-orderitem-btn btn-sm">Cancel item</button>
                           <%} else if(item.status === "Delivered"){%>
                             <button type="button" 
                               data-bs-toggle="modal"
                               data-bs-target="#returnModal"
                               data-order-id="<%= order.orderId %>"
                               data-product-id="<%= item.product._id %>" 
-                              class="btn btn-danger  btn-sm">Return item</button>
+                              class="btn btn-danger btn-sm">Return item</button>
                           <%} else if(item.status === "Return Request"){%>
                             <button class="btn-outline-secondary" disabled>Return Requested</button>
                           <% } else if(item.status === "Returned"){ %>
@@ -373,7 +373,7 @@ document.addEventListener("DOMContentLoaded",function(){
     }
 
     try {
-      const res = await fetch("/orders/return", {
+      const res = await fetch("/orders/return/item", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderId, productId, returnReason })
@@ -393,7 +393,7 @@ document.addEventListener("DOMContentLoaded",function(){
 });
 
         document.addEventListener("DOMContentLoaded", function () {
-          document.querySelectorAll(".cancel-order-btn").forEach(btn => {
+          document.querySelectorAll(".cancel-orderitem-btn").forEach(btn => {
             btn.addEventListener("click", async () => {
 
               const orderId = btn.getAttribute("data-order-id");
@@ -437,7 +437,7 @@ document.addEventListener("DOMContentLoaded",function(){
               if (result.isConfirmed) {
                 try {
 
-                  const res = await fetch("/orders/cancel", {
+                  const res = await fetch("/orders/cancel/item", {
                     method: "POST",
                     headers: {
                       "Content-Type": "application/json"

@@ -3,6 +3,7 @@ const Product = require("../../models/productSchema");
 const Wallet = require("../../models/walletSchema");
 const User = require("../../models/walletSchema");
 const mongoose = require("mongoose");
+const Address = require("../../models/addressSchema");
 
 
 const loadOrderPage = async (req,res)=>{
@@ -46,7 +47,7 @@ const loadOrderPage = async (req,res)=>{
       if(sort=="amountHigh") sortOption = {totalPrice:-1};
       if(sort==="amountLow") sortOption = {totalPrice:1};
 
-      const orders = await Order.find(query).populate("userId","name email").sort(sortOption).skip(skip).limit(limit);
+      const orders = await Order.find(query).populate("userId","name email").populate("orderedItems").sort(sortOption).skip(skip).limit(limit);
 
       const totalPages = Math.ceil(totalOrders/limit);
       
@@ -70,7 +71,7 @@ const updateOverallStatus = async(req,res)=>{
 
     const {orderId,status,order_id} = req.body;
 
-    const order = await Order.findOneAndUpdate({orderId:orderId},{$set:{overAllStatus:status}},{new:true});
+    const order = await Order.findOneAndUpdate({orderId:orderId},{$set:{overAllStatus:status,"orderedItems.$[].status":status}},{new:true});
 
     if(order){
      return res.json({success:true,message:"Status changed success fully"})
@@ -231,10 +232,31 @@ const postOrderItemStatus = async(req,res)=>{
   }
 }
 
+const loadItemDetailsPage = async(req,res)=>{
+  try {
 
+    const {orderId,itemId} = req.params;
+
+    const order = await Order.findOne({orderId}).populate("orderedItems.product").populate("userId");
+
+    const orderItem = order.orderedItems.find(item=>item.orderItemId === itemId);
+    const addressDoc = await Address.findOne({ userId: order.userId._id });
+   
+
+    const orderAddress = addressDoc.address.find(
+       (addr) => addr._id.toString() === order.address.toString()
+    );
+
+    res.render("admin/orderitemdetails",{order,orderItem,address:orderAddress});
+    
+  } catch (error) {
+    console.log("error:",error.message);
+  }
+}
 module.exports = {
     loadOrderPage,
     updateOverallStatus,
     loadOrderDetailsPage,
-    postOrderItemStatus
+    postOrderItemStatus,
+    loadItemDetailsPage
 }

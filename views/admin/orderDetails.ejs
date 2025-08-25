@@ -50,8 +50,10 @@
           <th>Quantity</th>
           <th>Total</th>
           <th>Status</th>
+          <th>Update</th>
           <th>Return Request</th>
           <th>Return reason</th>
+          <th>Details</th>
         </tr>
       </thead>
       <tbody>
@@ -63,19 +65,20 @@
             <th><%= product.orderDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %></th>
             <th><%= product.quantity %></th>
             <td class="text-success fw-bold">₹<%= product.totalPrice %></td>
+            <td><%= product.status %></td>
             <td>
               <form  class="update-status-form d-flex justify-content-center align-items-center gap-2" data-order-id="<%= order.orderId %>" data-item-id="<%= product.orderItemId %>">
                 <input type="hidden" name="order_id" value="<%= product.productId %>">
                 <select name="status" class="form-select form-select-sm">
                   <option selected disabled><%= product.status %></option>
-                  <option value="Pending" <%= product.status ==="Pending"?'selected':''%>>Pending</option>
                   <option value="Shipped" <%= product.status ==="Shipped"?'selected':''%>>Shipped</option>
                   <option value="Out for Delivery" <%= product.status ==="Out for Delivery"?'selected':''%>>Out for Delivery</option>
                   <option value="Delivered" <%= product.status ==="Delivered"?'selected':''%>>Delivered</option>
-                  <option value="Cancelled" <%= product.status ==="Cancelled"?'selected':''%>>Cancelled</option>
                   <option value="Returned" <%= product.status ==="Returned"?'selected':''%>>Returned</option>
                 </select>
-                <button class="btn btn-sm btn-primary">Update</button>
+                <% if(product.status !== "Returned"){ %>
+                  <button class="btn btn-sm btn-primary">Update</button>
+                  <% } %>
               </form>
             </td> 
             <td>
@@ -91,6 +94,9 @@
               <% } else { %>
                 <span class="badge bg-secondary">None</span>
               <% } %>
+            </td>
+            <td>
+              <a href="/admin/orders/item/details/<%= order.orderId %>/<%= product.orderItemId %>" class="btn btn-sm btn-outline-dark">View</a>
             </td>
           </tr>
         <% }) %>

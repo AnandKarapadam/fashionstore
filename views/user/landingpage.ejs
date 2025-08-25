@@ -122,7 +122,7 @@
           <a class="nav-link" href="/">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/all-products">All products</a>
+          <a class="nav-link" href="/product/all">All products</a>
         </li>
         
         <li class="d-flex flex-row justify-content-center pe-3 gap-2">
@@ -134,7 +134,7 @@
   </nav>
 <% if(banner) {%>
   <div class="container-fluid mb-4 mt-5">
-    <a href="/all-products"><img class="img-fluid banner" src="/uploads/re-image/<%= banner.image %>" alt=""></a>
+    <a href="/product/all"><img class="img-fluid banner" src="/uploads/re-image/<%= banner.image %>" alt=""></a>
   </div>
   <% } %>
 
@@ -154,7 +154,7 @@
    
   <div class="scroll-container d-flex justify-content-center" id="cardRow">
     <% category.forEach(cat => { %>
-      <a href="/all-products?category=<%= cat._id %>" class="text-decoration-none text-dark">
+      <a href="/product/all?category=<%= cat._id %>" class="text-decoration-none text-dark">
         <div class="card product-card">
           <img src="<%= cat.image %>" class="card-img-top" alt="<%= cat.name %>">
           <div class="card-body p-2">
@@ -182,7 +182,7 @@
   <!-- Horizontal Scrollable Card Row -->
   <div class="scroll-container d-flex justify-content-center" id="cardRow">
     <% products.forEach(product => { %>
-      <a href="/all-products?search=<%= product.productName %>" class="text-decoration-none text-dark">
+      <a href="/product/all?search=<%= product.productName %>" class="text-decoration-none text-dark">
         <div class="card product-card pro-card">
           <img src="/uploads/re-image/<%= product.productImage[0] %>" class="card-img-top object-fit-cover" alt="<%= product.productName %>">
           <div class="card-body p-2">
