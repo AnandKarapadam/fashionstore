@@ -72,6 +72,46 @@ const updateOverallStatus = async(req,res)=>{
     const {orderId,status,order_id} = req.body;
 
     const order = await Order.findOneAndUpdate({orderId:orderId},{$set:{overAllStatus:status,"orderedItems.$[].status":status}},{new:true});
+    if(!order) return res.json({success:false});
+    
+    const allReturned = order.orderedItems.every(item=>item.status === "Returned");
+    if(allReturned){
+      const userId = order.userId;
+
+      let totalPaid = order.totalPrice;
+      let couponDiscount = order.discount||0;
+
+      let refundAmount = totalPaid-couponDiscount;
+
+      const wallet = await Wallet.findOne({userId});
+      if(!wallet){
+        const newWallet = new Wallet({
+          userId,
+          balance:refundAmount,
+          transactions:[
+            {
+              type:"CREDIT",
+              amount:refundAmount,
+              description:`Refund for the Order ${orderId}`,
+              orderId:order._id,
+              balanceAfter:refundAmount
+            }
+          ]
+        })
+        await newWallet.save();
+      }else{
+        const newBalance = wallet.balance+refundAmount;
+        wallet.balance = newBalance;
+        wallet.transactions.push({
+          type:"CREDIT",
+          amount:refundAmount,
+          description:`Refund for order ${orderId}`,
+          orderId:order._id,
+          balanceAfter:newBalance
+        })
+        await wallet.save();
+      }
+    }
 
     if(order){
      return res.json({success:true,message:"Status changed success fully"})

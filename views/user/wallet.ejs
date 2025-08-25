@@ -1,0 +1,68 @@
+<%- include("../partials/user/header.ejs") %>
+<%- include("../partials/user/navbar.ejs") %>
+
+
+<div class="row mt-5 pt-5">
+        <div class="col-md-3 mt-5 d-none d-lg-block">
+    <div class="sidebar-content ms-5 w-100" style="position: sticky;top: 150px;">
+        <div class="bg-dark rounded-3 mb-4">
+            <h6 class="text-white d-flex align-items-center py-3 ps-2 text-truncate"><i class="bi bi-person-circle fs-4 me-2"></i>Hello Anand KV</h6>
+        </div>
+        <ul class="nav flex-column ">
+          <li class="nav-item"><a class="nav-link text-dark border" href="/profile"><i class="bi bi-person-circle me-2"></i> Profile</a></li>
+          <li class="nav-item"><a class="nav-link text-dark border" href="/orders"><i class="bi bi-inboxes-fill me-2"></i> Orders</a></li>
+          <li class="nav-item"><a class="nav-link text-dark border" href="/wallet"><i class="bi bi-wallet me-2"></i> Wallet</a></li>
+          <li class="nav-item"><a class="nav-link text-dark border" href="/address"><i class="bi bi-geo me-2"></i> Address</a></li>
+          <li class="nav-item"><a class="nav-link text-dark border text-truncate" href="/delete-account"><i class="bi bi-trash2-fill me-2"></i> Delete Account</a></li>
+          <li class="nav-item"><a class="nav-link text-dark border" href="/logout"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+        </ul>
+      </div>
+        </div>
+        <div class="col-md-9 mb-5 mt-3 mx-auto">
+            <div id="mainContent" class="main-content container">
+    <div class="card shadow rounded-4 mx-auto p-4" style="max-width: 600px;">
+      <h4 class="card-title text-center mb-4 fw-bold">MY WALLET</h4>
+      <div class="w-75 mx-auto bg-light p-3 rounded rounded-3 mb-2 border">
+        <p class="mb-0 fw-semibold">Total Balance</p>
+        <hr>
+        <p class="fw-semibold d-flex">Wallet <span class="ms-auto text-success">₹<%= wallet.balance %></span></p>
+      </div>
+      <div class="w-75 mx-auto bg-light p-3 rounded rounded-3 mb-3 border">
+        <p class="fw-semibold">Add money to wallet.</p>
+        <hr>
+        <p class="text-center"><span  class="fs-4 fw-bold cash">₹100</span></p>
+        <form action="/profile/wallet/add">
+            <input type="hidden" name="amount" id="amountInput" value="100">
+        <div class="mb-2 button-container">
+          <button class="btn btn-sm bg-white border">₹100</button>
+          <button class="btn btn-sm bg-white border">₹200</button>
+          <button class="btn btn-sm bg-white border">₹500</button>
+        </div>
+        <div class="d-flex">
+          <button class="btn btn-dark btn-sm mx-auto fw-semibold">Add money to wallet</button>
+        </div>
+        </form>
+      </div>
+      <div class="d-flex">
+        <a href="/profile/wallet/transactions" class="btn btn-primary ms-auto btn-sm">Show Transaction History</a>
+      </div>
+    </div>
+    </div>
+    </div>
+    </div>  
+
+
+<%- include("../partials/user/footer.ejs") %>
+
+<script>
+      const buttons = document.querySelectorAll(".button-container button");
+      const cashElement = document.querySelector(".cash");
+
+      buttons.forEach(button => {
+        button.addEventListener("click",(e)=>{
+            e.preventDefault()
+          cashElement.textContent = button.textContent;
+        })
+      });
+
+</script>
