@@ -11,5 +11,7 @@ router.post("/add",wishlistController.toggleAddToWishlist);
 router.post("/remove",wishlistController.toggleRemoveFromWishlist);
 
 
+
+
 module.exports = router;
 

@@ -31,7 +31,7 @@
         <p class="fw-semibold">Add money to wallet.</p>
         <hr>
         <p class="text-center"><span  class="fs-4 fw-bold cash">₹100</span></p>
-        <form action="/profile/wallet/add">
+        <form action="/profile/wallet/add" method="get">
             <input type="hidden" name="amount" id="amountInput" value="100">
         <div class="mb-2 button-container">
           <button class="btn btn-sm bg-white border">₹100</button>
@@ -57,11 +57,13 @@
 <script>
       const buttons = document.querySelectorAll(".button-container button");
       const cashElement = document.querySelector(".cash");
+      const amountInput = document.getElementById("amountInput");
 
       buttons.forEach(button => {
         button.addEventListener("click",(e)=>{
             e.preventDefault()
           cashElement.textContent = button.textContent;
+          amountInput.value = button.textContent.replace("₹","");
         })
       });
 

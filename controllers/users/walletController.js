@@ -1,6 +1,7 @@
 const Wallet = require("../../models/walletSchema");
 const User = require("../../models/userSchema");
 const logger = require("../../utils/logger");
+const razorpay = require("../../config/razorpay");
 
 const loadWalletPage = async (req,res)=>{
     try {
@@ -72,9 +73,45 @@ const loadWalletAddMoney = async (req,res)=>{
     }
 }
 
+const createWalletOrder = async (req,res)=>{
+    try {
+          const {amount,paymentMethod} = req.body;
+          const userId = req.session.user;
+
+          if(!amount||amount<=0){
+            return res.json({success:false,message:"Invalid Amount"});
+          }
+
+          if(paymentMethod==="razorpay"||paymentMethod==="card"||paymentMethod==="gpay"){
+            const options = {
+                amount:amount*100,
+                currency:"INR",
+                receipt:"wallet_rcpt_"+Date.now(),
+            }
+            const order  = await razorpay.orders.create(options);
+
+            return res.json({
+                success:true,
+                key:process.env.RAZORPAY_KEY_ID,
+                amount:order.amount,
+                currency:order.currency,
+                _id:order._id,
+                method:paymentMethod
+            })
+          }else{
+            return res.json({success:false,message:"Invalid payment method"});
+          }
+        
+
+    } catch (error) {
+        console.log("Error:",error.message)
+    }
+}
+
 
 module.exports = {
     loadWalletPage,
     loadTransactionPage,
-    loadWalletAddMoney
+    loadWalletAddMoney,
+    createWalletOrder
 }

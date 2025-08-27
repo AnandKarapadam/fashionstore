@@ -83,5 +83,6 @@ router.post("/change-email/resend-otp",userAuth,profileController.changeEmailRes
 router.get("/profile/wallet",userAuth,walletController.loadWalletPage);
 router.get("/profile/wallet/transactions",userAuth,walletController.loadTransactionPage);
 router.get("/profile/wallet/add",userAuth,walletController.loadWalletAddMoney);
+router.post("/profile/wallet/pay",userAuth,walletController.createWalletOrder);
 
 module.exports = router
