@@ -8,6 +8,8 @@ const { countDocuments, validate } = require("../../models/userSchema");
 const {v4:uuidv4} = require("uuid");
 const User = require("../../models/userSchema");
 const Coupon = require("../../models/couponSchema");
+const razorpay = require("../../config/razorpay");
+const crypto = require("crypto");
 
 const loadCartPage = async(req,res)=>{
   try {
@@ -335,6 +337,7 @@ const postPaymentMethod = async(req,res)=>{
     const {type,productId} = req.body;
     let products = [];
     let subtotal = 0;
+    let checkoutType = type||"";
 
     if(type==="single"&&productId){
         const cart = await Cart.findOne({userId}).populate("items.productId");
@@ -385,7 +388,9 @@ const postPaymentMethod = async(req,res)=>{
       discount,
       finalAmount,
       totalAmount:subtotal,
-      couponApplied:discount>0
+      couponApplied:discount>0,
+      type,
+      productId
     }
 
     delete req.session.couponData;
@@ -402,13 +407,28 @@ const postPaymentMethod = async(req,res)=>{
       
     }
     else if(method === "razorpay"){
-      return res.json({success:true,redirectUrl:"/checkout/razorpay"});
+      if(type === "single"&& productId){
+        return res.json({success:true,redirectUrl:`/cart/checkout/razorpay?type=${type}&product=${productId}`});
+      }else{
+        return res.json({success:true,redirectUrl:"/cart/checkout/razorpay"});
+      }
+      
     }
     else if(method === "upi"){
-      return res.json({success:true,redirectUrl:"/checkout/upi"});
+      if(type === "single"&& productId){
+        return res.json({success:true,redirectUrl:`/cart/checkout/razorpay?type=${type}&product=${productId}`});
+      }else{
+        return res.json({success:true,redirectUrl:"/cart/checkout/razorpay"});
+      }
+      
     }
     else if(method === "card"){
-      return res.json({success:true,redirectUrl:"/checkout/card"})
+      if(type === "single"&& productId){
+        return res.json({success:true,redirectUrl:`/cart/checkout/razorpay?type=${type}&product=${productId}`});
+      }else{
+        return res.json({success:true,redirectUrl:"/cart/checkout/razorpay"});
+      }
+      
     }else if(method === "wallet"){
       return res.json({success:true,redirectUrl:"/checkout/wallet"})
     }
@@ -418,6 +438,138 @@ const postPaymentMethod = async(req,res)=>{
   }
 }
 
+const getRazorpayOrder = async (req,res)=>{
+  try {
+      const {orderData} = req.session;
+      if(!orderData){
+        return res.redirect("/cart");
+      }
+
+      const options = {
+        amount:orderData.finalAmount*100,
+        currency:"INR",
+        receipt:"order_rcpt"+Date.now()
+      }
+
+      const order = await razorpay.orders.create(options);
+      let selectedMethod = "";
+      if(orderData.paymentMethod==="card"||orderData.paymentMethod==="upi"){
+        selectedMethod = orderData.paymentMethod;
+      }
+      res.render("user/razorpayCheckout",{
+        key:process.env.RAZORPAY_KEY_ID,
+        order,
+        orderData,
+        selectedMethod
+      })
+  } catch (error) {
+    console.log("Error:",error.message);
+  }
+}
+function generateOrderItemId() {
+  const randomNum = Math.floor(1000 + Math.random() * 9000); // 4-digit random number
+  return `OIID${randomNum}`;
+}
+
+async function updateOrder(orderData,userId) {
+  const{type,productId,address,paymentMethod,razorpayOrderId,discount,couponApplied,finalAmount,totalAmount,razorpayPaymentId} = orderData;
+  let orderedItems = [];
+  let totalPrice = 0;
+
+  if(type==="single"&&productId){
+    const cart = await Cart.findOne(
+      {userId,"items.productId":productId},
+      {"items.$":1}
+    ).populate("items.productId");
+    if(!cart||cart.items.length===0)return res.json({success:false,message:"Product not found in cart"});
+
+    const singleItem = cart.items[0];
+    const price = singleItem.productId.salePrice||singleItem.productId.price;
+
+    orderedItems.push({
+      orderItemId:generateOrderItemId(),
+      product:singleItem.productId._id,
+      quantity:singleItem.quantity,
+      price,
+      totalPrice:price*singleItem.quantity,
+      status:"Processing"
+    })
+    totalPrice = price*singleItem.quantity;
+    await Cart.updateOne(
+      {userId},
+      {$pull:{items:{productId}}}
+    );
+  }else{
+    const cart = await Cart.findOne({userId}).populate("items.productId");
+
+    if(!cart||cart.items.length===0)return res.json({success:false,message:"Cart is empty"});
+
+    orderedItems = cart.items.map(item=>{
+      const price = item.productId.salePrice||item.productId.price;
+      return{
+        orderItemId:generateOrderItemId(),
+        product:item.productId._id,
+        quantity:item.quantity,
+        price,
+        totalPrice:price*item.quantity,
+        status:"Processing"
+      }
+    })
+
+    totalPrice = orderedItems.reduce((sum,i)=>sum+i.totalPrice,0);
+
+    await Cart.updateOne({userId},{$set:{items:[]}});
+
+  }
+
+  for(const item of orderedItems){
+    await Product.findByIdAndUpdate(item.product,{
+      $inc:{quantity:-item.quantity},
+    })
+  }
+
+  const order = new Order({
+    userId,
+    orderedItems,
+    totalPrice,
+    discount,
+    finalAmount,
+    address,
+    couponApplied,
+    paymentMethod,
+    paymentId:razorpayPaymentId||null,
+    razorpayOrderId:razorpayOrderId||null,
+    overAllStatus:"Processing"
+
+  })
+   await order.save();
+   return order;
+}
+
+const verifyRazorPayment = async (req,res)=>{
+  try {
+    const userId = req.session.user;
+    const {razorpay_order_id,razorpay_payment_id,razorpay_signature} = req.body;
+
+    const body = razorpay_order_id+"|"+razorpay_payment_id;
+    const expectedSignature  = crypto.createHmac("sha256",process.env.RAZORPAY_KEY_SECRET).update(body.toString()).digest("hex");
+
+    if(expectedSignature === razorpay_signature){
+      req.session.orderData.razorpayOrderId = razorpay_order_id;
+      req.session.orderData.razorpayPaymentId = razorpay_payment_id;
+      const order = await updateOrder(req.session.orderData,userId);
+
+      return res.json({success:true,orderId: order._id });
+    }else{
+      return res.json({success:false,message:"Invalid signature"});
+    }
+
+    
+  } catch (error) {
+    console.log("Error:",error.message);
+    res.json({success:false,message:"Server error"});
+  }
+}
 const applyCoupon = async(req,res)=>{
   try {
 
@@ -595,10 +747,7 @@ const getConfirmOrderPage = async(req,res)=>{
   }
 }
 
-function generateOrderItemId() {
-  const randomNum = Math.floor(1000 + Math.random() * 9000); // 4-digit random number
-  return `OIID${randomNum}`;
-}
+
 
 
 const postConfirmation = async (req, res) => {
@@ -748,7 +897,7 @@ const buyNowSingleProduct = async(req,res)=>{
       return res.redirect("/cart");
     }    
 
-    res.redirect(`/select-address?type=single&productId=${productId}`);
+    res.redirect(`/cart/select-address?type=single&productId=${productId}`);
 
   } catch (error) {
     console.error("Error:",error.message);
@@ -763,13 +912,24 @@ const loadSuccessPage = async (req,res)=>{
              user = await User.findById(id);
         }
 
-    res.render("user/orderSuccess",{user});
+    res.render("user/orderSuccess",{user,cssFile:"ordersuccess.css"});
     
   } catch (error) {
     console.error("Error:",error.message);
   }
 }
+const loadFailedPage = async(req,res)=>{
+  try {
 
+    const userId = req.session.user;
+    const user = await User.findById(userId);
+
+    res.render("user/paymentError",{user,cssFile:"paymentfail.css"});
+    
+  } catch (error) {
+    console.error("Error:",error.message);
+  }
+}
 module.exports = {
     loadCartPage,
     addToCart,
@@ -783,5 +943,8 @@ module.exports = {
     buyNowSingleProduct,
     postConfirmation,
     loadSuccessPage,
-    applyCoupon
+    applyCoupon,
+    getRazorpayOrder,
+    verifyRazorPayment,
+    loadFailedPage
 }

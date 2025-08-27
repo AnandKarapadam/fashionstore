@@ -1,0 +1,21 @@
+ @keyframes shake-grow {
+    0% {
+      transform: scale(1) rotate(0deg);
+    }
+    25% {
+      transform: scale(10) rotate(30deg);
+    }
+    50% {
+      transform: scale(5) rotate(-30deg);
+    }
+    75% {
+      transform: scale(2) rotate(30deg);
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+    }
+  }
+
+  .shake-grow {
+    animation: shake-grow 0.7s ease-in-out;
+  }
