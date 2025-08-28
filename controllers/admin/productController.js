@@ -247,7 +247,13 @@ const editProduct = async (req, res) => {
     existingProduct.regularPrice = req.body.actualPrice;
     existingProduct.salePrice = req.body.discountPrice;
     existingProduct.quantity = req.body.quantity;
-    existingProduct.status = req.body.status;
+    
+
+    if(req.body.quantity==0){
+        existingProduct.status = "out of stock";
+    }else{
+        existingProduct.status = req.body.status;
+    }
 
     // ✅ Handle deleted images (hidden input with names of deleted ones)
     if (req.body.deletedImages) {

@@ -105,7 +105,7 @@
       <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const amount = urlParams.get("amount");
+        let amount = urlParams.get("amount");
         const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
 
 
@@ -116,6 +116,10 @@
 
         document.getElementById("walletForm").addEventListener("submit", async function (e) {
           const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+          const enteredAmount = document.getElementById("amount").value.trim();
+          if(enteredAmount){
+            amount = enteredAmount;
+          }
 
           e.preventDefault();
           const res = await fetch("/profile/wallet/pay", {

@@ -94,7 +94,7 @@ const addToCart = async(req,res)=>{
 
     let cart = await Cart.findOne({userId:id})
 
-    if(cart.items.length===3){
+    if(cart && cart.items.length===5){
       return res.json({success:false,message:"Cart if full"});
     }
 
@@ -587,10 +587,23 @@ const loadWalletPayment = async (req,res)=>{
 
     const userId = req.session.user;
     const user = await User.findById(userId);
-    const wallet = await Wallet.findOne({userId});
+    let wallet = await Wallet.findOne({userId});
     const orderData = req.session.orderData;
 
-    res.render("user/walletPayment",{user,wallet,orderData});
+    if (!wallet) {
+      wallet = new Wallet({
+        userId,
+        balance: 0,
+        transactions: [] 
+      });
+      await wallet.save();
+    }
+
+    if(orderData.finalAmount>wallet.balance){
+       return res.render("user/walletPayment",{user,wallet,orderData,message:"No much wallet balance."});
+    }
+
+    res.render("user/walletPayment",{user,wallet,orderData,message:null});
     
   } catch (error) {
     console.log("Error:",error.message);
@@ -603,6 +616,10 @@ const postWalletPayment = async (req,res)=>{
     const{type,productId,address,paymentMethod,razorpayOrderId,discount,couponApplied,finalAmount,totalAmount} = req.session.orderData;
     const orderData = req.session.orderData;
     const userId = req.session.user;
+
+    if(!type&&!orderData){
+      return res.redirect("/cart/checkout/wallet");
+    }
 
     const user = await User.findById(userId);
     const wallet = await Wallet.findOne({userId});
@@ -626,7 +643,7 @@ const postWalletPayment = async (req,res)=>{
 
       if(!cart||cart.items.length===0){
         console.log("Product not found in cart");
-        return res.redirect("/cart/checkout/wallet");
+        return res.redirect("/cart");
       }
       const singleItem = cart.items[0];
       let price = singleItem.productId.salePrice||singleItem.productId.price;
@@ -649,7 +666,7 @@ const postWalletPayment = async (req,res)=>{
     }else{
       const cart = await Cart.findOne({userId}).populate("items.productId");
 
-      if(!cart||cart.items.length===0)return res.redirect("/cart/checkout/wallet");
+      if(!cart||cart.items.length===0)return res.redirect("/cart");
 
       orderedItems = cart.items.map(item=>{
         const price = item.productId.salePrice||item.productId.price;
@@ -703,7 +720,7 @@ const postWalletPayment = async (req,res)=>{
     await wallet.save();
 
     delete req.session.orderData;
-    res.render("user/orderSuccess");
+    res.redirect("/cart/order-success");
     
   } catch (error) {
     console.log("Error:",error.message);
