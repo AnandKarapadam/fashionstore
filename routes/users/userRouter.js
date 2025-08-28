@@ -84,5 +84,6 @@ router.get("/profile/wallet",userAuth,walletController.loadWalletPage);
 router.get("/profile/wallet/transactions",userAuth,walletController.loadTransactionPage);
 router.get("/profile/wallet/add",userAuth,walletController.loadWalletAddMoney);
 router.post("/profile/wallet/pay",userAuth,walletController.createWalletOrder);
+router.post('/profile/wallet/verify',userAuth,walletController.verifyWalletPayment);
 
 module.exports = router

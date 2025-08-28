@@ -1,167 +1,182 @@
 <%- include("../partials/user/header.ejs") %>
-<%- include("../partials/user/navbar.ejs") %>
+  <%- include("../partials/user/navbar.ejs") %>
 
 
-<div class="row mt-5 pt-5">
-    <div class="col-md-3 mt-5 d-none d-lg-block">
-      <div class="sidebar-content ms-5 w-100" style="position: sticky;top: 150px;">
-        <div class="bg-dark rounded-3 mb-4">
-          <h6 class="text-white d-flex align-items-center py-3 ps-2 text-truncate"><i
-              class="bi bi-person-circle fs-4 me-2"></i>Hello Anand KV</h6>
-        </div>
-        <ul class="nav flex-column ">
-          <li class="nav-item"><a class="nav-link text-dark border" href="/profile"><i
-                class="bi bi-person-circle me-2"></i> Profile</a></li>
-          <li class="nav-item"><a class="nav-link text-dark border" href="/orders"><i
-                class="bi bi-inboxes-fill me-2"></i> Orders</a></li>
-          <li class="nav-item"><a class="nav-link text-dark border" href="/profile/wallet"><i class="bi bi-wallet me-2"></i>
-              Wallet</a></li>
-          <li class="nav-item"><a class="nav-link text-dark border" href="/address"><i class="bi bi-geo me-2"></i>
-              Address</a></li>
-          <li class="nav-item"><a class="nav-link text-dark border text-truncate" href="/delete-account"><i
-                class="bi bi-trash2-fill me-2"></i> Delete Account</a></li>
-          <li class="nav-item"><a class="nav-link text-dark border" href="/logout"><i
-                class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="col-md-9 mb-5 mt-3 mx-auto">
-      <div id="mainContent" class="main-content container">
-        <div class="card shadow rounded-4 mx-auto p-4" style="max-width: 600px;">
-          <h4 class="card-title text-center mb-4 fw-bold">Add To Wallet</h4>
-
-          <form id="walletForm">
-            <div class="d-flex align-items-center px-2">
-              <label for="amount" class="fw-semibold">Amount</label>
-              <input type="text" id="amount" class="form-control ms-2 form-control-sm rounded-3 w-50">
-            </div>
-            <div class="container mt-3" style="height: 60px;padding-left: 70px;" >
-              <div class="d-flex justify-content-between align-items-start h-75">
-
-                <!-- Radio button (left) -->
-                <div class=" d-flex pe-2 align-items-center justify-content-center h-100">
-                  <input type="radio" name="paymentMethod" value="razorpay" />
-                </div>
-
-                <!-- Address info (middle) -->
-                <div class="flex-grow-1 h-100 d-flex align-items-center">
-
-                  <img class="img-fluid" style="width: 150px;height: 50px;" src="/images/razorpay-1.png" alt="">
-                </div>
-
-              </div>
-            </div>
-            <div class="container" style="height: 60px;padding-left: 70px;" >
-              <div class="d-flex justify-content-between align-items-start h-75">
-
-                <!-- Radio button (left) -->
-                <div class=" d-flex pe-3 align-items-center justify-content-center h-100">
-                  <input type="radio" name="paymentMethod" value="gpay" />
-                </div>
-
-                <!-- Address info (middle) -->
-                <div class="flex-grow-1 h-100 d-flex align-items-center">
-
-                  <img class="img-fluid" style="width: 80px;height: 25px;" src="/images/gpay image.png" alt="">
-                 
-                </div>
-
-              </div>
-            </div>
-            <div class="container mt-0" style="height: 60px;padding-left: 70px;" >
-              <div class="d-flex justify-content-between align-items-start h-75">
-
-                <!-- Radio button (left) -->
-                <div class=" d-flex pe-3 align-items-center justify-content-center h-100">
-                  <input type="radio" name="paymentMethod" value="card" />
-                </div>
-
-                <!-- Address info (middle) -->
-                <div class="flex-grow-1 h-100 d-flex align-items-center">
-                  <p class="d-flex my-auto fw-semibold">Credit/debit Card</p>
-                </div>
-
-              </div>
-            </div>
-            <div class="d-flex align-items-center justify-content-center">
-              <button type="submit" class="btn btn-sm btn-dark">Proceed To Pay</button>
-            </div>
-          </form>
-
-
+    <div class="row mt-5 pt-5">
+      <div class="col-md-3 mt-5 d-none d-lg-block">
+        <div class="sidebar-content ms-5 w-100" style="position: sticky;top: 150px;">
+          <div class="bg-dark rounded-3 mb-4">
+            <h6 class="text-white d-flex align-items-center py-3 ps-2 text-truncate"><i
+                class="bi bi-person-circle fs-4 me-2"></i>Hello Anand KV</h6>
+          </div>
+          <ul class="nav flex-column ">
+            <li class="nav-item"><a class="nav-link text-dark border" href="/profile"><i
+                  class="bi bi-person-circle me-2"></i> Profile</a></li>
+            <li class="nav-item"><a class="nav-link text-dark border" href="/orders"><i
+                  class="bi bi-inboxes-fill me-2"></i> Orders</a></li>
+            <li class="nav-item"><a class="nav-link text-dark border" href="/profile/wallet"><i
+                  class="bi bi-wallet me-2"></i>
+                Wallet</a></li>
+            <li class="nav-item"><a class="nav-link text-dark border" href="/address"><i class="bi bi-geo me-2"></i>
+                Address</a></li>
+            <li class="nav-item"><a class="nav-link text-dark border text-truncate" href="/delete-account"><i
+                  class="bi bi-trash2-fill me-2"></i> Delete Account</a></li>
+            <li class="nav-item"><a class="nav-link text-dark border" href="/logout"><i
+                  class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+          </ul>
         </div>
       </div>
+      <div class="col-md-9 mb-5 mt-3 mx-auto">
+        <div id="mainContent" class="main-content container">
+          <div class="card shadow rounded-4 mx-auto p-4" style="max-width: 600px;">
+            <h4 class="card-title text-center mb-4 fw-bold">Add To Wallet</h4>
+
+            <form id="walletForm">
+              <div class="d-flex align-items-center px-2">
+                <label for="amount" class="fw-semibold">Amount</label>
+                <input type="text" id="amount" class="form-control ms-2 form-control-sm rounded-3 w-50">
+              </div>
+              <div class="container mt-3" style="height: 60px;padding-left: 70px;">
+                <div class="d-flex justify-content-between align-items-start h-75">
+
+                  <!-- Radio button (left) -->
+                  <div class=" d-flex pe-2 align-items-center justify-content-center h-100">
+                    <input type="radio" name="paymentMethod" value="razorpay" />
+                  </div>
+
+                  <!-- Address info (middle) -->
+                  <div class="flex-grow-1 h-100 d-flex align-items-center">
+
+                    <img class="img-fluid" style="width: 150px;height: 50px;" src="/images/razorpay-1.png" alt="">
+                  </div>
+
+                </div>
+              </div>
+              <div class="container" style="height: 60px;padding-left: 70px;">
+                <div class="d-flex justify-content-between align-items-start h-75">
+
+                  <!-- Radio button (left) -->
+                  <div class=" d-flex pe-3 align-items-center justify-content-center h-100">
+                    <input type="radio" name="paymentMethod" value="gpay" />
+                  </div>
+
+                  <!-- Address info (middle) -->
+                  <div class="flex-grow-1 h-100 d-flex align-items-center">
+
+                    <img class="img-fluid" style="width: 80px;height: 25px;" src="/images/gpay image.png" alt="">
+
+                  </div>
+
+                </div>
+              </div>
+              <div class="container mt-0" style="height: 60px;padding-left: 70px;">
+                <div class="d-flex justify-content-between align-items-start h-75">
+
+                  <!-- Radio button (left) -->
+                  <div class=" d-flex pe-3 align-items-center justify-content-center h-100">
+                    <input type="radio" name="paymentMethod" value="card" />
+                  </div>
+
+                  <!-- Address info (middle) -->
+                  <div class="flex-grow-1 h-100 d-flex align-items-center">
+                    <p class="d-flex my-auto fw-semibold">Credit/debit Card</p>
+                  </div>
+
+                </div>
+              </div>
+              <div class="d-flex align-items-center justify-content-center">
+                <button type="submit" class="btn btn-sm btn-dark">Proceed To Pay</button>
+              </div>
+            </form>
+
+
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
 
 
 
 
 
-<%- include("../partials/user/footer.ejs") %>
+    <%- include("../partials/user/footer.ejs") %>
+      <!-- In your EJS or HTML head -->
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+      <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const amount = urlParams.get("amount");
+        const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
 
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script>
-const urlParams = new URLSearchParams(window.location.search);
-const amount = urlParams.get("amount");
-const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
 
-if(amount){
-  document.getElementById("amount").value = amount;
-}
 
-document.getElementById("walletForm").addEventListener("submit",async function (e) {
-  
-e.preventDefault();
- const res = await fetch("/profile/wallet/pay",{
-  method:"POST",
-  headers:{
-    "Content-Type":"application/json"
-  },
-  body:JSON.stringify({amount,paymentMethod})
- })
+        if (amount) {
+          document.getElementById("amount").value = amount;
+        }
 
- const orderData = await res.json();
+        document.getElementById("walletForm").addEventListener("submit", async function (e) {
+          const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
 
- if(!orderData.success){
-  alert("failed to create razorpay order");
-  return;
- }
+          e.preventDefault();
+          const res = await fetch("/profile/wallet/pay", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ amount })
+          })
 
- const options = {
-  key:orderData.key,
-  amount:orderData.amount,
-  currency:"INR",
-  name:"RORITO FASHION",
-  description:"Wallet Top-up",
-  method: {
-    upi: paymentMethod === "gpay" ? 1 : 0,
-    card: paymentMethod === "card" ? 1: 0,
-    wallet: paymentMethod === "razorpay" ? 1: 0
-  },
-  order_id:orderData._id,
-  handler:async function (response) {
-    const verifyRes = await fetch("/profile/wallet/verify",{
-      method:"POST", 
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(response)
-    })
+          const orderData = await res.json();
 
-    const verifyData = await verifyRes.json();
+          if (!orderData.success) {
+            Swal.fire('Hello!', 'This is a small popup:' + orderData.message, 'success');
+            return;
+          }
 
-    if(verifyData.success){
-      alert("Payment successfull and wallet updated!");
-      window.location.href = "/profile/wallet"
-    }
-    else{
-      alert("Payment failed:"+verifyData.message);
-    }
-  },
-  theme:{color:"#000"}
- };
- const rzp = new Razorpay(options);
- rzp.open();
+          const options = {
+            key: orderData.key,
+            amount: orderData.amount,
+            currency: "INR",
+            name: "RORITO FASHION",
+            description: "Wallet Top-up",
+            order_id: orderData.orderId,
+            handler: async function (response) {
+              const verifyRes = await fetch("/profile/wallet/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(response)
+              })
 
-})
+              const verifyData = await verifyRes.json();
 
-</script>
+              if (verifyData.success) {
+                Swal.fire({
+                  toast: true,
+                  position: 'top', // 'top-start', 'bottom-end', etc.
+                  icon: 'success',
+                  title: 'Wallet Top-up Successful!',
+                  showConfirmButton: false,
+                  timer: 3000
+                }).then(()=>window.location.href = "/profile/wallet");
+                
+              }
+              else {
+                alert("Payment failed:" + verifyData.message);
+              }
+            },
+            theme: { color: "#000" }
+          };
+
+          if (selectedMethod === "card") {
+            options.method = { card: true, upi: false, netbanking: false, wallet: false, paylater: false };
+          } else if (selectedMethod === "upi") {
+            options.method = { card: false, upi: true, netbanking: false, wallet: false, paylater: false };
+          } else if (selectedMethod === "razorpay") {
+            // Do nothing, allow Razorpay default options (card, UPI, wallet, netbanking, EMI, etc.)
+          }
+          const rzp = new Razorpay(options);
+          rzp.open();
+
+        })
+
+      </script>
