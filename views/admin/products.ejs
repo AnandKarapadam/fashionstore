@@ -86,7 +86,7 @@
             <th>Sale Price</th>
             <th>Offer Price</th>
             <th>Offer</th>
-            <th>Add Offer Price</th>
+            <th>Add Offer</th>
             <th>Quantity</th>
             <th>Status</th>
             <th>Active</th>
@@ -111,7 +111,7 @@
                    </form>
                  <% } else { %>
                    <form action="/admin/products/add-offer/<%= product._id %>" onsubmit="return validateOffer(this)" method="POST" class="d-flex align-items-center gap-2">
-                     <input type="number" name="offerPrice" placeholder="₹" data-regular-price ="<%= product.regularPrice %>" class="form-control form-control-sm" style="max-width: 80px;" min="1" />
+                     <input type="number" name="offerPrice" placeholder="%" data-regular-price ="<%= product.regularPrice %>" class="form-control form-control-sm" style="max-width: 80px;" min="1" max="99" />
                      <button class="btn btn-success btn-sm custom-btn">
                        <i class="fas fa-plus"></i> Add
                      </button>

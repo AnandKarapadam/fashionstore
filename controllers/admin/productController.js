@@ -138,7 +138,10 @@ const removeOffer = async(req,res)=>{
     try {
         const id = req.params.id;
 
-        await Product.findByIdAndUpdate(id,{salePrice:"",productOffer:""});
+        const product = await Product.findById(id);
+        const regularPrice = product.regularPrice;
+
+        await Product.findByIdAndUpdate(id,{salePrice:regularPrice,productOffer:""});
 
         res.redirect("/admin/products");
         
@@ -151,18 +154,24 @@ const removeOffer = async(req,res)=>{
 const addOffer = async(req,res)=>{
     try {
         const id = req.params.id;
-        const offerPrice = parseFloat(req.body.offerPrice);
-        const productData = await Product.findById(id);
-        
+        let offer = parseFloat(req.body.offerPrice);
+        const productData = await Product.findById(id).populate("category");
+        let offerPrice = 0;
 
 
         if(productData){
             const realPrice = productData.regularPrice;
-             
 
-            let  offer = ((realPrice-offerPrice)/realPrice)*100;
+               offerPrice = realPrice-(realPrice*offer)/100;
+               
+                if(productData.category&&productData.category.categoryOffer){
+                    if(productData.category.categoryOffer>offer && productData.category.isListed){
+                        offer = productData.category.categoryOffer;
+                        offerPrice = realPrice-(realPrice*offer)/100;
+                    }
+                }
             await Product.findByIdAndUpdate(id,{
-                salePrice:offerPrice,
+                salePrice:Math.round(offerPrice),
                 productOffer:Math.round(offer)});
                 
              }   

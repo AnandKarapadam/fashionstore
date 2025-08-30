@@ -388,7 +388,6 @@ const postCancelWholeOrder = async (req, res) => {
         item.status = "Cancelled";
         item.cancelReason = cancelReason;
 
-        
         await Product.findByIdAndUpdate(item.product, {
           $inc: { quantity: item.quantity },
         });
