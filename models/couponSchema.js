@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { ref } = require("pdfkit");
 const Schema = mongoose.Schema;
 
 
@@ -29,7 +30,12 @@ let couponSchema = new Schema({
         type:Boolean,
         default:true
     },
-    userId:[{
+    user:{
+        type:Schema.Types.ObjectId,
+        ref:"User",
+        default:null
+    },
+    usedBy:[{
         type:Schema.Types.ObjectId,
         ref:"User"
     }]

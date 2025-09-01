@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const env = require("dotenv").config();
 const session = require("express-session");
 const Address = require("../../models/addressSchema");
+const Coupon = require("../../models/couponSchema");
 
 
 function generateOtp(){
@@ -438,6 +439,21 @@ const changeEmailResendOTP = async (req,res)=>{
     }
 }
 
+const loadReferAndEarn = async (req,res)=>{
+    try {
+
+        const userId = req.session.user;
+        const user = await User.findById(userId);
+
+        const rewardCoupons = await Coupon.find({user:userId,isList:true,expireOn:{$gt:new Date()}});
+
+        res.render("user/referAndEarn",{user,cssFile:"referandearn.css",rewardCoupons});
+        
+    } catch (error) {
+        console.log("Error:",error.message);
+    }
+}
+
 module.exports = {
     loadForgetpage,
     forgetEmailValid,
@@ -457,6 +473,6 @@ module.exports = {
     changeEmailPage,
     varifyEmailChangeOTP,
     changeEmailOTPVerify,
-    changeEmailResendOTP
-    
+    changeEmailResendOTP,
+    loadReferAndEarn
 }

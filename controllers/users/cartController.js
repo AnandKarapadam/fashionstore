@@ -731,8 +731,8 @@ const applyCoupon = async(req,res)=>{
 
     const userId = req.session.user;
     const {couponCode} = req.body;
-    const type= req.query||null;
-    const productId = req.query||null;
+    const {type}= req.query||null;
+    const {productId} = req.query||null;
 
     const coupon = await Coupon.findOne({name:couponCode,isList:true});
 
@@ -740,11 +740,15 @@ const applyCoupon = async(req,res)=>{
       return res.json({success:false,message:"Invalid Coupon Code"});
     }
 
+    if(coupon.user&&coupon.user.toString()!==userId.toString()){
+      return res.json({success:false,message:"This coupon is not available for you."});
+    }
+
     if(new Date()>coupon.expireOn){
       return res.json({success:false,message:"Coupon has expired."})
     }
 
-    if(coupon.userId.some(id=>id.toString()===userId.toString())){
+    if(coupon.usedBy.some(id=>id.toString()===userId.toString())){
       return res.json({success:false,message:"You have already used this coupon."});
     }
 
@@ -784,7 +788,7 @@ const applyCoupon = async(req,res)=>{
       const discount = coupon.offerPrice;
       const finalAmount = subtotal-discount;
 
-      coupon.userId.push(userId);
+      coupon.usedBy.push(userId);
       await coupon.save();
 
       req.session.couponData = {

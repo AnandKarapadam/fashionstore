@@ -188,7 +188,6 @@ const addOffer = async(req,res)=>{
 const toggleIsBlocked = async(req,res)=>{
     try {
         const id  = req.params.id;
-       // await Product.findByIdAndUpdate(id, { $bit: { isBlocked: { xor: 1 } } }); simpler version//
         const productData = await Product.findById(id);
         if (!productData) {
             return res.redirect("/admin/pageerror");

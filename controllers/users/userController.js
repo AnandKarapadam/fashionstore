@@ -1,16 +1,13 @@
 const User = require("../../models/userSchema");
 const nodemailer = require("nodemailer");
-const env = require("dotenv").config();
 const bcrypt = require("bcrypt");
 const Category = require("../../models/categorySchema");
 const Product = require("../../models/productSchema");
 const Banner = require("../../models/bannerSchema");
 const Review = require("../../models/reviewSchema");
-const Cart = require("../../models/cartSchema");
 const Wishlist = require("../../models/wishlistSchema");
-const mongoose = require("mongoose");
-const Address  = require("../../models/addressSchema");
-
+const crypto = require("crypto");
+const Coupon = require("../../models/couponSchema");
 
 let loadHomepage = async (req, res) => {
   try {
@@ -43,7 +40,7 @@ let loadHomepage = async (req, res) => {
           user: userData,
           banner: findBanner,
           products,
-          cssFile:"home.css"
+          cssFile: "home.css",
         });
       } else {
         req.session.destroy(() => {
@@ -97,8 +94,6 @@ let loadLandingPage = async (req, res) => {
 let loadLogin = async (req, res) => {
   try {
     if (!req.session.user) {
-      
-
       return res.render("user/login");
     } else {
       return res.redirect("/");
@@ -181,7 +176,24 @@ async function sendVerificationEmail(email, otp) {
 
 let signup = async (req, res) => {
   try {
-    const { name, email, phone, password, confirmPassword } = req.body;
+    const { name, email, phone, password, confirmPassword, referralCode } =
+      req.body;
+
+    if (referralCode) {
+      const user = await User.findOne({ referralCode });
+
+      if (!user) {
+        return res.render("user/signup", {
+          message: "Code expired, try with another code.",
+        });
+      } 
+
+      if(user.email === email){
+        return res.render("user/signup",{message:"You cannot use your own Ref-code!"});
+      }
+        req.session.referralCode = referralCode;
+      
+    }
 
     if (password !== confirmPassword) {
       return res.render("user/signup", { message: "Password do not match" });
@@ -250,15 +262,33 @@ let verifyOTP = async (req, res) => {
       const user = req.session.usersData;
 
       const passwordHash = await securePassword(user.password);
+      const newReferralCode ="REF"+crypto.randomBytes(3).toString("hex");
 
       const saveUserData = new User({
         name: user.name,
         email: user.email,
         phone: user.phone,
         password: passwordHash,
+        referralCode: newReferralCode,
+        referredBy: req.session.referralCode || null,
       });
 
       await saveUserData.save();
+
+      if (req.session.referralCode) {
+        const referrer = await User.findOne({
+          referralCode: req.session.referralCode,
+        });
+        if (referrer&&referrer.email!==user.email) {
+           await Coupon.create({
+            name: "REW-" + Math.floor(10000 + Math.random() * 90000), 
+            offerPrice: 100, 
+            minimumPrice: 500, 
+            expireOn: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), 
+            user:referrer._id
+          });
+        }
+      }
 
       req.session.user = saveUserData._id;
       req.session.save((err) => {
@@ -302,21 +332,17 @@ const resendOTP = async (req, res) => {
         .status(200)
         .json({ success: true, message: "OTP Resend successfully" });
     } else {
-      res
-        .status(500)
-        .json({
-          success: false,
-          message: "Failed to resend OTP please try again",
-        });
+      res.status(500).json({
+        success: false,
+        message: "Failed to resend OTP please try again",
+      });
     }
   } catch (error) {
     console.error("Error in resending OTP", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Internal Server Error Please try again.",
-      });
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error Please try again.",
+    });
   }
 };
 
@@ -343,8 +369,8 @@ const loadAllProductsPage = async (req, res) => {
     let limit = 8;
     let skip = (page - 1) * limit;
     const userId = req.session.user;
-    let user 
-    if(userId){
+    let user;
+    if (userId) {
       user = await User.findById(userId);
     }
 
@@ -386,17 +412,22 @@ const loadAllProductsPage = async (req, res) => {
       .populate("category")
       .sort(sortOption)
       .skip(skip)
-      .limit(limit).lean();
+      .limit(limit)
+      .lean();
 
-      if(userId){
-        const wishlist = await Wishlist.findOne({userId:userId}).lean();
-        if(wishlist){
-          const wishlistProductsId = wishlist.products.map(p=>p.productId.toString());
-          products.forEach(product=>{
-            product.isWishlisted = wishlistProductsId.includes(product._id.toString());
-          })
-        }
+    if (userId) {
+      const wishlist = await Wishlist.findOne({ userId: userId }).lean();
+      if (wishlist) {
+        const wishlistProductsId = wishlist.products.map((p) =>
+          p.productId.toString()
+        );
+        products.forEach((product) => {
+          product.isWishlisted = wishlistProductsId.includes(
+            product._id.toString()
+          );
+        });
       }
+    }
 
     const categories = await Category.find({ isListed: true });
     const matchedProducts = await Product.countDocuments(query);
@@ -414,7 +445,7 @@ const loadAllProductsPage = async (req, res) => {
       categories,
       categoryName,
       user,
-      cssFile:"allproducts.css"
+      cssFile: "allproducts.css",
     });
   } catch (error) {
     console.error("Cannot render all products page", error.message);
@@ -427,10 +458,9 @@ const getProductDetails = async (req, res) => {
     const id = req.params.id;
     const userId = req.session.user;
     let userdata = await User.findById(userId);
-    
-    let user = userdata?userdata:"";
 
-   
+    let user = userdata ? userdata : "";
+
     const product = await Product.findOne({
       _id: id,
       isBlocked: false,
@@ -457,7 +487,13 @@ const getProductDetails = async (req, res) => {
       .populate("category")
       .lean();
 
-    res.render("user/product_details", { product, relatedProducts, reviews,cssFile:"productdetails.css",user});
+    res.render("user/product_details", {
+      product,
+      relatedProducts,
+      reviews,
+      cssFile: "productdetails.css",
+      user,
+    });
   } catch (error) {
     res.redirect("/pageNotFound");
     console.error("Error while rendering product details:", error.message);
@@ -472,13 +508,11 @@ const postReview = async (req, res) => {
       return res.redirect("/login");
     }
 
-      const existingReview = await Review.findOne({ product: id, user});
+    const existingReview = await Review.findOne({ product: id, user });
 
-
-
-      if(existingReview){
-        return res.redirect(`/product/details/${id}`);
-      }
+    if (existingReview) {
+      return res.redirect(`/product/details/${id}`);
+    }
 
     const { rating, comment } = req.body;
 
@@ -520,7 +554,8 @@ const postReview = async (req, res) => {
       _id: { $ne: id },
       category: product.category,
       isBlocked: false,
-    }).populate("category")
+    })
+      .populate("category")
       .lean();
 
     res.render("user/product_details", {
@@ -532,8 +567,7 @@ const postReview = async (req, res) => {
     res.redirect("/pageNotFound");
     console.error("Error in adding Review: ", error.message);
   }
-}
-
+};
 
 module.exports = {
   loadHomepage,
@@ -550,5 +584,4 @@ module.exports = {
   loadAllProductsPage,
   getProductDetails,
   postReview,
- 
 };

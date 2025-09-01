@@ -79,11 +79,13 @@ router.get("/change-email",userAuth,profileController.changeEmailPage);
 router.post("/change-email",userAuth,profileController.varifyEmailChangeOTP);
 router.post("/change-email/otp",userAuth,profileController.changeEmailOTPVerify);
 router.post("/change-email/resend-otp",userAuth,profileController.changeEmailResendOTP);
+router.get("/profile/refer&earn",userAuth,profileController.loadReferAndEarn);
 
 router.get("/profile/wallet",userAuth,walletController.loadWalletPage);
 router.get("/profile/wallet/transactions",userAuth,walletController.loadTransactionPage);
 router.get("/profile/wallet/add",userAuth,walletController.loadWalletAddMoney);
 router.post("/profile/wallet/pay",userAuth,walletController.createWalletOrder);
 router.post('/profile/wallet/verify',userAuth,walletController.verifyWalletPayment);
+
 
 module.exports = router

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { file } = require("pdfkit");
+const { file, ref } = require("pdfkit");
 
 const {Schema} = mongoose;
 
@@ -61,11 +61,11 @@ const userSchema = new mongoose.Schema({
         type:Date,
         default:Date.now
     },
-    referalCode:{
+    referralCode:{
         type:String
     },
-    redeemed:{
-        type:Boolean
+    referredBy:{
+        type:String
     },
     redeemedUsers:{
         type:Schema.Types.ObjectId,
