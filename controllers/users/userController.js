@@ -8,6 +8,7 @@ const Review = require("../../models/reviewSchema");
 const Wishlist = require("../../models/wishlistSchema");
 const crypto = require("crypto");
 const Coupon = require("../../models/couponSchema");
+const Wallet = require("../../models/walletSchema");
 
 let loadHomepage = async (req, res) => {
   try {
@@ -291,6 +292,10 @@ let verifyOTP = async (req, res) => {
       }
 
       req.session.user = saveUserData._id;
+      let wallet = new Wallet({
+        userId:saveUserData._id
+      })
+      await wallet.save();
       req.session.save((err) => {
         if (err) {
           console.error("error:", err);

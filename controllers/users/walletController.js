@@ -10,7 +10,7 @@ const loadWalletPage = async (req,res)=>{
         const userId = req.session.user;
         const user = await User.findById(userId);
 
-        const wallet = await Wallet.findOne({userId});
+        let wallet = await Wallet.findOne({userId});
         if (!wallet) {
            wallet = new Wallet({ userId, balance: 0, transactions: [] });
            await wallet.save();
@@ -19,6 +19,7 @@ const loadWalletPage = async (req,res)=>{
         res.render("user/wallet",{user,wallet});
         
     } catch (error) {
+        console.log("Error",error.message);
         logger.error("Error:",error.message);
     }
 }
