@@ -41,7 +41,20 @@ const loadCartPage = async(req,res)=>{
       user});
     }
 
+    let shouldSave = false
+    cart.items.forEach(item=>{
+      if(item.productId){
+        const currentPrice = item.productId.salePrice??item.productId.regularPrice;
+        const  newTotal = currentPrice*item.quantity;
+        if(item.price!== currentPrice||item.totalPrice!==newTotal){
+          item.price = currentPrice;
+          item.totalPrice = newTotal;
+          shouldSave = true;
+        }
+      }
+    })
 
+    if(shouldSave) await cart.save();
 
     const filterItems = search?cart.items.filter(item=>{
        const name = item.productId.productName.toLowerCase();

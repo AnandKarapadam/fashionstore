@@ -408,7 +408,7 @@ const loadAllProductsPage = async (req, res) => {
     else if (sort === "nameAsc") sortOption.productName = 1;
     else if (sort === "nameDesc") sortOption.productName = -1;
 
-    const products = await Product.find(query)
+    let products = await Product.find(query)
       .populate("category")
       .sort(sortOption)
       .skip(skip)
@@ -428,6 +428,8 @@ const loadAllProductsPage = async (req, res) => {
         });
       }
     }
+
+    products = products.filter(p=>p.category?.isListed)
 
     const categories = await Category.find({ isListed: true });
     const matchedProducts = await Product.countDocuments(query);
