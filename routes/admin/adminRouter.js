@@ -22,13 +22,11 @@ router.get("/",adminAuth,adminController.loadDashboard);
 router.get("/sales-report/download",adminAuth,adminController.salesReportDownload);
 
 
-
-
 // Order Management //
 router.get("/orders",adminAuth,orderController.loadOrderPage);
-router.post("/orders/update-status",orderController.updateOverallStatus);
-router.get("/orders/order-details/:orderId",orderController.loadOrderDetailsPage);
-router.post("/orders/order-details/:orderId/update-status",orderController.postOrderItemStatus);
+router.post("/orders/update-status",adminAuth,orderController.updateOverallStatus);
+router.get("/orders/order-details/:orderId",adminAuth,orderController.loadOrderDetailsPage);
+router.post("/orders/order-details/:orderId/update-status",adminAuth,orderController.postOrderItemStatus);
 
 
 

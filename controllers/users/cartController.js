@@ -216,7 +216,9 @@ const updateCartQuantity = async(req,res)=>{
 
     await cart.save();
 
-    res.json({ success: true });
+    const newSubtotal = cart.items.reduce((sum,i)=>sum+(i.totalPrice||0),0);
+
+    res.json({ success: true,updatedItemTotal:item.totalPrice,newSubtotal});
   } 
    catch (error) {
     console.error("Error:",error.message);
