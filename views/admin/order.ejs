@@ -59,8 +59,8 @@
       <tbody>
         <% orders.forEach(order => { %>
           <tr>
-            <td><%= order.orderId %></td>
-            <td><%= order.userId.name %><br><small><%= order.userId.email %></small></td>
+            <td><%= order?.orderId %></td>
+            <td><%= order.userId?.name %><br><small><%= order.userId?.email %></small></td>
             <td><%= order.createOn.toLocaleDateString() %></td>
             <th><%= order.createOn.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %></th>
             <td class="text-success fw-bold">₹<%= order.finalAmount||order.totalPrice %></td>

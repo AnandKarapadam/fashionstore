@@ -19,6 +19,7 @@ router.get("/login",adminController.loadLogin);
 router.post("/login",adminController.login);
 
 router.get("/",adminAuth,adminController.loadDashboard);
+router.get("/sales-report/download",adminAuth,adminController.salesReportDownload);
 
 
 
@@ -28,6 +29,7 @@ router.get("/orders",adminAuth,orderController.loadOrderPage);
 router.post("/orders/update-status",orderController.updateOverallStatus);
 router.get("/orders/order-details/:orderId",orderController.loadOrderDetailsPage);
 router.post("/orders/order-details/:orderId/update-status",orderController.postOrderItemStatus);
+
 
 
 //ADMIN LOGOUT//

@@ -138,7 +138,10 @@ const removeOffer = async(req,res)=>{
     try {
         const id = req.params.id;
 
-        await Product.findByIdAndUpdate(id,{salePrice:"",productOffer:""});
+        const product = await Product.findById(id);
+        const regularPrice = product.regularPrice;
+
+        await Product.findByIdAndUpdate(id,{salePrice:regularPrice,productOffer:""});
 
         res.redirect("/admin/products");
         
@@ -151,18 +154,24 @@ const removeOffer = async(req,res)=>{
 const addOffer = async(req,res)=>{
     try {
         const id = req.params.id;
-        const offerPrice = parseFloat(req.body.offerPrice);
-        const productData = await Product.findById(id);
-        
+        let offer = parseFloat(req.body.offerPrice);
+        const productData = await Product.findById(id).populate("category");
+        let offerPrice = 0;
 
 
         if(productData){
             const realPrice = productData.regularPrice;
-             
 
-            let  offer = ((realPrice-offerPrice)/realPrice)*100;
+               offerPrice = realPrice-(realPrice*offer)/100;
+               
+                if(productData.category&&productData.category.categoryOffer){
+                    if(productData.category.categoryOffer>offer && productData.category.isListed){
+                        offer = productData.category.categoryOffer;
+                        offerPrice = realPrice-(realPrice*offer)/100;
+                    }
+                }
             await Product.findByIdAndUpdate(id,{
-                salePrice:offerPrice,
+                salePrice:Math.round(offerPrice),
                 productOffer:Math.round(offer)});
                 
              }   
@@ -179,7 +188,6 @@ const addOffer = async(req,res)=>{
 const toggleIsBlocked = async(req,res)=>{
     try {
         const id  = req.params.id;
-       // await Product.findByIdAndUpdate(id, { $bit: { isBlocked: { xor: 1 } } }); simpler version//
         const productData = await Product.findById(id);
         if (!productData) {
             return res.redirect("/admin/pageerror");
@@ -247,7 +255,13 @@ const editProduct = async (req, res) => {
     existingProduct.regularPrice = req.body.actualPrice;
     existingProduct.salePrice = req.body.discountPrice;
     existingProduct.quantity = req.body.quantity;
-    existingProduct.status = req.body.status;
+    
+
+    if(req.body.quantity==0){
+        existingProduct.status = "out of stock";
+    }else{
+        existingProduct.status = req.body.status;
+    }
 
     // ✅ Handle deleted images (hidden input with names of deleted ones)
     if (req.body.deletedImages) {

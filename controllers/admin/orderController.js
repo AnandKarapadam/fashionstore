@@ -71,7 +71,77 @@ const updateOverallStatus = async(req,res)=>{
 
     const {orderId,status,order_id} = req.body;
 
+      const allItems = await Order.findOne({orderId:orderId});
+
+      let totalOrderAmount = allItems.totalPrice;
+      let totalDiscount = allItems.discount||0;
+
+      const alreadyReturnedItems = allItems.orderedItems.filter(item=>item.status==="Returned");
+      let alreadyRefundedAmount = 0;
+      if(alreadyReturnedItems.length>0){
+        let returnedTotal = alreadyReturnedItems.reduce(
+          (sum,i)=>sum+i.price*i.quantity,0
+        )
+
+          const discountShare = (returnedTotal/totalOrderAmount)*totalDiscount;
+          alreadyRefundedAmount = returnedTotal-discountShare;
+
+      }
+
     const order = await Order.findOneAndUpdate({orderId:orderId},{$set:{overAllStatus:status,"orderedItems.$[].status":status}},{new:true});
+    if(!order) return res.json({success:false});
+    
+    const allReturned = order.orderedItems.every(item=>item.status === "Returned");
+    if(allReturned){
+      const userId = order.userId;
+
+      let totalPaid = order.totalPrice;
+      let couponDiscount = order.discount||0;
+
+      let fullRefundAmount = totalPaid - couponDiscount;
+
+      let refundAmount = Math.max(fullRefundAmount - alreadyRefundedAmount, 0);
+
+      refundAmount = parseFloat(refundAmount.toFixed(2))
+
+      const wallet = await Wallet.findOne({userId});
+      if(!wallet){
+        const newWallet = new Wallet({
+          userId,
+          balance:refundAmount,
+          transactions:[
+            {
+              type:"CREDIT",
+              amount:refundAmount,
+              description:`Refund for the Order ${orderId}`,
+              orderId:order._id,
+              balanceAfter:refundAmount
+            }
+          ]
+        })
+        await newWallet.save();
+      }else{
+        const newBalance = wallet.balance+refundAmount;
+        wallet.balance = newBalance;
+        wallet.transactions.push({
+          type:"CREDIT",
+          amount:refundAmount,
+          description:`Refund for order ${orderId}`,
+          orderId:order._id,
+          balanceAfter:newBalance
+        })
+        await wallet.save();
+      }
+
+      for(let item of order.orderedItems){
+        if(item.product&&item.quantity>0){
+          await Product.updateOne(
+            {_id:item.product},
+            {$inc:{quantity:item.quantity}}
+          )
+        }
+      }
+    }
 
     if(order){
      return res.json({success:true,message:"Status changed success fully"})
@@ -198,8 +268,28 @@ const postOrderItemStatus = async(req,res)=>{
         const returnedItem = order.orderedItems.find(
           item=>item.orderItemId === orderItemId
         )
+        let refundAmount = 0;
 
-        const refundAmount = returnedItem?returnedItem.price*returnedItem.quantity:0;
+        if(returnedItem){
+          const itemTotal = returnedItem.price*returnedItem.quantity;
+          refundAmount = itemTotal;
+
+          if(order.discount&&order.discount>0){
+            const orderSubTotal = order.orderedItems.reduce(
+              (sum,item)=>sum+(item.price*item.quantity),0
+            )
+            const discountShare = (itemTotal/orderSubTotal)*order.discount;
+            refundAmount = itemTotal-discountShare;
+          }
+
+          await Product.updateOne(
+            {_id:returnedItem.product},
+            {$inc:{quantity:returnedItem.quantity}}
+          )
+
+        }
+
+        refundAmount = parseFloat(refundAmount.toFixed(2));
 
         if(refundAmount>0){
           let wallet = await Wallet.findOne({userId:order.userId});
@@ -207,12 +297,30 @@ const postOrderItemStatus = async(req,res)=>{
           if(wallet){
             const currentBalance = parseFloat(wallet.balance.toString());
             wallet.balance = (currentBalance+refundAmount).toFixed(2);
+            wallet.transactions.push({
+              type:"CREDIT",
+              amount:refundAmount,
+              description:order.discount
+              ? `Refund (after coupon) for Order ${orderId}`
+              : `Refund for Order ${orderId}`,
+              orderId:order._id,
+              balanceAfter:wallet.balance
+            })
             await wallet.save();
           }
           else{
             wallet = new Wallet({
               userId:order.userId,
-              balance:refundAmount
+              balance:refundAmount,
+              transactions:[
+            {
+              type:"CREDIT",
+              amount:refundAmount,
+              description:`Refund for the Order ${orderId}`,
+              orderId:order._id,
+              balanceAfter:refundAmount
+            }
+          ]
             });
             await wallet.save();
           }

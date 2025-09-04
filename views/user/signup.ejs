@@ -64,10 +64,15 @@
         <input type="password" id="password" name="password" class="form-control bg-light rounded-3 fw-bold" placeholder="Password" required />
         <div id="error4" class="error-message"></div>
       </div>
-      <div class="mb-1">
+      <div class="mb-2">
         
         <input type="password" id="confirm-password" name="confirmPassword" class="form-control bg-light rounded-3 fw-bold" placeholder="Confirm Password" required />
         <div id="error5" class="error-message"></div>
+      </div>
+      <div class="mb-1">
+        
+        <input type="text" name="referralCode" class="form-control bg-light rounded-3 fw-bold" placeholder="Referral Code (optional)">
+        <div id="error6" class="error-message"></div>
       </div>
       <% if(locals.message && message.length>0){ %>
         <div class="alert alert-danger text-center">

@@ -1,10 +1,72 @@
 <%- include("../partials/user/header.ejs") %>
-<%- include("../partials/user/navbar.ejs") %>
+<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-white px-3 mb-4">
+    <a class="navbar-brand" href="/">RORITO</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <!-- Push everything to the right -->
+      <ul class="navbar-nav ms-auto gap-lg-5 mb-2 mb-lg-0">
+        <li class="nav-item active">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/product/all">All products</a>
+        </li>
+        <% if(user && user.name) {%>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <%= user.name.split(' ')[0] %>
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="/profile">Profile</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+          </ul>
+        </li>
+        <% } %>
+        <li class="nav-item d-lg-flex gap-5 align-items-center">
+  <a class="nav-icon position-relative" href="/cart">
+    <i class="bi bi-cart4"></i>
+    
+      <span  class="position-absolute start-90 translate-middle badge rounded-pill bg-danger " style=" height: 17px; font-size: 0.6rem;top: 10px;">
+        <span id="cart-count">0</span>
+        <span class="visually-hidden">items in cart</span>
+      </span>
+   
+  </a>
+
+  <a href="/wishlist" class="nav-icon">
+    <i class="bi bi-handbag"></i>
+  </a>
+</li>
+
+        <li class="nav-item d-flex align-items-center">
+          <form action="/orders" method="get" class="d-flex ms-lg-3 mt-2 mt-lg-0" role="search">
+            
+            <input class="form-control border border-1 border-dark me-2 form-control-sm rounded-4" name="search" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-dark btn-sm rounded-4 " type="submit">Search</button>
+            <a href="/orders" class="btn btn-dark rounded-5 btn-sm ms-1"><i class="bi bi-x-circle"></i></a>
+                       
+          </form>
+        </li>
+      </ul>
+    </div>
+  </nav>
 
     
     
   <% if(orders.length>0){%>
-      <div class="container mt-5 pt-4">
+      <div class="container pt-4" style="margin-top: 60px;">
+        <div class="fixed-top" style="top: 80px;left: 69px;">
+          <a href="/profile">profile</a>\
+          <a href="/orders" class="text-muted text-decoration-none">orders</a>
+        </div>
   <% orders.forEach(order=>{%>
     <div class="container my-5">
 
@@ -17,6 +79,7 @@
                 <h6 class="card-title">Order ID: <span class="text-muted"><%= order.orderId %></span></h6>
                 <span class="badge bg-primary"><%= order.overAllStatus || "Pending" %></span>
               </div>
+             
               <% order.orderedItems.forEach(item=> { %>
               <div class="row mx-2 mx-md-5 mb-5 product-card bg-light">
                 <div class="col-md-4 d-flex order-details">
@@ -167,10 +230,10 @@
 </div>
 
     <% }else{ %>
-      <div class="container d-flex align-items-center justify-content-center">
+      <div class="container d-flex align-items-center my-5 justify-content-center pt-5 mx-5 bg-light" style="height: 65vh;">
         <div class="row d-flex flex-column justify-content-center align-items-center">
-          <p>No Items found</p>
-          <a href="/product/all">Explore Products</a>
+          <p class="text-muted">No Items found</p>
+          <a href="/product/all" class="btn btn-outline-secondary">Explore Products</a>
         </div>
       </div>
     <% } %>

@@ -185,11 +185,34 @@
 
       <script>
 
+         function changeQuantity(change) {
+          const qtyInput = document.getElementById('quantity');
+          const currentQty = parseInt(qtyInput.value);
+          const maxQty = parseInt(qtyInput.max);
+          const minQty = parseInt(qtyInput.min);
+
+          let newQty = currentQty + change;
+          if (newQty < minQty) newQty = minQty;
+          if (newQty > maxQty) newQty = maxQty;
+
+          qtyInput.value = newQty;
+        }
+
+        const cartForm = document.getElementById("cartForm");
+        const visibleQuantity = document.getElementById("quantity");
+        const hiddenQuantity = document.getElementById("hiddenQuantity");
+
+        cartForm.addEventListener("submit",function(){
+          hiddenQuantity.value = visibleQuantity.value;
+        })
+
+
         document.getElementById("addToCartBtn").addEventListener("click",async function(e){
           e.preventDefault();
 
           const productId = this.getAttribute("data-product-id");
-          const quantity = document.getElementById("hiddenQuantity")?.value||1;
+          const quantity = document.getElementById("quantity").value; 
+      
 
           try{
 
@@ -277,27 +300,7 @@
 
 
         // Quantity inc/dec function
-        function changeQuantity(change) {
-          const qtyInput = document.getElementById('quantity');
-          const currentQty = parseInt(qtyInput.value);
-          const maxQty = parseInt(qtyInput.max);
-          const minQty = parseInt(qtyInput.min);
-
-          let newQty = currentQty + change;
-          if (newQty < minQty) newQty = minQty;
-          if (newQty > maxQty) newQty = maxQty;
-
-          qtyInput.value = newQty;
-        }
-
-        const cartForm = document.getElementById("cartForm");
-        const visibleQuantity = document.getElementById("quantity");
-        const hiddenQuantity = document.getElementById("hiddenQuantity");
-
-        cartForm.addEventListener("submit",function(){
-          hiddenQuantity.value = visibleQuantity.value;
-        })
-
+       
         
       </script>
 

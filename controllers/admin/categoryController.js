@@ -60,12 +60,26 @@ const addOffer = async(req,res)=>{
     try {
         const {id} = req.params;
         const {offerPrice} = req.body;
+        const offer = offerPrice;
 
-        if(!offerPrice || offerPrice<0){
+        if(offer>90 || offer<0){
             req.session.error = "Invalid offer price";
             return res.redirect("/admin/category");
         }
-        await Category.findByIdAndUpdate(id,{categoryOffer:offerPrice});
+        let category = await Category.findByIdAndUpdate(id,{categoryOffer:offer},{new:true});
+        let products = await Product.find({category:category._id});
+
+        for(let product of products ){
+            const  realPrice = product.regularPrice;
+
+            const finalOffer  = Math.max(product.productOffer,category.categoryOffer);
+            const finalSalePrice = realPrice-(realPrice*finalOffer)/100;
+            product.salePrice = Math.round(finalSalePrice);
+            product.productOffer = finalOffer;
+
+            await product.save();
+        }
+
 
         req.session.success = "Offer added successfully";
         res.redirect("/admin/category");
@@ -81,6 +95,18 @@ const removeOffer = async (req,res)=>{
        if(!id){
         return res.redirect("admin/category");
        }
+       const category = await Category.findById(id);
+       const products = await Product.find({category:id});
+       
+       for(let product of products){
+
+        if(product.productOffer === category.categoryOffer){
+            product.productOffer = 0;
+            product.salePrice = product.regularPrice;
+        }
+        await product.save();
+       }
+
        await Category.findByIdAndUpdate(id,{categoryOffer:0});
        
        res.redirect("/admin/category");

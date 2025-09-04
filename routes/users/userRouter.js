@@ -4,11 +4,10 @@ let userController = require("../../controllers/users/userController");
 let {userAuth} = require("../../middlewares/auth");
 const passport = require("passport");
 let profileController = require("../../controllers/users/profileController");
-let wishlistController = require("../../controllers/users/wishlistController");
-
 const multer = require("multer");
 const storage = require("../../helpers/multer");
 const uploads = multer({storage:storage});
+const walletController = require("../../controllers/users/walletController");
 
 
 router.get("/",userAuth,userController.loadHomepage);
@@ -80,6 +79,13 @@ router.get("/change-email",userAuth,profileController.changeEmailPage);
 router.post("/change-email",userAuth,profileController.varifyEmailChangeOTP);
 router.post("/change-email/otp",userAuth,profileController.changeEmailOTPVerify);
 router.post("/change-email/resend-otp",userAuth,profileController.changeEmailResendOTP);
+router.get("/profile/refer&earn",userAuth,profileController.loadReferAndEarn);
+
+router.get("/profile/wallet",userAuth,walletController.loadWalletPage);
+router.get("/profile/wallet/transactions",userAuth,walletController.loadTransactionPage);
+router.get("/profile/wallet/add",userAuth,walletController.loadWalletAddMoney);
+router.post("/profile/wallet/pay",userAuth,walletController.createWalletOrder);
+router.post('/profile/wallet/verify',userAuth,walletController.verifyWalletPayment);
 
 
 module.exports = router
