@@ -76,14 +76,7 @@ app.use((req, res, next) => {
 });
 
 
-app.use("/",userRouter);
-app.use("/product",productRouter);
-app.use("/address",addressRouter);
-app.use("/cart",cartRouter);
-app.use("/orders",orderRouter);
-app.use("/wishlist",wishlistRouter);
 
-app.use("/admin",adminRouter);
 app.use("/admin/products",adminProductRouter);
 app.use("/admin/coupon",adminCouponRouter);
 app.use("/admin/category",adminCategoryRouter);
@@ -91,7 +84,14 @@ app.use("/admin/brands",adminBrandRouter);
 app.use("/admin/banner",adminBannerRouter);
 app.use("/admin/users",adminUserRouter);
 app.use("/admin/orders",adminOrderRouter);
+app.use("/admin",adminRouter);
 
+app.use("/product",productRouter);
+app.use("/address",addressRouter);
+app.use("/cart",cartRouter);
+app.use("/orders",orderRouter);
+app.use("/wishlist",wishlistRouter);
+app.use("/",userRouter);
 
 app.listen(process.env.PORT,(err)=>{
     console.log("Server running port:",process.env.PORT);
