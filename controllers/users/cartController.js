@@ -415,7 +415,13 @@ const postPaymentMethod = async(req,res)=>{
 
     if(method === "cod"){
 
+      if(finalAmount>1000){
+        return res.json({success:false,message:"Cash on Delivery is not available for orders above ₹1000"})
+      }
+
       if(type==="single"&&productId){
+        const product = await Product.findById(productId);
+
          return res.json({success:true,redirectUrl:`/cart/checkout/confirm?type=${type}&product=${productId}`})
       }else{
         return res.json({success:true,redirectUrl:"/cart/checkout/confirm"})

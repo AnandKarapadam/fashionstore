@@ -384,6 +384,13 @@ const loadAllProductsPage = async (req, res) => {
       {$set:{status:"out of stock"}}
     )
 
+    if(product.quantity>0){
+      const product = await Product.updateMany(
+        {quantity:{$gt:0}},
+        {$set:{status:"Available"}}
+      )
+    }
+
     const {
       search = "",
       category = "",
