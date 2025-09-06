@@ -22,6 +22,7 @@ const adminBrandRouter = require("./routes/admin/brandRouter");
 const adminBannerRouter = require("./routes/admin/bannerRouter");
 const adminUserRouter = require("./routes/admin/userRouter");
 const adminOrderRouter = require("./routes/admin/orderRouter");
+const adminDeliveryRouter = require("./routes/admin/deliveryRouter");
 
 const Cart = require("./models/cartSchema");
 
@@ -84,6 +85,7 @@ app.use("/admin/brands",adminBrandRouter);
 app.use("/admin/banner",adminBannerRouter);
 app.use("/admin/users",adminUserRouter);
 app.use("/admin/orders",adminOrderRouter);
+app.use("/admin/delivery",adminDeliveryRouter);
 app.use("/admin",adminRouter);
 
 app.use("/product",productRouter);

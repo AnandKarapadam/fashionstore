@@ -11,6 +11,7 @@ const Coupon = require("../../models/couponSchema");
 const razorpay = require("../../config/razorpay");
 const crypto = require("crypto");
 const Wallet = require("../../models/walletSchema");
+const Delivery = require("../../models/deliverySchema");
 
 const loadCartPage = async(req,res)=>{
   try {
@@ -291,8 +292,37 @@ const loadPaymentPage = async(req,res)=>{
       subtotal = req.session.couponData.finalAmount;
     }
     
+  let deliveryCharge = 0;
+  let delivery  = await Delivery.findOne();
+  const addressDoc = await Address.findOne({"address._id":req.session.selectedAddress});
 
-     res.render("user/payment",{cartItems,discount,finalAmount,subtotal,type,productId,user});
+  if(!addressDoc){
+    return res.json({success:false,message:"Address not found"});
+  }
+
+  const selectedAddress = addressDoc.address.id(req.session.selectedAddress);
+
+  if(delivery.type === "fixed"){
+
+    deliveryCharge = delivery.amount;
+    
+  }else if(delivery.type === "state"){
+    const usersState = selectedAddress.state.trim().toLowerCase();
+
+    const stateRule = delivery.stateRules.find(
+      rule=>rule.state.trim().toLowerCase()===usersState
+    )
+    if(stateRule){
+      deliveryCharge = stateRule.charge;
+    }else{
+      deliveryCharge  = 0;
+    }
+
+  }
+
+  finalAmount = subtotal+deliveryCharge;
+
+     res.render("user/payment",{cartItems,discount,deliveryCharge,finalAmount,subtotal,type,productId,user});
 
   } catch (error) {
     console.error("Error:",error.message);
@@ -389,11 +419,41 @@ const postPaymentMethod = async(req,res)=>{
   let discount = 0;
   let finalAmount = subtotal;
 
+  let deliveryCharge = 0;
+  let delivery  = await Delivery.findOne();
+  const addressDoc = await Address.findOne({"address._id":req.session.selectedAddress});
+
+  if(!addressDoc){
+    return res.json({success:false,message:"Address not found"});
+  }
+
+  const selectedAddress = addressDoc.address.id(req.session.selectedAddress);
+
+  if(delivery.type === "fixed"){
+
+    deliveryCharge = delivery.amount;
+    
+  }else if(delivery.type === "state"){
+    const usersState = selectedAddress.state.trim().toLowerCase();
+
+    const stateRule = delivery.stateRules.find(
+      rule=>rule.state.trim().toLowerCase()===usersState
+    )
+    if(stateRule){
+      deliveryCharge = stateRule.charge;
+    }else{
+      deliveryCharge  = 0;
+    }
+
+  }
+  
+
 
     if(req.session.couponData&&req.session.couponData.couponApplied){
       discount = req.session.couponData.discount;
-      finalAmount = subtotal-discount;
     }
+
+    finalAmount = subtotal-discount+deliveryCharge;
 
 
     req.session.orderData = {
@@ -406,7 +466,8 @@ const postPaymentMethod = async(req,res)=>{
       totalAmount:subtotal,
       couponApplied:discount>0,
       type:checkoutType,
-      productId
+      productId,
+      deliveryCharge
     }
 
     delete req.session.couponData;
