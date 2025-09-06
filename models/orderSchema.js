@@ -114,7 +114,7 @@ orderSchema.pre("save", function (next) {
     this.orderId = `ORID${randomNum}`;
   }
   next();
-});
+})
 
 let Order = mongoose.model("Order", orderSchema);
 

@@ -379,6 +379,18 @@ const loadAllProductsPage = async (req, res) => {
       user = await User.findById(userId);
     }
 
+    const product = await Product.updateMany(
+      {quantity:{$lt:1}},
+      {$set:{status:"out of stock"}}
+    )
+
+    if(product.quantity>0){
+      const product = await Product.updateMany(
+        {quantity:{$gt:0}},
+        {$set:{status:"Available"}}
+      )
+    }
+
     const {
       search = "",
       category = "",
@@ -510,6 +522,7 @@ const postReview = async (req, res) => {
   try {
     const id = req.params.id;
     const user = req.session.user;
+    const userData = await User.findById(user);
 
     if (!user) {
       return res.redirect("/login");
@@ -569,6 +582,8 @@ const postReview = async (req, res) => {
       product: updatedProduct,
       reviews: updateReview,
       relatedProducts,
+      user:userData,
+      cssFile:"productdetails.css"
     });
   } catch (error) {
     res.redirect("/pageNotFound");

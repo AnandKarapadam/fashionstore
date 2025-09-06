@@ -221,7 +221,7 @@ const postProfile = async (req,res)=>{
         const user = await User.findById(userId)
         const address = await Address.findOne({userId})
 
-        res.render('user/profile',{user,address});
+        res.redirect("/profile");
         
         
     } catch (error) {

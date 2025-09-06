@@ -119,7 +119,11 @@
                  <% } %>
               </td>
               <td><%= product.quantity %></td>
-              <td><%= product.status %></td>
+              <% if(product.quantity==0) {%>
+                <td>Out of stock</td>
+              <%}else{%>
+                <td><%= product.status %></td>
+               <% } %> 
               <td>
                 <%= product.isBlocked ? "Blocked":"UnBlocked" %>
               </td>
