@@ -24,7 +24,7 @@
         <label class="fw-semibold small d-block mb-1">Qty:</label>
         <div class="input-group input-group-sm justify-content-center" style="width: 100px; margin: auto;">
           <button class="btn btn-outline-secondary" type="button" data-product-id="<%= item.productId._id %>" onclick="changeQty(this, -1)">−</button>
-          <input type="text" class="form-control text-center form-control-sm quantity-input" value="<%= item.quantity %>" readonly>
+          <input type="number" class="form-control text-center form-control-sm quantity-input" max="<%= item.productId.quantity %>" value="<%= item.quantity %>" readonly>
           <button class="btn btn-outline-secondary" type="button" data-product-id="<%= item.productId._id %>" onclick="changeQty(this, 1)">+</button>
         </div>
       </div>
@@ -197,10 +197,12 @@
     const parent = btn.closest(".input-group");
     const productId = btn.getAttribute("data-product-id");
     const input = parent.querySelector(".quantity-input");
+    const maxQty = parseInt(input.getAttribute("max"));
 
     let newQty = parseInt(input.value) +delta;
 
     if (newQty < 1) newQty = 1;
+    if(newQty>maxQty)newQty = maxQty;
     
     fetch('/cart/update-quantity',{
       method:"Post",

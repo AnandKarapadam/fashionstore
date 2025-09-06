@@ -379,6 +379,11 @@ const loadAllProductsPage = async (req, res) => {
       user = await User.findById(userId);
     }
 
+    const product = await Product.updateMany(
+      {quantity:{$lt:1}},
+      {$set:{status:"out of stock"}}
+    )
+
     const {
       search = "",
       category = "",
