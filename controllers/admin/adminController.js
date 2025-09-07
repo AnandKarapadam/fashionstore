@@ -48,7 +48,7 @@ const loadDashboard = async (req, res) => {
       const prCount = await Product.countDocuments({ isBlocked: false });
       const brCount = await Brand.countDocuments({ isBlocked: false });
 
-      const { filter, startDate, endDate, page = 1 } = req.query;
+      const { filter, startDate, endDate, page = 1,chartFilter } = req.query;
       const limit = 5;
 
       let query = { overAllStatus: "Delivered" };
@@ -110,6 +110,111 @@ const loadDashboard = async (req, res) => {
         );
       });
 
+
+      let chartQuery = {overAllStatus:"Delivered"};
+
+      if(chartFilter==="topDaily"){
+        chartQuery.createOn = {
+          $gte:new Date(today.setHours(0,0,0,0)),
+          $lte:new Date(today.setHours(23,59,59,999))
+        }
+      }else if(chartFilter==="topMonthly"){
+        const monthAgo = new Date();
+        monthAgo.setMonth(today.getMonth()-1);
+        chartQuery.createOn={$gte:monthAgo,$lte:today}
+      }else if(chartFilter=== "topYearly"){
+        const yearAgo = new Date();
+        yearAgo.setFullYear(today.getFullYear()-1);
+        chartQuery.createOn = {$gte:yearAgo,$lte:today}
+      }
+
+      const topProducts = await Order.aggregate([
+        {$match:chartQuery},
+        {$unwind:"$orderedItems"},
+        {
+          $group:{
+            _id:"$orderedItems.product",
+            totalSold:{$sum:"$orderedItems.quantity"},
+          },
+        },
+        {
+          $lookup:{
+            from:"products",
+            localField:"_id",
+            foreignField:"_id",
+            as:"product",
+          }
+        },
+        {$unwind:"$product"},
+        {$project:{name:"$product.productName",totalSold:1}},
+        {$sort:{totalSold:-1}},
+        {$limit:10}
+      ])
+
+      const topCategories = await Order.aggregate([
+        {$match:chartQuery},
+        {$unwind:"$orderedItems"},
+        {
+          $lookup:{
+            from:"products",
+            localField:"orderedItems.product",
+            foreignField:"_id",
+            as:"product"
+          }
+        },
+        {$unwind:"$product"},
+        {
+          $group:{
+            _id:"$product.category",
+            totalSold:{$sum:"$orderedItems.quantity"}
+          }
+        },
+        {
+          $lookup:{
+            from:"categories",
+            localField:"_id",
+            foreignField:"_id",
+            as:"category"
+          }
+        },
+        {$unwind:"$category"},
+        {$project:{name:"$category.name",totalSold:1}},
+        {$sort:{totalSold:-1}},
+        {$limit:10}
+      ]);
+
+      const topBrands = await Order.aggregate([
+        {$match:chartQuery},
+        {$unwind:"$orderedItems"},
+        {
+          $lookup:{
+            from:"products",
+            localField:"orderedItems.product",
+            foreignField:"_id",
+            as:"product"
+          }
+        },
+        {$unwind:"$product"},
+        {
+          $group:{
+            _id:"$product.brand",
+            totalSold:{$sum:"$orderedItems.quantity"},
+          }
+        },
+        {
+          $lookup:{
+            from:"brands",
+            localField:"_id",
+            foreignField:"_id",
+            as:"brand"
+          },
+        },
+        {$unwind:"$brand"},
+        {$project:{name:"$brand.brandName",totalSold:1}},
+        {$sort:{totalSold:-1}},
+        {$limit:10}
+      ])
+
       return res.render("admin/dashboard", {
         cssFile: "admin/dashboard",
         count,
@@ -124,6 +229,10 @@ const loadDashboard = async (req, res) => {
         orders,
         currentPage: pageInt,
         totalPages,
+        topProducts:topProducts||[],
+        topCategories:topCategories||[],
+        topBrands:topBrands||[],
+        chartFilter
       });
     } else {
       return res.redirect("/admin/login");
