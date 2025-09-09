@@ -9,6 +9,7 @@ const Wishlist = require("../../models/wishlistSchema");
 const crypto = require("crypto");
 const Coupon = require("../../models/couponSchema");
 const Wallet = require("../../models/walletSchema");
+const { match } = require("assert");
 
 let loadHomepage = async (req, res) => {
   try {
@@ -371,7 +372,7 @@ const logout = async (req, res) => {
 const loadAllProductsPage = async (req, res) => {
   try {
     let page = parseInt(req.query.page) || 1;
-    let limit = 8;
+    let limit = 9;
     let skip = (page - 1) * limit;
     const userId = req.session.user;
     let user;
@@ -426,7 +427,8 @@ const loadAllProductsPage = async (req, res) => {
     else if (sort === "nameDesc") sortOption.productName = -1;
 
     let products = await Product.find(query)
-      .populate("category")
+      .populate({path:"category",match:{isListed:true}})
+      .populate({path:"brand",match:{isBlocked:false}})
       .sort(sortOption)
       .skip(skip)
       .limit(limit)
@@ -446,7 +448,7 @@ const loadAllProductsPage = async (req, res) => {
       }
     }
 
-    products = products.filter(p=>p.category?.isListed)
+    products = products.filter(p=>p.category?.isListed&&p.brand)
 
     const categories = await Category.find({ isListed: true });
     const matchedProducts = await Product.countDocuments(query);
@@ -468,7 +470,7 @@ const loadAllProductsPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Cannot render all products page", error.message);
-    res.redirect("/pageNotFound");
+    res.redirect("/pageNotFound");  
   }
 };
 

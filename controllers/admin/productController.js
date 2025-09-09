@@ -72,7 +72,7 @@ const addproduct = async(req,res)=>{
                 })
                 await newProduct.save();
 
-                return res.redirect("/admin/product/all");
+                return res.redirect("/admin/products");
             }
         else{
             return res.render("admin/addProduct",{message:"Product Already Exists!",formData:products,brands,categorys});
