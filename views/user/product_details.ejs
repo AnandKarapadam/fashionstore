@@ -1,191 +1,216 @@
 <%- include("../partials/user/header.ejs") %>
-<%- include("../partials/user/navbar.ejs") %>
+  <%- include("../partials/user/navbar.ejs") %>
 
- <div class="container pt-5 mt-5">
-    <!-- Breadcrumbs -->
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Home</a></li>
-        <li class="breadcrumb-item"><a href="/product/all">All-products</a></li>
-        <li class="breadcrumb-item active" aria-current="page"><%= product.productName %></li>
-      </ol>
-    </nav>
+    <div class="container pt-5 mt-5">
+      <!-- Breadcrumbs -->
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item"><a href="/product/all">All-products</a></li>
+          <li class="breadcrumb-item active" aria-current="page">
+            <%= product.productName %>
+          </li>
+        </ol>
+      </nav>
 
-    <div class="row">
-      <!-- Product Images with Zoom -->
-      <div class="col-md-6">
-  <!-- Main Preview Image -->
-  <div class="main-preview bg-light mb-3 text-center position-relative">
-  <div class="image-zoom-container">
-    <img id="mainImage" src="/uploads/re-image/<%= product.productImage[0] %>" class="img-fluid main-image" />
-    <div id="lens" class="zoom-lens"></div>
-  </div>
-</div>
+      <div class="row">
+        <!-- Product Images with Zoom -->
+        <div class="col-md-6">
+          <!-- Main Preview Image -->
+          <div class="main-preview bg-light mb-3 text-center position-relative">
+            <div class="image-zoom-container">
+              <img id="mainImage" src="/uploads/re-image/<%= product.productImage[0] %>" class="img-fluid main-image" />
+              <div id="lens" class="zoom-lens"></div>
+            </div>
+          </div>
 
 
-  <!-- Thumbnails -->
-  <div class="d-flex justify-content-center flex-wrap gap-2">
-    <% product.productImage.forEach(img => { %>
-      <img 
-        src="/uploads/re-image/<%= img %>" 
-        class="thumb-img" 
-        onclick="changeMainImage(this)"
-      />
-    <% }) %>
-  </div>
-</div>
-
-      <!-- Product Info -->
-      <div class="col-md-6">
-        <h3><%= product.productName %></h3>
-        <p><strong>Brand:</strong> <%= product.brand.brandName.toUpperCase() %></p>
-        <p>
-          <span class="fs-4 fw-bold text-danger">₹<%= product.salePrice %></span>
-          <% if (product.salePrice < product.regularPrice) { %>
-            <span class="text-muted text-decoration-line-through">₹<%= product.regularPrice %></span>
-            <span class="badge bg-success ms-2">Offer <%= product.productOffer %>%</span>
-          <% } %>
-        </p>
-
-        <!-- Ratings -->
-        <p>
-          <strong>Rating:</strong>
-          <%= product.ratings.average.toFixed(1) %> ⭐ 
-          (<%= product.ratings.count %> reviews)
-        </p>
-
-        <!-- Stock Info -->
-        <% if (product.status === "out of stock" || product.quantity === 0) { %>
-          <p class="text-danger fw-bold">Out of Stock</p>
-        <% } else { %>
-          <p class="text-success fw-bold">In Stock: <%= product.quantity %></p>
-        <% } %>
-        <div class="d-flex align-items-center gap-2 mb-3">
-          <button type="button" class="btn btn-outline-secondary px-2 py-1 btn-sm" onclick="changeQuantity(-1)">−</button>
-           <input type="number" id="quantity" name="quantity" value="1" min="1" max="<%= product.quantity %>" class="form-control text-center form-control-sm fw-bold" style="width: 60px;" readonly required>
-          <button type="button" class="btn btn-outline-secondary px-2 py-1 btn-sm" onclick="changeQuantity(1)">+</button>
+          <!-- Thumbnails -->
+          <div class="d-flex justify-content-center flex-wrap gap-2">
+            <% product.productImage.forEach(img=> { %>
+              <img src="/uploads/re-image/<%= img %>" class="thumb-img" onclick="changeMainImage(this)" />
+              <% }) %>
+          </div>
         </div>
 
-        <!-- Add to Cart Button -->
-        <% if (product.quantity > 0 && product.status === "Available") { %>
-          
-            <button type="button" onclick="addToWishlist('<%= product._id %>',event)" class="btn btn-danger mb-3 rounded-4 fw-semibold w-50">Add to Wishlist</button>
-          
-          <form id="cartForm" >
-            <input type="hidden" id="hiddenQuantity" name="quantity">
-            <button type="submit" id="addToCartBtn" data-product-id="<%= product._id %>"  class="btn btn-primary rounded-4 fw-semibold w-50">Add to Cart</button>
-          </form>
-        <% } else { %>
-          <button class="btn btn-secondary" disabled>Unavailable</button>
-        <% } %>
-      </div>
-    </div>
+        <!-- Product Info -->
+        <div class="col-md-6">
+          <h3>
+            <%= product.productName %>
+          </h3>
+          <p><strong>Brand:</strong>
+            <%= product.brand.brandName.toUpperCase() %>
+          </p>
+          <p>
+            <span class="fs-4 fw-bold text-danger">₹<%= product.salePrice %></span>
+            <% if (product.salePrice < product.regularPrice) { %>
+              <span class="text-muted text-decoration-line-through">₹<%= product.regularPrice %></span>
+              <span class="badge bg-success ms-2">Offer <%= product.productOffer %>%</span>
+              <% } %>
+          </p>
 
-    <div class="row">
+          <!-- Ratings -->
+          <p>
+            <strong>Rating:</strong>
+            <%= product.ratings.average.toFixed(1) %> ⭐
+              (<%= product.ratings.count %> reviews)
+          </p>
 
-      <!-- Description -->
-    <div class="mt-5 col-md-6">
-      <h5>Description</h5>
-      <p><%= product.description %></p>
-    </div>
+          <!-- Stock Info -->
+          <% if (product.status==="out of stock" || product.quantity===0) { %>
+            <p class="text-danger fw-bold">Out of Stock</p>
+            <% } else { %>
+              <p class="text-success fw-bold">In Stock: <%= product.quantity %>
+              </p>
+              <% } %>
+                <div class="d-flex align-items-center gap-2 mb-3">
+                  <button type="button" class="btn btn-outline-secondary px-2 py-1 btn-sm"
+                    onclick="changeQuantity(-1)">−</button>
+                  <input type="number" id="quantity" name="quantity" value="1" min="1" max="<%= product.quantity %>"
+                    class="form-control text-center form-control-sm fw-bold" style="width: 60px;" readonly required>
+                  <button type="button" class="btn btn-outline-secondary px-2 py-1 btn-sm"
+                    onclick="changeQuantity(1)">+</button>
+                </div>
 
-      <!-- Reviews Section -->
-      <div class="mt-5 col-md-6 overflow-auto"  style="max-height: 300px;">
-      <h5 style="position: sticky;top: 0;background-color: white;">Customer Reviews</h5>
-      <% if (reviews.length === 0) { %>
-        <p>No reviews yet.</p>
-      <% } else { %>
-        <% reviews.forEach(review => { %>
-          <div class="border rounded p-3 mb-2">
-            <strong><%= review.username %></strong> — 
-            <span><%= review.rating %> ⭐</span>
-            <p class="mb-0"><%= review.comment %></p>
-            <small class="text-muted"><%= review.createdAt.toDateString() %></small>
-          </div>
-        <% }) %>
-      <% } %>
-    </div>  
-    </div>
+                <!-- Add to Cart Button -->
+                <% if (product.quantity> 0 && product.status === "Available") { %>
 
-    <hr class="my-4">
+                  <button type="button" onclick="addToWishlist('<%= product._id %>',event)"
+                    class="btn btn-danger mb-3 rounded-4 fw-semibold w-50">Add to Wishlist</button>
 
-    <div class="container mt-5">
-      <div>
-        <h3>Peoples also like</h3>
-      </div>
-  <!-- Left/Right Scroll Buttons -->
-  <div class="scroll-buttons mb-2">
-    <button onclick="scrollLeft()">&larr;</button>
-    <button onclick="scrollRight()">&rarr;</button>
-  </div>
-
-  <!-- Horizontal Scrollable Card Row -->
-  <div class="scroll-container d-flex justify-content-center" id="cardRow">
-    <% if (typeof relatedProducts !== "undefined"){ %>
-    <% relatedProducts.forEach(product => { %>
-            <div class="col-6 col-md-4 col-lg-3">
-              <div class="product-card shadow-sm position-relative">
-                <a href="/product/details/<%= product._id %>" class="text-decoration-none text-dark">
-                  <img class="product-img" src="/uploads/re-image/<%= product.productImage[0] %>"  alt="<%= product.productName %>">
-                  <% if (product.quantity > 0) { %>
-                   <span class="badge bg-success position-absolute top-0 end-0 m-2">Available</span>
+                  <form id="cartForm">
+                    <input type="hidden" id="hiddenQuantity" name="quantity">
+                    <button type="submit" id="addToCartBtn" data-product-id="<%= product._id %>"
+                      class="btn btn-primary rounded-4 fw-semibold w-50">Add to Cart</button>
+                  </form>
                   <% } else { %>
-                  <span class="badge bg-danger position-absolute top-0 end-0  m-2">Out of Stock</span>
+                    <button class="btn btn-secondary" disabled>Unavailable</button>
+                    <% } %>
+        </div>
+      </div>
+
+      <div class="row">
+
+        <!-- Description -->
+        <div class="mt-5 col-md-6">
+          <h5>Description</h5>
+          <p>
+            <%= product.description %>
+          </p>
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="mt-5 col-md-6 overflow-auto" style="max-height: 300px;">
+          <h5 style="position: sticky;top: 0;background-color: white;">Customer Reviews</h5>
+          <% if (reviews.length===0) { %>
+            <p>No reviews yet.</p>
+            <% } else { %>
+              <% reviews.forEach(review=> { %>
+                <div class="border rounded p-3 mb-2">
+                  <strong>
+                    <%= review.username %>
+                  </strong> —
+                  <span>
+                    <%= review.rating %> ⭐
+                  </span>
+                  <p class="mb-0">
+                    <%= review.comment %>
+                  </p>
+                  <small class="text-muted">
+                    <%= review.createdAt.toDateString() %>
+                  </small>
+                </div>
+                <% }) %>
                   <% } %>
-                  <% if (product.productOffer && product.productOffer > 0) { %>
-                   <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2"><%= product.productOffer %>% OFF</span>
-                  <% } %>
-                  <h6 class="mt-2 text-truncate"><%= product.productName %></h6>
-                  <div class="d-flex flex-column align-items-start">
-                  <span class="fw-bold text-success fs-6">₹<%= product.salePrice %></span>
-                  <% if (product.regularPrice > product.salePrice) { %>
-                 <small class="text-muted text-decoration-line-through">₹<%= product.regularPrice %></small>
-                <% } %>
-                 </div>
-                </a>
+        </div>
+      </div>
+
+      <hr class="my-4">
+
+      <div class="container mt-5">
+        <div>
+          <h3>Peoples also like</h3>
+        </div>
+        <!-- Left/Right Scroll Buttons -->
+        <div class="scroll-buttons mb-2">
+          <button onclick="scrollLeft()">&larr;</button>
+          <button onclick="scrollRight()">&rarr;</button>
+        </div>
+
+        <!-- Horizontal Scrollable Card Row -->
+        <div class="scroll-container d-flex justify-content-center" id="cardRow">
+          <% if (typeof relatedProducts !=="undefined" ){ %>
+            <% relatedProducts.forEach(product=> { %>
+              <div class="col-6 col-md-4 col-lg-3">
+                <div class="product-card shadow-sm position-relative">
+                  <a href="/product/details/<%= product._id %>" class="text-decoration-none text-dark">
+                    <img class="product-img" src="/uploads/re-image/<%= product.productImage[0] %>"
+                      alt="<%= product.productName %>">
+                    <% if (product.quantity> 0) { %>
+                      <span class="badge bg-success position-absolute top-0 end-0 m-2">Available</span>
+                      <% } else { %>
+                        <span class="badge bg-danger position-absolute top-0 end-0  m-2">Out of Stock</span>
+                        <% } %>
+                          <% if (product.productOffer && product.productOffer> 0) { %>
+                            <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2">
+                              <%= product.productOffer %>% OFF
+                            </span>
+                            <% } %>
+                              <h6 class="mt-2 text-truncate">
+                                <%= product.productName %>
+                              </h6>
+                              <div class="d-flex flex-column align-items-start">
+                                <span class="fw-bold text-success fs-6">₹<%= product.salePrice %></span>
+                                <% if (product.regularPrice> product.salePrice) { %>
+                                  <small class="text-muted text-decoration-line-through">₹<%= product.regularPrice %>
+                                  </small>
+                                  <% } %>
+                              </div>
+                  </a>
+                </div>
               </div>
-            </div>
-          <% }) %> 
-          <%}%>
-  </div>
-</div>
+              <% }) %>
+                <%}%>
+        </div>
+      </div>
 
-<div class="mt-5" id="review-section">
-  <h5>Add Your Review</h5>
-  <form action="/product/<%= product._id %>/review" method="POST" class="mt-3">
+      <div class="mt-5" id="review-section">
+        <h5>Add Your Review</h5>
+        <form action="/product/<%= product._id %>/review" method="POST" class="mt-3">
 
-    
 
-    <div class="mb-3">
-      <label for="rating" class="form-label">Rating</label>
-      <select name="rating" id="rating" class="form-select" required>
-        <option value="">Select rating</option>
-        <% for (let i = 5; i >= 1; i--) { %>
-          <option value="<%= i %>"><%= i %> Star<%= i > 1 ? ' s' : '' %>
+
+          <div class="mb-3">
+            <label for="rating" class="form-label">Rating</label>
+            <select name="rating" id="rating" class="form-select" required>
+              <option value="">Select rating</option>
+              <% for (let i=5; i>= 1; i--) { %>
+                <option value="<%= i %>">
+                  <%= i %> Star<%= i> 1 ? ' s' : '' %>
                 </option>
                 <% } %>
-                  </select>
-    </div>
+            </select>
+          </div>
 
-    <div class="mb-3">
-      <label for="comment" class="form-label">Comment</label>
-      <textarea name="comment" id="comment" class="form-control" rows="4" placeholder="Write your feedback..."
-        required></textarea>
-    </div>
+          <div class="mb-3">
+            <label for="comment" class="form-label">Comment</label>
+            <textarea name="comment" id="comment" class="form-control" rows="4" placeholder="Write your feedback..."
+              required></textarea>
+          </div>
 
-    <button type="submit" class="btn btn-primary">Post Review</button>
-    </form>
-    </div>
+          <button type="submit" class="btn btn-primary">Post Review</button>
+        </form>
+      </div>
 
     </div>
     <%- include('../partials/user/footer.ejs') %>
-    <!-- SweetAlert2 CDN -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <!-- SweetAlert2 CDN -->
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
       <script>
 
-         function changeQuantity(change) {
+        function changeQuantity(change) {
           const qtyInput = document.getElementById('quantity');
           const currentQty = parseInt(qtyInput.value);
           const maxQty = parseInt(qtyInput.max);
@@ -202,53 +227,68 @@
         const visibleQuantity = document.getElementById("quantity");
         const hiddenQuantity = document.getElementById("hiddenQuantity");
 
-        cartForm.addEventListener("submit",function(){
+        cartForm.addEventListener("submit", function () {
           hiddenQuantity.value = visibleQuantity.value;
         })
 
 
-        document.getElementById("addToCartBtn").addEventListener("click",async function(e){
+        document.getElementById("addToCartBtn").addEventListener("click", async function (e) {
           e.preventDefault();
 
           const productId = this.getAttribute("data-product-id");
-          const quantity = document.getElementById("quantity").value; 
-      
+          const quantity = document.getElementById("quantity").value;
 
-          try{
 
-            const res = await fetch(`/cart/add/${productId}`,{
-              method:"POST",
-              headers:{
-                "Content-Type":"application/json"
+          try {
+
+            const res = await fetch(`/cart/add/${productId}`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
               },
-              body:JSON.stringify({quantity})
+              body: JSON.stringify({ quantity })
             })
+            let data = await res.json();
 
-            const data = await res.json();
 
-            if(data.success){
+            if (data.success) {
               Swal.fire({
-                icon:"success",
-                title:"Product added successfully",
-                text:data.message,
-                timer:1000
-              }).then(()=>location.reload());
+                icon: "success",
+                title: "Product added successfully",
+                text: data.message,
+                timer: 1000
+              }).then(() => location.reload());
             }
-            else{
-              Swal.fire({
-                icon:"error",
-                title:"Error",
-                text:data.message
-              })
+            else {
+              if (data.message === "Please Login To Your Account") {
+                Swal.fire({
+                  icon: "warning",
+                  title: "Login Required",
+                  text: data.message,
+                  showCancelButton: true,   // show cancel option
+                  confirmButtonText: "Go to Login",
+                  cancelButtonText: "Stay Here"
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    window.location.href = "/login"; // redirect only if confirmed
+                  }
+                });
+              } else {
+                Swal.fire({
+                  icon: "error",
+                  title: "Error",
+                  text: data.message
+                });
+              }
             }
 
-          }catch(error){
-            console.log("Error:",error.message);
-            Swal.fire("Error", "Something went wrong!", "error");
+          } catch (error) {
+            console.log("Error:", error.stack);
+            Swal.fire("Error", `something went wrong`, "error");
           }
 
         })
-        
+
         const mainImage = document.getElementById("mainImage");
         const lens = document.getElementById("lens");
         const result = document.getElementById("zoomResult");
@@ -300,42 +340,42 @@
 
 
         // Quantity inc/dec function
-       
-        
+
+
       </script>
 
-<script>
-  async function addToWishlist(productId,e) {
-          console.log("productId",productId);
+      <script>
+        async function addToWishlist(productId, e) {
+          console.log("productId", productId);
           try {
             e.preventDefault()
-            
-            const response = await fetch(`/wishlist/add/${productId}`,{
-              method:"POST",
-              headers:{
-                "Content-Type":"application/json"
+
+            const response = await fetch(`/wishlist/add/${productId}`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
               }
             })
 
             const data = await response.json();
 
-            
-            if(!response.ok){
-              
-              Swal.fire("error!", data.message||"Error in adding product", "warning")
+
+            if (!response.ok) {
+
+              Swal.fire("error!", data.message || "Error in adding product", "warning")
             }
-            else{
-                
-                window.location.reload();
+            else {
+
+              window.location.reload();
             }
 
           } catch (error) {
-            console.error("Error: ",error.message);
-            Swal.fire("error!",error.message||"Error in wishlist","warning");
-            
+            console.error("Error: ", error.message);
+            Swal.fire("error!", error.message || "Error in wishlist", "warning");
+
           }
         }
-</script>
-</body>
+      </script>
+      </body>
 
-</html>
+      </html>

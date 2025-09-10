@@ -44,9 +44,17 @@ const adminAuth = (req,res,next)=>{
     })
 }
 
+const cartAuth = (req,res,next)=>{
+  if(!req.session.user){
+    return res.json({success:false,message:"Please Login To Your Account"});
+  }
+  next();
+}
+
 module.exports = {
     userAuth,
-    adminAuth
+    adminAuth,
+    cartAuth
 }
 
 

@@ -80,6 +80,11 @@ let orderSchema = new Schema({
     trim: true,
     default: null,
   },
+  deliveryCharge:{
+    type:Number,
+    default:0,
+  }
+  ,
   returnReason: {
     type: String,
     trim: true,

@@ -144,7 +144,7 @@
 
     <div class="bg-light p-2 rounded-3">
     <!-- 1. Product Summary -->
-      <div style="max-height: 200px;overflow-y: scroll;">
+      <div >
     <% (cartItems||[]).slice().reverse().forEach(item=>{ %>
     <div class="d-flex justify-content-between mb-2">
       <% if(item.productId.quantity>0){ %>

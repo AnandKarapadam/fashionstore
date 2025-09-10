@@ -24,7 +24,7 @@ const loadAddressPage = async(req,res)=>{
                currentPage: 1,
                totalPages: 1,
                search,
-            addresses: [{ address: [] }],
+            addresses: [],
             userId,
             user
             });

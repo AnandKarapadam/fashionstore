@@ -14,9 +14,10 @@
           <li class="nav-item"><a class="nav-link text-dark border" href="/wallet"><i class="bi bi-wallet me-2"></i> Wallet</a></li>
           <li class="nav-item"><a class="nav-link text-dark border" href="/address"><i class="bi bi-geo me-2"></i> Address</a></li>
           <li class="nav-item"><a class="nav-link text-dark border" href="/profile/refer&earn"><i class="bi bi-gift me-2"></i> Reffer & Earn</a></li>
-          <li class="nav-item"><a class="nav-link text-dark border text-truncate" href="/delete-account"><i class="bi bi-trash2-fill me-2"></i> Delete Account</a></li>
+          <li class="nav-item"><a class="nav-link text-dark border text-truncate" href="/delete-account" onclick="confirmDeleteEvent(event)"><i class="bi bi-trash2-fill me-2" ></i> Delete Account</a></li>         
           <li class="nav-item"><a class="nav-link text-dark border" href="/logout"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
         </ul>
+        <form action="/delete-account" method="post" style="display: none;" id="deleteAccountForm" ></form>
       </div>
         </div>
         <div class="col-md-9 mb-5 mt-3 mx-auto">
@@ -54,6 +55,27 @@
 
 
 <%- include("../partials/user/footer.ejs") %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+     
+    <script>
+      function confirmDeleteEvent(e){
+        e.preventDefault();
+
+        Swal.fire({
+          icon:"Warning",
+          text:"This will permentaly delete your account!",
+          title:"Are you sure?",
+          showCancelButton:true,
+          confirmButtonText:"Yes,delete it",
+          cancelButtonText:"Cancel"
+        }).then((result)=>{
+          if(result.isConfirmed){
+            document.getElementById("deleteAccountForm").submit()
+          }
+        })
+      }
+    </script>
 
 <script>
       const buttons = document.querySelectorAll(".button-container button");

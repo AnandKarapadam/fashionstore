@@ -102,6 +102,8 @@ const loadOrderDetails = async (req, res) => {
       orderDate: order.createOn,
       status: orderItem.status,
       address,
+      discount: order.discount,
+      deliveryCharge: order.deliveryCharge,
     };
 
     res.render("user/orderDetails", {
@@ -130,14 +132,14 @@ const invoiceDownload = async (req, res) => {
     const { orderId, productId } = req.params;
     const userId = req.session.user;
 
-    const order = await Order.findOne({ _id: orderId, userId }).populate(
-      {path:"orderedItems.product",populate:{path:"brand",model:"Brand"}},
-      
-    );
+    const order = await Order.findOne({ _id: orderId, userId }).populate({
+      path: "orderedItems.product",
+      populate: { path: "brand", model: "Brand" },
+    });
 
     const user = await User.findById(userId);
 
-    if (!order||!user) {
+    if (!order || !user) {
       return res.status(404).send("Order not found");
     }
 
@@ -154,40 +156,56 @@ const invoiceDownload = async (req, res) => {
         { text: "RORITO", style: "header" },
         { text: "Official Invoice\n\n", style: "subheader" },
 
-        { text: [
-          "Invoice Date:",
-          {text: `${new Date().toLocaleDateString()}`,bold:true}
-        ] },
-        { text: [
-          "Order ID",
-          {text: `${order.orderId}` ,bold:true}
-        ] },
-        { text:[
-          "Customer Name:",
-          {text: `${user.name}`,bold:true,color:"blue" }
-        ]},
-        { text: [
-          "Total Order Amount:",
-          {text:`₹${order.finalAmount}`,bold:true,color:"green"}
-        ]},
-        { text: [
-          "Discount Applied:",
-          {text:`-₹${order.discount}\n\n`,bold:true}
-        ]},
+        {
+          text: [
+            "Invoice Date:",
+            { text: `${new Date().toLocaleDateString()}`, bold: true },
+          ],
+        },
+        { text: ["Order ID:", { text: `${order.orderId}`, bold: true }] },
+        {
+          text: [
+            "Customer Name:",
+            { text: `${user.name}\n\n`, bold: true, color: "blue" },
+          ],
+        },
+        {
+          text: [
+            "Total Order Amount:",
+            { text: `₹${order.finalAmount}`, bold: true, color: "green" },
+          ],
+        },
+        {
+          text: [
+            "Discount Applied:",
+            { text: `-₹${order.discount}`, bold: true },
+          ],
+        },
+        {
+          text: [
+            "Delivery Charge:",
+            {text:`${order.deliveryCharge||0}\n\n`,bold:true}
+          ]
+        },
 
         {
           table: {
-            widths: ["*", "auto", "auto","auto", "auto","auto"],
+            widths: ["*", "auto", "auto", "auto", "auto"],
             body: [
-              ["Product Name","Brand", "Quantity","Actual Price", "Offer Price", "Total"],
               [
-                productItem.product.productName,
-                productItem.product.brand?.brandName||"N/A",
-                productItem.quantity,
-                `₹${productItem.product.regularPrice}`,
-                `₹${productItem.product.salePrice}`,
-                {text:`₹${productItem.price*productItem.quantity}`,bold:true,color:"green"},
+                "Product Name",
+                "Brand",
+                "Quantity",
+                "Actual Price",
+                "Offer Price",
               ],
+              ...order.orderedItems.map((item) => [
+                item.product.productName,
+                item.product.brand?.brandName || "N/A",
+                item.quantity,
+                `₹${item.product.regularPrice}`,
+                `₹${item.product.salePrice}`,
+              ]),
             ],
           },
         },
@@ -246,12 +264,10 @@ const postReturnRequest = async (req, res) => {
     }
 
     if (item.status !== "Delivered") {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Only delivered items can be returned",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Only delivered items can be returned",
+      });
     }
 
     item.status = "Return Request";
@@ -276,12 +292,10 @@ const postReturnRequest = async (req, res) => {
 
     await order.save();
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: "Return request submitted successfully",
-      });
+    return res.status(200).json({
+      success: true,
+      message: "Return request submitted successfully",
+    });
   } catch (error) {
     console.error("Error:", error.message);
     return res
