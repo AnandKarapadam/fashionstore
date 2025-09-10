@@ -106,13 +106,17 @@
         <p class="small fw-bold">%<%= orderItem.product.productOffer %></p>
       </div>
       <div class="d-flex justify-content-between">
+        <p class="small">Quantity</p>
+        <p class="small fw-bold"><%= orderItem.quantity %></p>
+      </div>
+      <div class="d-flex justify-content-between">
         <p class="small">Platform Fee</p>
         <p class="small fw-bold">₹0</p>
       </div>
       <hr>
       <div class="d-flex justify-content-between">
         <p class="small">Total Amount</p>
-        <p class="small fw-bold text-success">₹<%= orderItem.product.salePrice %></p>
+        <p class="small fw-bold text-success">₹<%= orderItem.product.salePrice*orderItem.quantity %></p>
       </div>
       </div>
     </div>

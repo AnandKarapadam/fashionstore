@@ -11,14 +11,17 @@ const ExcelJs = require("exceljs");
 const PDFDocument = require("pdfkit");
 const path = require("path");
 
+
 const loadLogin = async (req, res) => {
   try {
     if (req.session.admin) {
-      return res.redirect("/admin/dashboard");
+      return res.redirect("/admin");
     } else {
       res.render("admin/login", { message: null, cssFile: "admin/login" });
     }
-  } catch (error) {}
+  } catch (error) {
+    logger.error(`Error in Loading Login:${error.stack}`);
+  }
 };
 const login = async (req, res) => {
   try {
@@ -100,15 +103,16 @@ const loadDashboard = async (req, res) => {
         .skip(skip)
         .limit(limit);
 
-      let totalSales = 0;
-      let totalProductsSold = 0;
-      orders.forEach((order) => {
-        totalSales += order.totalPrice;
-        totalProductsSold += order.orderedItems.reduce(
-          (sum, item) => sum + item.quantity,
-          0
+        const allOrders = await Order.find({overAllStatus:"Delivered"});
+
+        const totalSales = allOrders.reduce((sum,order)=>sum+(order.finalAmount||0),0);
+        const totalProductsSold = allOrders.reduce(
+          (sum, order) =>
+                 sum + order.orderedItems.reduce((qty, item) => qty + Number(item.quantity), 0),
+              0
         );
-      });
+
+      
 
 
       let chartQuery = {overAllStatus:"Delivered"};
@@ -238,7 +242,8 @@ const loadDashboard = async (req, res) => {
       return res.redirect("/admin/login");
     }
   } catch (error) {
-    console.log("Error:", error.message);
+    logger.error(`Error:${error.stack}`);
+    
     res.redirect("/pageerror");
   }
 };
@@ -272,6 +277,8 @@ const salesReportDownload = async (req, res) => {
     }
 
     const orders = await Order.find(query).populate("userId");
+    const totalSales = orders.filter(order=>order.overAllStatus==="Delivered").reduce((acc, order) => acc + (order.finalAmount || 0), 0);
+
 
     if (orders.length == 0) {
       return res.status(404).send("No sales data found for this filter");
@@ -327,6 +334,10 @@ const salesReportDownload = async (req, res) => {
   // Title
   doc.fontSize(18).text("Sales Report", { align: "center" });
   doc.moveDown(1);
+
+  doc.fontSize(12).font("Helvetica-Bold").text(`Total Sales Amount:${totalSales}`,{align:"right"});
+  doc.moveDown(1);
+
 
   // Column setup (x position + width + alignment)
   const columns = [

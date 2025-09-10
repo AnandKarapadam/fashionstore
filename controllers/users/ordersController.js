@@ -7,6 +7,8 @@ const path = require("path");
 const User = require("../../models/userSchema");
 const Wishlist = require("../../models/wishlistSchema");
 const Wallet = require("../../models/walletSchema");
+const Brand = require("../../models/brandSchema");
+const { text } = require("pdfkit");
 
 const loadOrderPage = async (req, res) => {
   try {
@@ -129,10 +131,13 @@ const invoiceDownload = async (req, res) => {
     const userId = req.session.user;
 
     const order = await Order.findOne({ _id: orderId, userId }).populate(
-      "orderedItems.product"
+      {path:"orderedItems.product",populate:{path:"brand",model:"Brand"}},
+      
     );
 
-    if (!order) {
+    const user = await User.findById(userId);
+
+    if (!order||!user) {
       return res.status(404).send("Order not found");
     }
 
@@ -149,20 +154,39 @@ const invoiceDownload = async (req, res) => {
         { text: "RORITO", style: "header" },
         { text: "Official Invoice\n\n", style: "subheader" },
 
-        { text: `Invoice Date: ${new Date().toLocaleDateString()}` },
-        { text: `Order ID: ${order.orderId}` },
-        { text: `Customer ID: ${userId}\n\n` },
+        { text: [
+          "Invoice Date:",
+          {text: `${new Date().toLocaleDateString()}`,bold:true}
+        ] },
+        { text: [
+          "Order ID",
+          {text: `${order.orderId}` ,bold:true}
+        ] },
+        { text:[
+          "Customer Name:",
+          {text: `${user.name}`,bold:true,color:"blue" }
+        ]},
+        { text: [
+          "Total Order Amount:",
+          {text:`₹${order.finalAmount}`,bold:true,color:"green"}
+        ]},
+        { text: [
+          "Discount Applied:",
+          {text:`-₹${order.discount}\n\n`,bold:true}
+        ]},
 
         {
           table: {
-            widths: ["*", "auto", "auto", "auto"],
+            widths: ["*", "auto", "auto","auto", "auto","auto"],
             body: [
-              ["Product Name", "Quantity", "Unit Price", "Total"],
+              ["Product Name","Brand", "Quantity","Actual Price", "Offer Price", "Total"],
               [
                 productItem.product.productName,
+                productItem.product.brand?.brandName||"N/A",
                 productItem.quantity,
+                `₹${productItem.product.regularPrice}`,
                 `₹${productItem.product.salePrice}`,
-                `₹${productItem.price}`,
+                {text:`₹${productItem.price*productItem.quantity}`,bold:true,color:"green"},
               ],
             ],
           },

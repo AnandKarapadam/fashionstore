@@ -320,9 +320,24 @@ const loadPaymentPage = async(req,res)=>{
 
   }
 
-  finalAmount = subtotal+deliveryCharge;
+  const today = new Date();
 
-     res.render("user/payment",{cartItems,discount,deliveryCharge,finalAmount,subtotal,type,productId,user});
+  const availableCoupons = await Coupon.find({
+    isList:true,
+    createOn:{$lte:today},
+    expireOn:{$gte:today},
+    $or:[
+      {user:null},
+      {user:userId}
+    ],
+    usedBy:{$ne:userId}
+  })
+
+  finalAmount = subtotal+deliveryCharge;
+  
+  
+
+     res.render("user/payment",{cartItems,discount,coupons:availableCoupons,deliveryCharge,finalAmount,subtotal,type,productId,user});
 
   } catch (error) {
     console.error("Error:",error.message);
@@ -521,7 +536,7 @@ const postPaymentMethod = async(req,res)=>{
     }
 
   } catch (error) {
-    console.error("Error: ",error.message);
+    console.error("Error: ",error.message); 
   }
 }
 
