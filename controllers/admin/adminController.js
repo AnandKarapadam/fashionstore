@@ -9,6 +9,7 @@ const Order = require("../../models/orderSchema");
 const logger = require("../../utils/logger");
 const ExcelJs = require("exceljs");
 const PDFDocument = require("pdfkit");
+const path = require("path");
 
 const loadLogin = async (req, res) => {
   try {
@@ -47,7 +48,7 @@ const loadDashboard = async (req, res) => {
       const prCount = await Product.countDocuments({ isBlocked: false });
       const brCount = await Brand.countDocuments({ isBlocked: false });
 
-      const { filter, startDate, endDate, page = 1 } = req.query;
+      const { filter, startDate, endDate, page = 1,chartFilter } = req.query;
       const limit = 5;
 
       let query = { overAllStatus: "Delivered" };
@@ -109,6 +110,111 @@ const loadDashboard = async (req, res) => {
         );
       });
 
+
+      let chartQuery = {overAllStatus:"Delivered"};
+
+      if(chartFilter==="topDaily"){
+        chartQuery.createOn = {
+          $gte:new Date(today.setHours(0,0,0,0)),
+          $lte:new Date(today.setHours(23,59,59,999))
+        }
+      }else if(chartFilter==="topMonthly"){
+        const monthAgo = new Date();
+        monthAgo.setMonth(today.getMonth()-1);
+        chartQuery.createOn={$gte:monthAgo,$lte:today}
+      }else if(chartFilter=== "topYearly"){
+        const yearAgo = new Date();
+        yearAgo.setFullYear(today.getFullYear()-1);
+        chartQuery.createOn = {$gte:yearAgo,$lte:today}
+      }
+
+      const topProducts = await Order.aggregate([
+        {$match:chartQuery},
+        {$unwind:"$orderedItems"},
+        {
+          $group:{
+            _id:"$orderedItems.product",
+            totalSold:{$sum:"$orderedItems.quantity"},
+          },
+        },
+        {
+          $lookup:{
+            from:"products",
+            localField:"_id",
+            foreignField:"_id",
+            as:"product",
+          }
+        },
+        {$unwind:"$product"},
+        {$project:{name:"$product.productName",totalSold:1}},
+        {$sort:{totalSold:-1}},
+        {$limit:10}
+      ])
+
+      const topCategories = await Order.aggregate([
+        {$match:chartQuery},
+        {$unwind:"$orderedItems"},
+        {
+          $lookup:{
+            from:"products",
+            localField:"orderedItems.product",
+            foreignField:"_id",
+            as:"product"
+          }
+        },
+        {$unwind:"$product"},
+        {
+          $group:{
+            _id:"$product.category",
+            totalSold:{$sum:"$orderedItems.quantity"}
+          }
+        },
+        {
+          $lookup:{
+            from:"categories",
+            localField:"_id",
+            foreignField:"_id",
+            as:"category"
+          }
+        },
+        {$unwind:"$category"},
+        {$project:{name:"$category.name",totalSold:1}},
+        {$sort:{totalSold:-1}},
+        {$limit:10}
+      ]);
+
+      const topBrands = await Order.aggregate([
+        {$match:chartQuery},
+        {$unwind:"$orderedItems"},
+        {
+          $lookup:{
+            from:"products",
+            localField:"orderedItems.product",
+            foreignField:"_id",
+            as:"product"
+          }
+        },
+        {$unwind:"$product"},
+        {
+          $group:{
+            _id:"$product.brand",
+            totalSold:{$sum:"$orderedItems.quantity"},
+          }
+        },
+        {
+          $lookup:{
+            from:"brands",
+            localField:"_id",
+            foreignField:"_id",
+            as:"brand"
+          },
+        },
+        {$unwind:"$brand"},
+        {$project:{name:"$brand.brandName",totalSold:1}},
+        {$sort:{totalSold:-1}},
+        {$limit:10}
+      ])
+
       return res.render("admin/dashboard", {
         cssFile: "admin/dashboard",
         count,
@@ -123,6 +229,10 @@ const loadDashboard = async (req, res) => {
         orders,
         currentPage: pageInt,
         totalPages,
+        topProducts:topProducts||[],
+        topCategories:topCategories||[],
+        topBrands:topBrands||[],
+        chartFilter
       });
     } else {
       return res.redirect("/admin/login");
@@ -204,35 +314,70 @@ const salesReportDownload = async (req, res) => {
       return workbook.xlsx.write(res).then(() => res.end());
     }
 
-    if (type === "pdf") {
-      const doc = new PDFDocument();
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader(
-        "Content-Disposition",
-        "attachment; filename=sales-report.pdf"
-      );
+   if (type === "pdf") {
+  const doc = new PDFDocument({ margin: 40 });
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader(
+    "Content-Disposition",
+    "attachment; filename=sales-report.pdf"
+  );
 
-      doc.pipe(res);
+  doc.pipe(res);
 
-      doc.fontSize(18).text("Sales Report", { align: "center" });
-      doc.moveDown();
-      let count = 0;
-      orders.forEach((order) => {
-        count++;
-        doc
-          .fontSize(12)
-          .text(
-            `${count})Order: ${order.orderId} | User: ${
-              order.userId?.name || "Guest"
-            } | Date: ${order.createOn.toDateString()} | Total: ₹${
-              order.totalPrice
-            } | Discount: ₹${order.discount} | Final: ₹${order.finalAmount}`
-          );
-        doc.moveDown(0.5);
-      });
+  // Title
+  doc.fontSize(18).text("Sales Report", { align: "center" });
+  doc.moveDown(1);
 
-      doc.end();
+  // Column setup (x position + width + alignment)
+  const columns = [
+    { label: "No",       key: "no",       x: 50,  width: 30,  align: "left" },
+    { label: "Order ID", key: "orderId",  x: 80,  width: 80,  align: "left" },
+    { label: "User",     key: "user",     x: 160, width: 80,  align: "left" },
+    { label: "Date",     key: "date",     x: 240, width: 100, align: "left" },
+    { label: "Total ",key: "total",    x: 340, width: 60,  align: "right" },
+    { label: "Discount", key: "discount", x: 400, width: 70,  align: "right" },
+    { label: "Final ",key: "final",    x: 470, width: 70,  align: "right" },
+  ];
+
+  let y = doc.y;
+
+  // Headers
+  doc.fontSize(12).font("Helvetica-Bold");
+  columns.forEach(col => {
+    doc.text(col.label, col.x, y, { width: col.width, align: col.align });
+  });
+
+  y += 20; 
+
+  
+  doc.moveTo(50, y - 5).lineTo(540, y - 5).stroke();
+
+  
+  doc.fontSize(10).font("Helvetica");
+  orders.forEach((order, i) => {
+    const row = {
+      no: i + 1,
+      orderId: order.orderId,
+      user: order.userId?.name || "Guest",
+      date: new Date(order.createOn).toDateString(),
+      total: order.totalPrice,
+      discount: order.discount,
+      final: order.finalAmount,
+    };
+
+    columns.forEach(col => {
+      doc.text(String(row[col.key]), col.x, y, { width: col.width, align: col.align });
+    });
+
+    y += 18; 
+    if (y > doc.page.height - 50) {
+      doc.addPage();
+      y = doc.y;
     }
+  });
+
+  doc.end();
+}
   } catch (error) {
     console.log("Error:", error.message);
     logger.error(`Error:${error.message}`);

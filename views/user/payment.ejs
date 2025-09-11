@@ -120,9 +120,9 @@
         <div>-₹<span id="discountAmount"><%= discount || 0 %></span></div>
     </div>
     <!-- 3. Platform Fee -->
-    <div class="d-flex justify-content-between small text-muted mb-3">
-      <div>Platform Fee</div>
-      <div>₹0</div>
+    <div class="d-flex justify-content-between small fw-bold text-muted mb-3">
+      <div>Delivery Charge</div>
+      <div>₹<%= deliveryCharge %></div>
     </div>
       </div>
     <hr>
@@ -138,7 +138,7 @@
     <!-- 5. Total Price -->
     <div class="d-flex justify-content-between mb-3 bg-light rounded-3 p-3">
       <div class="fw-bold">Total <br> <small class="text-muted fw-normal">In rupees</small></div>
-      <div class="fw-bold text-success"><span id="totalAmount">₹<%= subtotal %></span></div>
+      <div class="fw-bold text-success"><span id="totalAmount">₹<%= finalAmount %></span></div>
     </div>
 
     <!-- 6. Continue Button -->

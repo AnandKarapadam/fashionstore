@@ -2,38 +2,29 @@
 
 <%- include("../partials/admin/sidebar.ejs") %>
 
-<div class="container">
-  <div class="row mt-5 jusitfy-content-center">
-    <div class="col-md-4">
-      <a href="/admin/users" class="text-decoration-none text-dark">
-      <div class="card text-center p-2 shadow-sm bg-light">
-        <h2 style="text-shadow: 2px 1px 2px #000000;" class="fw-semibold">Active Users</h2>
-        <i class="bi bi-list-ol fs-1 text-success fw-bold"></i>
-        <p class="fw-bold fs-3">Count : <span class="text-primary fw-bold" style="text-shadow: 2px 1px 2px #000000;"  ><%= count%></span> </p>
-      </div>
-      </a>
-    </div>
-    
-    <div class="col-md-4">
-      <a href="/admin/products" class="text-decoration-none text-dark">
-      <div class="card text-center p-2  shadow-sm bg-light">
-        <h2 style="text-shadow: 2px 1px 2px #000000;" class="fw-semibold">Active Products</h2>
-        <i class="bi bi-luggage-fill fs-1 text-primary fw-bold"></i>
-        <p class="fw-bold fs-3">Count : <span class="text-success fw-bold" style="text-shadow: 2px 1px 2px #000000;"><%= products%></span> </p>
-      </div>
-    </a>
-    </div>
+<div class="container mt-5">
+  
+  <form action="/admin" method="get" class="mb-3">
+    <select name="chartFilter" onchange="this.form.submit()" class="form-select w-auto d-inline-block" >
+      <option value="">All Time</option>
+      <option value="topDaily" <%= chartFilter==="topDaily"?"selected":"" %>>Daily</option>
+      <option value="topMonthly" <%= chartFilter==="topMonthly"?"selected":"" %>>Monthly</option>
+      <option value="topYearly" <%= chartFilter==="topYearly"?"selected":"" %>>Yearly</option>
+    </select>
+  </form>
 
+  <div class="row">
     <div class="col-md-4">
-      <a href="/admin/brands" class="text-decoration-none text-dark">
-       <div class=" card text-center p-2  shadow-sm bg-light">
-        <h2 style="text-shadow: 2px 1px 2px #000000;" class="fw-semibold">Companies</h2>
-        <i class="bi bi-suitcase-lg-fill text-danger fw-bold fs-1"></i>
-        <p class="fw-bold fs-3">Count : <span class="text-warning fw-bold" style="text-shadow: 2px 1px 2px #000000;"><%= brand%></span> </p>
-      </div>
-      </a>
+      <canvas id="topProductsChart" style="width: 430px;height: 300px;"></canvas>
+    </div>
+    <div class="col-md-4">
+      <canvas id="topCategoriesChart" style="width: 430px;height: 300px;" ></canvas>
+    </div>
+    <div class="col-md-4">
+      <canvas id="topBrandsChart" style="width: 430px;height: 300px;" ></canvas>
+    </div>
   </div>
-  </div>
+
 </div>
 <div class="d-flex w-100 mt-4">
   <hr class="w-75 mx-auto border border-2 border-dark">
@@ -168,8 +159,106 @@
        class="btn btn-success">Download Excel</a>
   </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  function toggleCustomDate() {
+
+
+const topProducts = JSON.parse('<%- JSON.stringify(topProducts || []) %>');
+const topCategories= JSON.parse('<%- JSON.stringify(topCategories || []) %>');
+const topBrands = JSON.parse('<%- JSON.stringify(topBrands || []) %>');
+
+
+function createBarChart(ctxId,dataArr,labelText){
+  const ctx = document.getElementById(ctxId).getContext("2d");
+
+  const palettes = {
+    "Top Products": [
+      "rgba(54, 162, 235, 0.6)",   // blue
+      "rgba(100, 181, 246, 0.6)",  // light blue
+      "rgba(25, 118, 210, 0.6)",   // dark blue
+      "rgba(3, 169, 244, 0.6)",    // cyan
+      "rgba(0, 188, 212, 0.6)"     // teal-blue
+    ],
+    "Top Categories": [
+      "rgba(255, 99, 132, 0.6)",   // red
+      "rgba(255, 138, 101, 0.6)",  // coral
+      "rgba(229, 57, 53, 0.6)",    // dark red
+      "rgba(244, 81, 30, 0.6)",    // orange-red
+      "rgba(211, 47, 47, 0.6)"     // crimson
+    ],
+    "Top Brands": [
+      "rgba(76, 175, 80, 0.6)",    // green
+      "rgba(139, 195, 74, 0.6)",   // lime
+      "rgba(56, 142, 60, 0.6)",    // forest green
+      "rgba(102, 187, 106, 0.6)",  // light green
+      "rgba(67, 160, 71, 0.6)"     // medium green
+    ]
+  };
+
+ 
+  const palette = palettes[labelText] || [
+    "rgba(54, 162, 235, 0.6)",
+    "rgba(75, 192, 192, 0.6)",
+    "rgba(153, 102, 255, 0.6)"
+  ];
+
+const borderColor = palette.map(c=>c.replace("0.6","1"));
+
+  return new Chart(ctx,{
+    type:"bar",
+    data:{
+      labels:dataArr.map(item=>item.name),
+      datasets:[{
+        label:labelText,
+        data:dataArr.map(item=>item.totalSold),
+        backgroundColor: dataArr.map((_,i)=>palette[i%palette.length]),
+        borderColor: dataArr.map((_,i)=>borderColor[i%borderColor.length]),
+        borderWidth:1
+      }]
+    },
+    options:{
+      responsive:false,
+      animation:true,
+      maintainAspectRatio: false,
+      plugins:{
+        legend:{display:true},
+        tooltip:{enabled:true,animation:true},
+        title:{
+          display:true,
+          text:labelText,
+          font:{size:18,weight:"bold"},
+          padding:{top:5,bottom:10}
+        }
+      },
+      scales:{
+        x: {
+      ticks: {
+        autoSkip: true,
+        maxTicksLimit:10,
+        maxRotation: 0, // keep labels straight
+        minRotation: 0 , // prevent tilt
+        callback: function(value, index, ticks) {
+          let label = this.getLabelForValue(value);
+          return label.length > 10 ? label.substring(0, 10) + "…" : label;
+        }
+      }
+    },
+        y:{
+          beginAtZero:true,
+          ticks:{precision:0,autoSkip:true,maxTicksLimit:6,callback:function(value){return value}}
+        }
+      }
+    }
+  })
+
+
+}
+
+if(topProducts.length) createBarChart("topProductsChart",topProducts,"Top Products");
+if(topCategories.length) createBarChart("topCategoriesChart",topCategories,"Top Categories");
+if(topBrands.length) createBarChart("topBrandsChart",topBrands,"Top Brands")
+
+function toggleCustomDate() {
     const filter = document.getElementById("filterSelect").value;
     const customFields = document.querySelectorAll(".custom-date");
     if (filter === "custom") {
