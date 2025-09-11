@@ -90,13 +90,10 @@
             <div class="col-6 col-md-4 col-lg-3">
               <div class="product-card shadow-sm position-relative" >
                 <i  class="bi <%= product.isWishlisted ? 'bi-heart-fill text-danger' : 'bi-heart' %> wishlist-icon position-absolute rounded-circle bg-light shadow-sm px-1 top-0 end-0 m-2 fs-7 text-secondary"
-   onclick="toggleWishlist(this, '<%= product._id %>' )"></i>
+                    onclick="toggleWishlist(this, '<%= product._id %>' )"></i>
                 <a href="/product/details/<%= product._id %>" class="text-decoration-none text-dark">
                   <img src="/uploads/re-image/<%= product.productImage[0] %>?/uploads/re-image/<%= product.productImage[0] %>:/uploads/product-images/<%= product.productImage[0] %>"  alt="<%= product.productName %>">
                    
-                  <!-- <% if (product.productOffer && product.productOffer > 0) { %>
-                   <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2"><%= product.productOffer %>% OFF</span>
-                  <% } %> -->
                   <h6 class="mt-2 text-truncate"><%= product.productName %></h6>
                   <div class="d-flex flex-column align-items-start">
                   <p class="mb-0 d-flex w-100"><span class="fw-bold text-success fs-6">₹<%= product.salePrice %></span>

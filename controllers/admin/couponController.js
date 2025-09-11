@@ -40,6 +40,12 @@ const createCoupon = async(req,res)=>{
             minimumPrice:parseInt(req.body.minimumprice)
         }
 
+        const existingCoupon  = await Coupon.findOne({name:data.couponName});
+
+        if(existingCoupon){
+            return res.redirect("/admin/coupon?error=CouponAlreadyExist");
+        }
+
         const newCoupon = new Coupon({
             name:data.couponName,
             createOn:data.startDate,

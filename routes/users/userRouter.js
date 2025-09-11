@@ -57,7 +57,7 @@ router.get("/auth/google/callback", passport.authenticate("google", { failureRed
 
 router.get("/pageNotFound",userController.loadPageNotFound);
 router.get("/logout",userController.logout);
-
+router.post("/delete-account",userController.deleteAccount);
 
 //Profile Management
 router.get("/forget-password",userAuth,profileController.loadForgetpage);

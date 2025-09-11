@@ -94,25 +94,30 @@
       <p class="text-muted small">Product Details</p>
       <hr>
       <div class="d-flex justify-content-between">
-        <p class="small">List Price</p>
-        <p class="small fw-bold">₹<%= orderItem.product.regularPrice %></p>
+        <p class="small">MRP</p>
+        <p class="small fw-bold text-danger">₹<%= orderItem.product.regularPrice %></p>
       </div>
       <div class="d-flex justify-content-between">
         <p class="small">Selling Price</p>
-        <p class="small fw-bold">₹<%= orderItem.product.salePrice %></p>
+        <p class="small fw-bold text-success">₹<%= orderItem.product.salePrice %></p>
       </div>
       <div class="d-flex justify-content-between">
-        <p class="small">Discount</p>
-        <p class="small fw-bold">%<%= orderItem.product.productOffer %></p>
+        <p class="small">Total MRP</p>
+        <p class="small fw-bold"><%= orderItem.quantity %> x <%= orderItem.product.regularPrice %>=<%= orderItem.quantity*orderItem.product.regularPrice %></p>
       </div>
       <div class="d-flex justify-content-between">
-        <p class="small">Platform Fee</p>
-        <p class="small fw-bold">₹0</p>
+        <p class="small">Offer:</p>
+        <p class="small fw-bold"><%= orderItem.product.productOffer %>%</p>
       </div>
+      <div class="d-flex justify-content-between">
+        <p class="small">Total Selling Price:</p>
+        <p class="small fw-bold"><%= orderItem.quantity %> x <%= orderItem.product.salePrice %> = <%= orderItem.quantity*orderItem.product.salePrice %></p>
+      </div>
+      
       <hr>
       <div class="d-flex justify-content-between">
-        <p class="small">Total Amount</p>
-        <p class="small fw-bold text-success">₹<%= orderItem.product.salePrice %></p>
+        <p class="small">Product Price:</p>
+        <p class="small fw-bold text-success ">₹<%=  orderItem.product.salePrice*orderItem.quantity %></p>
       </div>
       </div>
     </div>

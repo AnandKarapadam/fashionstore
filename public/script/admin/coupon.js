@@ -42,3 +42,19 @@ function confirmDelete(event) {
     }
   });
 }
+
+const urlParams = new URLSearchParams(window.location.search);
+const error =  urlParams.get("error");
+
+if(error==="CouponAlreadyExist"){
+  Swal.fire({
+    icon:"error",
+    title:"Duplicate coupon",
+    text:"This coupon name already exists. Please try another name!",
+    confirmButtonColor:"#d33"
+  }).then(()=>{
+    const url = new URL(window.location.href);
+    url.searchParams.delete("error");
+    window.history.replaceState({},document.title,url.toString());
+  })
+}

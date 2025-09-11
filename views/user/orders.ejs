@@ -150,7 +150,7 @@
                   <%} else{ %>  
                     <a href="/product/all" class="btn btn-outline-dark btn-sm mb-2 mb-md-0">Shop</a>
                     <%}%>
-                  <span class="fw-bold text-end ms-auto">Total: ₹<%= order.finalAmount %></span>
+                  <span class="fw-bold text-end ms-auto d-flex flex-column">Total: ₹<%= order.finalAmount %> <%if(order.discount>0){%> <span style="font-size: 12px;" class="text-muted fw-semibold ">Saved:-₹<%= order.discount %></span> <%}%></span>
               </div>
             </div>
           </div>

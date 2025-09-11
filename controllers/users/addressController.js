@@ -24,7 +24,7 @@ const loadAddressPage = async(req,res)=>{
                currentPage: 1,
                totalPages: 1,
                search,
-            addresses: [{ address: [] }],
+            addresses: [],
             userId,
             user
             });
@@ -63,7 +63,7 @@ const loadNewAddressPage = async(req,res)=>{
         res.render("user/addAddress",{user})
         
     } catch (error) {
-        console.error("Error: ",error.message);
+        console.error('Error: ',error.message);
     }
 }
 
@@ -97,8 +97,8 @@ const postAddress = async(req,res)=>{
             state,
             pincode,
             phone,
-            altPhone:altPhone||"",
-            locality:locality||"",
+            altPhone:altPhone||'',
+            locality:locality||'',
             address,
             countryCode
         }

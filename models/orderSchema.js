@@ -80,6 +80,11 @@ let orderSchema = new Schema({
     trim: true,
     default: null,
   },
+  deliveryCharge:{
+    type:Number,
+    default:0,
+  }
+  ,
   returnReason: {
     type: String,
     trim: true,
@@ -108,11 +113,23 @@ let orderSchema = new Schema({
   },
 });
 
-orderSchema.pre("save", function (next) {
+orderSchema.pre("save",async function (next) {
   if (!this.orderId) {
-    const randomNum = Math.floor(1000000 + Math.random() * 9000000);
-    this.orderId = `ORID${randomNum}`;
+    let isUinque = false;
+    let newOrderId;
+    while(!isUinque){
+      const randomNum = Math.floor(1000000 + Math.random() * 9000000);
+      newOrderId = `ORID${randomNum}`;
+
+      const existingOrder = await mongoose.models.Order.findOne({orderId:newOrderId});
+
+      if(!existingOrder){
+        isUinque = true;
+      }
+    }
+    this.orderId = newOrderId;
   }
+  
   next();
 })
 

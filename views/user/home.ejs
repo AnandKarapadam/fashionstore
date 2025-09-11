@@ -22,8 +22,8 @@
   <div class="scroll-container d-flex justify-content-center" id="cardRow">
     <% category.forEach(cat => { %>
       <a href="/product/all?category=<%= cat._id %>" class="text-decoration-none text-dark">
-        <div class="card product-card">
-          <img src="<%= cat.image %>" class="card-img-top" alt="<%= cat.name %>">
+        <div class="card product-card hover-card">
+          <img src="<%= cat.image %>" class="card-img-top " alt="<%= cat.name %>">
           <div class="card-body p-2">
             <h6 class="card-title text-center mb-0"><%= cat.name %></h6>
           </div>
@@ -50,10 +50,10 @@
   <div class="scroll-container d-flex justify-content-center mb-5" id="secondRow">
     <% products.forEach(product => { %>
       <a href="/product/all?search=<%= product.productName %>" class="text-decoration-none text-dark">
-        <div class="card product-card pro-card">
-          <img src="/uploads/re-image/<%= product.productImage[0] %>" class="card-img-top object-fit-cover" alt="<%= product.productName %>">
+        <div class="card hover-card  product-card pro-card">
+          <img src="/uploads/re-image/<%= product.productImage[0] %>" class=" " alt="<%= product.productName %>">
           <div class="card-body p-2">
-            <h6 class="card-title d-block text-truncate mb-0" ><%= product.productName %></h6>
+            <h6 class="card-title d-block text-center text-truncate mb-0" ><%= product.productName %></h6>
           </div>
         </div>
       </a>

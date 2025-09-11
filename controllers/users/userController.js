@@ -9,6 +9,8 @@ const Wishlist = require("../../models/wishlistSchema");
 const crypto = require("crypto");
 const Coupon = require("../../models/couponSchema");
 const Wallet = require("../../models/walletSchema");
+const { match } = require("assert");
+const logger = require("../../utils/logger");
 
 let loadHomepage = async (req, res) => {
   try {
@@ -22,7 +24,7 @@ let loadHomepage = async (req, res) => {
     if (userId) {
       const userData = await User.findOne({ _id: userId });
       if (!userData.isBlocked) {
-        const category = await Category.find({}).lean();
+        const category = await Category.find({isListed:true}).lean();
 
         for (let cat of category) {
           const product = await Product.findOne({
@@ -32,10 +34,10 @@ let loadHomepage = async (req, res) => {
           }).lean();
 
           cat.image = product?.productImage?.[0]
-            ? `/uploads/product-images/${product.productImage[0]}`
+            ? `/uploads/re-image/${product.productImage[0]}`
             : "/images/default-category.jpg";
         }
-        const products = await Product.find().sort({ quantity: 1 });
+        const products = await Product.find().sort({ quantity: 1 }).limit(10);
         return res.render("user/home", {
           category,
           user: userData,
@@ -368,10 +370,28 @@ const logout = async (req, res) => {
   }
 };
 
+const deleteAccount = async(req,res)=>{
+  try {
+    const userId = req.session.user;
+
+    const deleted = await User.findByIdAndDelete(userId);
+
+    if(deleted){
+      req.session.destroy();
+      return res.redirect("/landingpage");
+    }else{
+      logger.error("Error in deleting the User");
+      res.redirect("/pageNotFound")
+    }
+  } catch (error) {
+    console.log("Error:",error.message)
+  }
+}
+
 const loadAllProductsPage = async (req, res) => {
   try {
     let page = parseInt(req.query.page) || 1;
-    let limit = 8;
+    let limit = 12;
     let skip = (page - 1) * limit;
     const userId = req.session.user;
     let user;
@@ -426,7 +446,8 @@ const loadAllProductsPage = async (req, res) => {
     else if (sort === "nameDesc") sortOption.productName = -1;
 
     let products = await Product.find(query)
-      .populate("category")
+      .populate({path:"category",match:{isListed:true}})
+      .populate({path:"brand",match:{isBlocked:false}})
       .sort(sortOption)
       .skip(skip)
       .limit(limit)
@@ -446,7 +467,7 @@ const loadAllProductsPage = async (req, res) => {
       }
     }
 
-    products = products.filter(p=>p.category?.isListed)
+    products = products.filter(p=>p.category?.isListed&&p.brand)
 
     const categories = await Category.find({ isListed: true });
     const matchedProducts = await Product.countDocuments(query);
@@ -468,7 +489,7 @@ const loadAllProductsPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Cannot render all products page", error.message);
-    res.redirect("/pageNotFound");
+    res.redirect("/pageNotFound");  
   }
 };
 
@@ -606,4 +627,5 @@ module.exports = {
   loadAllProductsPage,
   getProductDetails,
   postReview,
+  deleteAccount
 };

@@ -97,6 +97,10 @@ const addToCart = async(req,res)=>{
     const quantity = parseInt(req.body.quantity)||1;
     const id = req.session.user;
 
+   if(!id){
+    return res.json({success:false,message:"Please Login To Account"})
+   }
+
     let product = await Product.findById({_id:productId})
 
     if(!product||product.isBlocked||product.quantity<=0){
@@ -289,7 +293,7 @@ const loadPaymentPage = async(req,res)=>{
 
     if(req.session.couponData){
       discount = req.session.couponData.discount;
-      subtotal = req.session.couponData.finalAmount;
+      // subtotal = req.session.couponData.finalAmount;
     }
     
   let deliveryCharge = 0;
@@ -320,9 +324,26 @@ const loadPaymentPage = async(req,res)=>{
 
   }
 
-  finalAmount = subtotal+deliveryCharge;
+  
 
-     res.render("user/payment",{cartItems,discount,deliveryCharge,finalAmount,subtotal,type,productId,user});
+  const today = new Date();
+
+  const availableCoupons = await Coupon.find({
+    isList:true,
+    createOn:{$lte:today},
+    expireOn:{$gte:today},
+    $or:[
+      {user:null},
+      {user:userId}
+    ],
+    usedBy:{$ne:userId}
+  })
+
+  finalAmount = subtotal+deliveryCharge-discount;
+  
+  
+
+     res.render("user/payment",{cartItems,discount,coupons:availableCoupons,deliveryCharge,finalAmount,subtotal,type,productId,user});
 
   } catch (error) {
     console.error("Error:",error.message);
@@ -470,7 +491,7 @@ const postPaymentMethod = async(req,res)=>{
       deliveryCharge
     }
 
-    delete req.session.couponData;
+    
     
        
 
@@ -521,7 +542,7 @@ const postPaymentMethod = async(req,res)=>{
     }
 
   } catch (error) {
-    console.error("Error: ",error.message);
+    console.error("Error: ",error.message); 
   }
 }
 
@@ -559,7 +580,7 @@ function generateOrderItemId() {
 }
 
 async function updateOrder(orderData,userId) {
-  const{type,productId,address,paymentMethod,razorpayOrderId,discount,couponApplied,finalAmount,totalAmount,razorpayPaymentId} = orderData;
+  const{type,productId,address,paymentMethod,razorpayOrderId,discount,couponApplied,finalAmount,deliveryCharge,totalAmount,razorpayPaymentId} = orderData;
   let orderedItems = [];
   let totalPrice = 0;
 
@@ -630,11 +651,11 @@ async function updateOrder(orderData,userId) {
     paymentMethod,
     paymentId:razorpayPaymentId||null,
     razorpayOrderId:razorpayOrderId||null,
-    overAllStatus:"Processing"
+    overAllStatus:"Processing",
+    deliveryCharge
 
   })
 
-  
    await order.save();
  
    return order;
@@ -653,6 +674,9 @@ const verifyRazorPayment = async (req,res)=>{
       req.session.orderData.razorpayPaymentId = razorpay_payment_id;
       const order = await updateOrder(req.session.orderData,userId);
         delete req.session.orderData;
+        if(req.session.couponData){
+         delete req.session.couponData
+          }
       return res.json({success:true,orderId: order._id });
     }else{
       return res.json({success:false,message:"Invalid signature"});
@@ -660,7 +684,7 @@ const verifyRazorPayment = async (req,res)=>{
 
     
   } catch (error) {
-    console.log("Error:",error.message);
+    console.log("Error:",error.stack);
     res.json({success:false,message:"Server error"});
   }
 }
@@ -695,7 +719,7 @@ const loadWalletPayment = async (req,res)=>{
 const postWalletPayment = async (req,res)=>{
   try {
 
-    const{type,productId,address,paymentMethod,razorpayOrderId,discount,couponApplied,finalAmount,totalAmount} = req.session.orderData;
+    const{type,productId,address,paymentMethod,razorpayOrderId,deliveryCharge,discount,couponApplied,finalAmount,totalAmount} = req.session.orderData;
     const orderData = req.session.orderData;
     const userId = req.session.user;
 
@@ -786,7 +810,8 @@ const postWalletPayment = async (req,res)=>{
       paymentMethod,
       paymentId:null,
       razorpayOrderId:null,
-      overAllStatus:"Processing"
+      overAllStatus:"Processing",
+      deliveryCharge
     })
     await order.save();
     
@@ -802,6 +827,8 @@ const postWalletPayment = async (req,res)=>{
     await wallet.save();
 
     delete req.session.orderData;
+    delete req.session.couponData;
+  
     res.redirect("/cart/order-success");
     
   } catch (error) {
@@ -905,6 +932,7 @@ const getConfirmOrderPage = async(req,res)=>{
      const {type,product} = req.query;
      const userId = req.session.user;
 
+     delete req.session.couponData;  
      let user
         if(userId){
              user = await User.findById(userId);
@@ -1100,12 +1128,14 @@ const postConfirmation = async (req, res) => {
       couponApplied: orderData.couponApplied,
       paymentMethod:paymentMethod,
       overAllStatus:"Processing",
+      deliveryCharge:orderData.deliveryCharge
 
     });
 
     await newOrder.save();
 
     delete req.session.orderData;
+    delete req.session.couponData;
 
     res.status(200).json({
       message: "Order placed successfully",
@@ -1134,7 +1164,7 @@ const buyNowSingleProduct = async(req,res)=>{
       const product =  await Product.findById(productId);
       await Cart.updateOne(
     {userId},
-    {$push:{items:{productId:product_id,quantity:1,price:product.salePrice}}}
+    {$push:{items:{productId:product._id,quantity:1,price:product.salePrice}}}
     )
       return res.redirect("/cart");
     }    

@@ -52,5 +52,23 @@
 }
 
 .pro-card img {
+    object-fit: contain;
+    width: 100%;
     height: 150px;
+}
+
+.card-img-top {
+    object-fit: contain;
+    height: 150px;
+    /* adjust height */
+    padding: 5px;
+}
+
+.hover-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
