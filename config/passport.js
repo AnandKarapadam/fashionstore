@@ -14,7 +14,12 @@ passport.use(new GoogleStrategy({
         
         const email = profile.emails[0].value;
         let user = await User.findOne({email});
-
+        let referralCode;
+        let exists;
+        do {
+          referralCode = "REF" + crypto.randomBytes(3).toString("hex");
+          exists = await User.findOne({ referralCode });
+        } while (exists);
        
 
         if(user){
@@ -28,7 +33,8 @@ passport.use(new GoogleStrategy({
             user = new User({
                 name:profile.displayName,
                 email:profile.emails[0].value,
-                googleId:profile.id
+                googleId:profile.id,
+                referralCode:referralCode
             })
 
             await user.save();
