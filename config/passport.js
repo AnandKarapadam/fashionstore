@@ -26,11 +26,11 @@ passport.use(new GoogleStrategy({
         if(user){
             if(!user.googleId){
                 user.googleId=profile.id;
-                await user.save()
             }
             if(!user.referralCode){
                 user.referralCode = referralCode;
             }
+            await user.save()
             return done(null,user);
         }
         else{
