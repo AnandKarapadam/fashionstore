@@ -28,6 +28,8 @@ passport.use(new GoogleStrategy({
                 user.googleId=profile.id;
                 await user.save()
             }
+            if(!user.referralCode){
+                user.referralCode = referralCode;
             return done(null,user);
         }
         else{
