@@ -61,7 +61,7 @@ router.post("/delete-account",userController.deleteAccount);
 
 //Profile Management
 router.get("/forget-password",profileController.loadForgetpage);
-router.post("/forget-email-valid",userAuth,profileController.forgetEmailValid);
+router.post("/forget-email-valid",profileController.forgetEmailValid);
 router.post("/verify-passForgot-otp",userAuth,profileController.verifyForgotPassOtp);
 router.get("/reset-password",userAuth,profileController.getResetPasswordPage);
 router.post("/resend-forgot-otp",userAuth,profileController.resendforgotOTP);
