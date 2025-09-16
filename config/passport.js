@@ -30,6 +30,7 @@ passport.use(new GoogleStrategy({
             }
             if(!user.referralCode){
                 user.referralCode = referralCode;
+            }
             return done(null,user);
         }
         else{
