@@ -60,7 +60,7 @@ router.get("/logout",userController.logout);
 router.post("/delete-account",userController.deleteAccount);
 
 //Profile Management
-router.get("/forget-password",userAuth,profileController.loadForgetpage);
+router.get("/forget-password",profileController.loadForgetpage);
 router.post("/forget-email-valid",userAuth,profileController.forgetEmailValid);
 router.post("/verify-passForgot-otp",userAuth,profileController.verifyForgotPassOtp);
 router.get("/reset-password",userAuth,profileController.getResetPasswordPage);
