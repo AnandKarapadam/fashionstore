@@ -78,7 +78,7 @@ let loadLandingPage = async (req, res) => {
         }).lean();
 
         cat.image = product?.productImage?.[0]
-          ? `/uploads/product-images/${product.productImage[0]}`
+          ? `/uploads/re-image/${product.productImage[0]}`
           : "/images/default-category.jpg";
       }
       res.render("user/landingpage", {
