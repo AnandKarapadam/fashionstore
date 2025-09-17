@@ -83,7 +83,7 @@
                 <% } %>
             </td>
             <td>
-              <% if (product.status === 'Return Request') { %>
+              <% if (product.status === 'Return Request'||product.status=='Returned') { %>
                 <span><small><%= product.returnReason %></small></span>
               <% } else { %>
                 <span class="badge bg-secondary">None</span>

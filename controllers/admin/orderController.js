@@ -326,7 +326,21 @@ const postOrderItemStatus = async(req,res)=>{
           }
         }
         
+      
+
+      const updatedOrder = await Order.findOne({ orderId: orderId });
+        const allReturned = updatedOrder.orderedItems.every(
+          item => item.status === "Returned"
+        );
+
+        if (allReturned) {
+          await Order.updateOne(
+            { orderId: orderId },
+            { $set: { overAllStatus: "Returned" } }
+          );
+        }
       }
+
       return res.json({success:true,message:"Order item updated successfully"});
     }
     else{

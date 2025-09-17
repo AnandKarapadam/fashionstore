@@ -390,6 +390,13 @@ const deleteAccount = async(req,res)=>{
 
 const loadAllProductsPage = async (req, res) => {
   try {
+
+    await Product.updateMany(
+        { quantity: { $lte: 0 }, status: { $ne: "out of stock" } },
+        { $set: { status: "out of stock" } }
+    );
+    
+
     let page = parseInt(req.query.page) || 1;
     let limit = 12;
     let skip = (page - 1) * limit;

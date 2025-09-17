@@ -42,10 +42,12 @@
         <!-- Buttons -->
         <div class="d-flex flex-column gap-2">
           <!-- Move to Cart Form -->
+          
           <form action="/wishlist/move-to-cart/<%= item.product._id %>" method="POST">
-            <button class="btn btn-sm btn-success text-truncate" type="submit">Move to Cart</button>
+            <button <%= (item.product.quantity<=0 || item.product.status=='out of stock') ? "disabled title='Out Of Stock'" : "" %>
+               class="btn btn-sm btn-success text-truncate" type="submit">Move to Cart</button>
           </form>
-
+         
           <!-- Remove Button -->
           <div>
             <button class="btn btn-sm btn-outline-secondary" type="button" onclick="removeFromWishlist('<%= item.product._id %>')">

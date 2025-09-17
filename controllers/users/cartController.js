@@ -16,6 +16,11 @@ const Delivery = require("../../models/deliverySchema");
 const loadCartPage = async(req,res)=>{
   try {
 
+    await Product.updateMany(
+    { quantity: { $lte: 0 }, status: { $ne: "out of stock" } },
+    { $set: { status: "out of stock" } }
+);
+
     const id = req.session.user;
     const page = parseInt(req.query.page)||1;
     const search = req.query.search||"";
@@ -103,7 +108,7 @@ const addToCart = async(req,res)=>{
 
     let product = await Product.findById({_id:productId})
 
-    if(!product||product.isBlocked||product.quantity<=0){
+    if(!product||product.isBlocked||product.quantity<=0||product.status==='out of stock'){
       return res.json({success:false,message:"Product not found!"});
     }
 
@@ -207,6 +212,12 @@ const loadSelectAddress = async(req,res)=>{
 const updateCartQuantity = async(req,res)=>{
   try {
 
+    await Product.updateMany(
+    { quantity: { $lte: 0 }, status: { $ne: "out of stock" } },
+    { $set: { status: "out of stock" } }
+);
+
+
   const { productId, quantity } = req.body;
   const userId = req.session.user;
 
@@ -272,7 +283,7 @@ const loadPaymentPage = async(req,res)=>{
 
       if(cart){
         const item = cart.items[0];
-        if(item.productId&&!item.productId.isBlocked&&item.productId.quantity>0){
+        if(item.productId&&!item.productId.isBlocked&&item.productId.quantity>0&&item.productId.status=='Available'){
           cartItems = [item];
           subtotal = item.totalPrice;
         }
@@ -282,7 +293,7 @@ const loadPaymentPage = async(req,res)=>{
     else{
       const cart = await Cart.findOne({userId}).populate("items.productId");
 
-    const validItems = cart?cart.items.filter(item=>item.productId && !item.productId.isBlocked&&item.productId.quantity>0):[];
+    const validItems = cart?cart.items.filter(item=>item.productId && !item.productId.isBlocked&&item.productId.quantity>0&&item.productId.status==='Available'):[];
 
     subtotal = validItems.reduce((acc,item)=>acc+item.totalPrice,0);
       cartItems = validItems;
@@ -615,8 +626,10 @@ async function updateOrder(orderData,userId) {
     if(!cart||cart.items.length===0){
       throw new Error("Product not found in cart");
     }
+ 
+    const inStockItems = cart.items.filter(item => item.productId.quantity > 0&&item.productId.status==='Available');
 
-    orderedItems = cart.items.map(item=>{
+    orderedItems = inStockItems.map(item=>{
       const price = item.productId.salePrice||item.productId.price;
       return{
         orderItemId:generateOrderItemId(),
@@ -773,8 +786,8 @@ const postWalletPayment = async (req,res)=>{
       const cart = await Cart.findOne({userId}).populate("items.productId");
 
       if(!cart||cart.items.length===0)return res.redirect("/cart");
-
-      orderedItems = cart.items.map(item=>{
+      let isStockItems = cart.items.filter(item=>item.productId.status==='Available'&&item.productId.quantity>0);
+      orderedItems = isStockItems.map(item=>{
         const price = item.productId.salePrice||item.productId.price;
         return{
           orderItemId:generateOrderItemId(),

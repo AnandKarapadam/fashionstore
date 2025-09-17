@@ -15,3 +15,4 @@
 2025-09-09 21:52:28 [info] : Logger is working admin:true
 2025-09-09 21:52:50 [info] : Logger is working admin:true
 2025-09-10 18:10:15 [warn] : Wishlist add attempt without login
+2025-09-17 22:04:21 [error] : product is already in wishlist.

@@ -436,6 +436,10 @@ const postCancelWholeOrder = async (req, res) => {
       }
     }
 
+    if(order.deliveryCharge&&order.deliveryCharge>0){
+      refundAmount+=order.deliveryCharge
+    }
+
     order.overAllStatus = "Cancelled";
     order.cancelReason = cancelReason;
 

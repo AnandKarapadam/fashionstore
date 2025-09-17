@@ -65,7 +65,7 @@
       <span class="text-success ms-2 fw-bold me-2 mb-1">Available</span>
       <% } else if(item.productId.status === "Discontinued" || item.productId.isBlocked){ %>
       <span class="text-danger ms-2 fw-bold me-2 mb-1">Currently unavailable</span>
-      <%} else if(item.productId.quantity === 0){%>
+      <%} else if(item.productId.quantity <= 0 || item.productId.status==='out of stock'){%>
       <span class="text-danger ms-2 fw-bold me-2 mb-1">Out Of Stock</span>
       <%} %>  
     </div>
@@ -159,10 +159,10 @@
     </div>
 
     <!-- 2. Delivery Charges -->
-    <div class="d-flex justify-content-between small text-success fw-semibold mb-2">
+    <!-- <div class="d-flex justify-content-between small text-success fw-semibold mb-2">
       <div>Delivery Charges</div>
       <div class="text-success">Free</div>
-    </div>
+    </div> -->
 
     <!-- 3. Platform Fee -->
     <div class="d-flex justify-content-between small text-muted mb-3">
