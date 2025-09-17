@@ -55,7 +55,7 @@
             <%= product.ratings.average.toFixed(1) %> ⭐
               (<%= product.ratings.count %> reviews)
           </p>
-
+          <p class="text-muted text-sm" style="font-size: 13px;">Only medium Available</p>
           <!-- Stock Info -->
           <% if (product.status==="out of stock" || product.quantity===0) { %>
             <p class="text-danger fw-bold">Out of Stock</p>

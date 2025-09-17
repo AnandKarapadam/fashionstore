@@ -19,10 +19,10 @@ const sendVerificationEmail = async (email, otp) => {
         console.log("SMTP User:", process.env.NODEMAILER_EMAIL);
 console.log("SMTP Pass:", process.env.NODEMAILER_PASSWORD ? "Loaded" : "Missing");
     const transporter = nodeMailer.createTransport({
-      name:"anandkv@gmail.com",  
+        
       service:"gmail",
-      port: 587,
-      secure: false,
+      port: 465,
+      secure: true,
     //   requireTLS: true,
       auth: {
         user: process.env.NODEMAILER_EMAIL,
@@ -32,7 +32,7 @@ console.log("SMTP Pass:", process.env.NODEMAILER_PASSWORD ? "Loaded" : "Missing"
 
 
     const mailOptions = {
-      from: `${process.env.NODEMAILER_EMAIL}>`,
+      from: process.env.NODEMAILER_EMAIL,
       to: email,
       subject: "Fashion Store - Your One Time Password (OTP)",
       html: `
