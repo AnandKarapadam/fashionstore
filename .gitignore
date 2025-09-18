@@ -2,3 +2,4 @@
 node_modules
 logs/exceptions.log
 logs/combined.log
+logs/*.log
