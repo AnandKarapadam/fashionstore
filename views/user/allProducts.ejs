@@ -41,6 +41,7 @@
               <a href="/product/all" class="text-decoration-none text-secondary " >Clear All</a>
               </div>
           <form method="get" action="/product/all"  class="d-flex flex-column gap-3">
+            <input type="hidden" name="search" value="<%= typeof search !== 'undefined' ? search : '' %>">
             <!-- Sort -->
             <div>
               <label class="form-label">Sort By</label>
@@ -86,6 +87,7 @@
         <!-- Products -->
         <div class="col-md-9 pt-4 ps-4">
           <div class="row g-4">
+            <% if(products.length>0){%>
             <% products.forEach(product => { %>
               <div class="col-6 col-md-4 col-lg-3">
                 <div class="product-card shadow-sm position-relative" >
@@ -151,6 +153,19 @@
               </li>
             </ul>
           </nav>
+          <%} else{ %>
+            <div class="d-flex flex-column justify-content-center align-items-center" style="min-height: 300px;">
+    <% if (search) { %>
+      <h5 class="mb-3">No products found for "<%= search %>"</h5>
+    <% } else if (category) { %>
+      <h5 class="mb-3">No products found in this category</h5>
+    <% } else { %>
+      <h5 class="mb-3">No products found</h5>
+    <% } %>
+    
+    <a href="/product/all" class="btn btn-dark">See All Products</a>
+  </div>
+            <%}%>
         </div>
       </div>
     </div>

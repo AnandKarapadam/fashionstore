@@ -1,20 +1,20 @@
 <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-white px-3 mb-4">
-    <a class="navbar-brand" href="/">RORITO</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+  <a class="navbar-brand" href="/">RORITO</a>
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <!-- Push everything to the right -->
-      <ul class="navbar-nav ms-auto gap-lg-5 mb-2 mb-lg-0">
-        <li class="nav-item active">
-          <a class="nav-link" href="/">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/product/all">All products</a>
-        </li>
-        <% if(typeof user !== "undefined" && user?.name) {%>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <!-- Push everything to the right -->
+    <ul class="navbar-nav ms-auto gap-lg-5 mb-2 mb-lg-0">
+      <li class="nav-item active">
+        <a class="nav-link" href="/">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/product/all">All products</a>
+      </li>
+      <% if(typeof user !=="undefined" && user?.name) {%>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
             aria-expanded="false">
@@ -48,7 +48,13 @@
         <li class="nav-item d-flex align-items-center">
           <form action="/product/all" method="get" class="d-flex ms-lg-3 mt-2 mt-lg-0" role="search">
             
-            <input class="form-control border border-1 border-dark me-2 form-control-sm rounded-4" name="search" type="search" placeholder="Search" aria-label="Search">
+              <input type="hidden" name="sort" value="<%= typeof sort !== 'undefined' ? sort : '' %>">
+             <input type="hidden" name="category" value="<%= typeof category !== 'undefined' && typeof category === 'string' ? category : '' %>">
+            <input type="hidden" name="minPrice" value="<%= typeof minPrice !== 'undefined' ? minPrice : 0 %>">
+            <input type="hidden" name="maxPrice" value="<%= typeof maxPrice !== 'undefined' ? maxPrice : 10000 %>">
+
+
+            <input class="form-control border border-1 border-dark me-2 form-control-sm rounded-4" name="search"  type="search" placeholder="Search" aria-label="Search">
             <button class="btn btn-outline-dark btn-sm rounded-4 " type="submit">Search</button>                       
           </form>
         </li>

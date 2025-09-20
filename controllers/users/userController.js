@@ -11,6 +11,7 @@ const Coupon = require("../../models/couponSchema");
 const Wallet = require("../../models/walletSchema");
 const { match } = require("assert");
 const logger = require("../../utils/logger");
+const mongoose = require("mongoose");
 
 let loadHomepage = async (req, res) => {
   try {
@@ -29,22 +30,22 @@ let loadHomepage = async (req, res) => {
         for (let cat of category) {
           const product = await Product.findOne({
             category: cat._id,
-            status:"Available",
+            status: "Available",
             isBlocked: false,
-            quantity:{$gt:0}
+            quantity: { $gt: 0 },
           }).lean();
 
-          if(product){
+          if (product) {
             cat.image = product.productImage?.[0]
-            ? `/uploads/re-image/${product.productImage[0]}`
-            : "/images/default-category.jpg";
+              ? `/uploads/re-image/${product.productImage[0]}`
+              : "/images/default-category.jpg";
 
             validCategories.push(cat);
           }
         }
         const products = await Product.find().sort({ quantity: 1 }).limit(10);
         return res.render("user/home", {
-          category:validCategories,
+          category: validCategories,
           user: userData,
           banner: findBanner,
           products,
@@ -82,16 +83,16 @@ let loadLandingPage = async (req, res) => {
           isBlocked: false,
         }).lean();
 
-        if(product){
+        if (product) {
           cat.image = product?.productImage?.[0]
-          ? `/uploads/re-image/${product.productImage[0]}`
-          : "/images/default-category.jpg";
+            ? `/uploads/re-image/${product.productImage[0]}`
+            : "/images/default-category.jpg";
 
           validCategories.push(cat);
         }
       }
       res.render("user/landingpage", {
-        category:validCategories,
+        category: validCategories,
         banner: findBanner,
         products,
       });
@@ -303,8 +304,8 @@ let verifyOTP = async (req, res) => {
 
           await Coupon.create({
             name: "WEL-" + Math.floor(10000 + Math.random() * 90000),
-            offerPrice: 100, 
-            minimumPrice: 500, 
+            offerPrice: 100,
+            minimumPrice: 500,
             expireOn: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
             user: saveUserData._id,
           });
@@ -444,7 +445,11 @@ const loadAllProductsPage = async (req, res) => {
 
     let categoryName = null;
 
-    if (category) {
+    if (
+      category &&
+      typeof category === "string" &&
+      mongoose.Types.ObjectId.isValid(category)
+    ) {
       const categoryDoc = await Category.findById(category).lean();
       if (categoryDoc) {
         categoryName = categoryDoc.name;
@@ -459,7 +464,9 @@ const loadAllProductsPage = async (req, res) => {
       query.productName = { $regex: new RegExp(search, "i") };
     }
     if (category) {
-      query.category = category;
+      if (mongoose.Types.ObjectId.isValid(category)) {
+        query.category = category;
+      }
     }
 
     let sortOption = {};
@@ -495,6 +502,12 @@ const loadAllProductsPage = async (req, res) => {
     const categories = await Category.find({ isListed: true });
     const matchedProducts = await Product.countDocuments(query);
     const totalPages = Math.ceil(matchedProducts / limit);
+    let recommendedProducts = [];
+    if (matchedProducts === 0) {
+      recommendedProducts = await Product.find({ isBlocked: false })
+        .limit(8)
+        .lean();
+    }
 
     res.render("user/allProducts", {
       products,
@@ -509,6 +522,7 @@ const loadAllProductsPage = async (req, res) => {
       categoryName,
       user,
       cssFile: "allproducts.css",
+      recommendedProducts
     });
   } catch (error) {
     console.error("Cannot render all products page", error.message);
