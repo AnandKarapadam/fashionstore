@@ -48,7 +48,7 @@
 
   <!-- Horizontal Scrollable Card Row -->
   <div class="scroll-container d-flex justify-content-center mb-5" id="secondRow">
-    <% products.forEach(product => { %>
+    <% products.slice(0,7).forEach(product => { %>
       <a href="/product/all?search=<%= product.productName %>" class="text-decoration-none text-dark">
         <div class="card hover-card  product-card pro-card">
           <img src="/uploads/re-image/<%= product.productImage[0] %>" class=" " alt="<%= product.productName %>">

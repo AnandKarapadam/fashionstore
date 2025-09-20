@@ -74,7 +74,7 @@ let loadLandingPage = async (req, res) => {
       });
       const products = await Product.find().sort({ quantity: 1 });
       const category = await Category.find({}).lean();
-
+      const validCategories = [];
       for (let cat of category) {
         const product = await Product.findOne({
           category: cat._id,
@@ -82,12 +82,16 @@ let loadLandingPage = async (req, res) => {
           isBlocked: false,
         }).lean();
 
-        cat.image = product?.productImage?.[0]
+        if(product){
+          cat.image = product?.productImage?.[0]
           ? `/uploads/re-image/${product.productImage[0]}`
           : "/images/default-category.jpg";
+
+          validCategories.push(cat);
+        }
       }
       res.render("user/landingpage", {
-        category,
+        category:validCategories,
         banner: findBanner,
         products,
       });
