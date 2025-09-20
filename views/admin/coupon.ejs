@@ -16,23 +16,27 @@
                             <form action="/admin/coupon/createCoupon" method="POST">
                                 <div class="mb-3">
                                     <label class="form-label">Coupon Name</label>
-                                    <input type="text" class="form-control" name="name" required />
+                                    <input type="text" class="form-control" name="name" />
+                                    <p class="text-sm text-danger" style="font-size: 12px;" id="nameError"></p>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Start Date</label>
-                                    <input type="date" class="form-control" name="startdate" required />
+                                    <input type="date" class="form-control" name="startdate" />
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">End Date</label>
-                                    <input type="date" class="form-control" name="enddate" required />
+                                    <input type="date" class="form-control" name="enddate" />
+                                    <p class="text-sm text-danger" style="font-size: 12px;" id="dateError"></p>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Offer Price</label>
-                                    <input type="text" class="form-control" name="offerprice" required />
+                                    <input type="text" class="form-control" name="offerprice" />
+                                    <p class="text-sm text-danger" style="font-size: 12px;" id="priceError"></p>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Minimum Price</label>
-                                    <input type="text" class="form-control" name="minimumprice" required />
+                                    <input type="text" class="form-control" name="minimumprice" />
+                                    <p class="text-sm text-danger" style="font-size: 12px;" id="minPriceError"></p>
                                 </div>
                                 <button type="submit" class="btn btn-success w-100">Add Coupon</button>
                             </form>

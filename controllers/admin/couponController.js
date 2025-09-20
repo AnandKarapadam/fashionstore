@@ -89,11 +89,12 @@ const toggleList = async(req,res)=>{
 const loadEditCoupon = async (req,res)=>{
     try {
         const id = req.params.id;
-        
+        const message = req.session.couponError;
+        delete req.session.couponError;
 
         const coupon = await Coupon.findById(id);
 
-        res.render("admin/editCoupon",{coupon});
+        res.render("admin/editCoupon",{coupon,message});
         
     } catch (error) {
         res.redirect("/admin/pageerror");
@@ -113,6 +114,11 @@ const editCoupon = async(req,res)=>{
             minimumprice
         } = req.body;
         
+        const existing = await Coupon.findOne({name:{$regex:new RegExp("^" + name + "$", "i")},_id:{$ne:id}});
+        if(existing){
+            req.session.couponError = "Coupon already exist";
+            return res.redirect(`/admin/coupon/edit/${id}`);
+        }
         const data = await Coupon.findByIdAndUpdate(id,{
             name:name,
             createOn:startdate,

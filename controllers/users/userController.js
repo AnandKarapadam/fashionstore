@@ -24,22 +24,27 @@ let loadHomepage = async (req, res) => {
     if (userId) {
       const userData = await User.findOne({ _id: userId });
       if (!userData.isBlocked) {
-        const category = await Category.find({isListed:true}).lean();
-
+        const category = await Category.find({ isListed: true }).lean();
+        const validCategories = [];
         for (let cat of category) {
           const product = await Product.findOne({
             category: cat._id,
-            status: "Available", // matching your enum value
+            status:"Available",
             isBlocked: false,
+            quantity:{$gt:0}
           }).lean();
 
-          cat.image = product?.productImage?.[0]
+          if(product){
+            cat.image = product.productImage?.[0]
             ? `/uploads/re-image/${product.productImage[0]}`
             : "/images/default-category.jpg";
+
+            validCategories.push(cat);
+          }
         }
         const products = await Product.find().sort({ quantity: 1 }).limit(10);
         return res.render("user/home", {
-          category,
+          category:validCategories,
           user: userData,
           banner: findBanner,
           products,
@@ -189,13 +194,14 @@ let signup = async (req, res) => {
         return res.render("user/signup", {
           message: "Code expired, try with another code.",
         });
-      } 
-
-      if(user.email === email){
-        return res.render("user/signup",{message:"You cannot use your own Ref-code!"});
       }
-        req.session.referralCode = referralCode;
-      
+
+      if (user.email === email) {
+        return res.render("user/signup", {
+          message: "You cannot use your own Ref-code!",
+        });
+      }
+      req.session.referralCode = referralCode;
     }
 
     if (password !== confirmPassword) {
@@ -265,7 +271,7 @@ let verifyOTP = async (req, res) => {
       const user = req.session.usersData;
 
       const passwordHash = await securePassword(user.password);
-      const newReferralCode ="REF"+crypto.randomBytes(3).toString("hex");
+      const newReferralCode = "REF" + crypto.randomBytes(3).toString("hex");
 
       const saveUserData = new User({
         name: user.name,
@@ -282,21 +288,29 @@ let verifyOTP = async (req, res) => {
         const referrer = await User.findOne({
           referralCode: req.session.referralCode,
         });
-        if (referrer&&referrer.email!==user.email) {
-           await Coupon.create({
-            name: "REW-" + Math.floor(10000 + Math.random() * 90000), 
+        if (referrer && referrer.email !== user.email) {
+          await Coupon.create({
+            name: "REW-" + Math.floor(10000 + Math.random() * 90000),
+            offerPrice: 100,
+            minimumPrice: 500,
+            expireOn: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            user: referrer._id,
+          });
+
+          await Coupon.create({
+            name: "WEL-" + Math.floor(10000 + Math.random() * 90000),
             offerPrice: 100, 
             minimumPrice: 500, 
-            expireOn: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), 
-            user:referrer._id
+            expireOn: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            user: saveUserData._id,
           });
         }
       }
 
       req.session.user = saveUserData._id;
       let wallet = new Wallet({
-        userId:saveUserData._id
-      })
+        userId: saveUserData._id,
+      });
       await wallet.save();
       req.session.save((err) => {
         if (err) {
@@ -370,32 +384,30 @@ const logout = async (req, res) => {
   }
 };
 
-const deleteAccount = async(req,res)=>{
+const deleteAccount = async (req, res) => {
   try {
     const userId = req.session.user;
 
     const deleted = await User.findByIdAndDelete(userId);
 
-    if(deleted){
+    if (deleted) {
       req.session.destroy();
       return res.redirect("/landingpage");
-    }else{
+    } else {
       logger.error("Error in deleting the User");
-      res.redirect("/pageNotFound")
+      res.redirect("/pageNotFound");
     }
   } catch (error) {
-    console.log("Error:",error.message)
+    console.log("Error:", error.message);
   }
-}
+};
 
 const loadAllProductsPage = async (req, res) => {
   try {
-
     await Product.updateMany(
-        { quantity: { $lte: 0 }, status: { $ne: "out of stock" } },
-        { $set: { status: "out of stock" } }
+      { quantity: { $lte: 0 }, status: { $ne: "out of stock" } },
+      { $set: { status: "out of stock" } }
     );
-    
 
     let page = parseInt(req.query.page) || 1;
     let limit = 12;
@@ -407,15 +419,15 @@ const loadAllProductsPage = async (req, res) => {
     }
 
     const product = await Product.updateMany(
-      {quantity:{$lt:1}},
-      {$set:{status:"out of stock"}}
-    )
+      { quantity: { $lt: 1 } },
+      { $set: { status: "out of stock" } }
+    );
 
-    if(product.quantity>0){
+    if (product.quantity > 0) {
       const product = await Product.updateMany(
-        {quantity:{$gt:0}},
-        {$set:{status:"Available"}}
-      )
+        { quantity: { $gt: 0 } },
+        { $set: { status: "Available" } }
+      );
     }
 
     const {
@@ -453,8 +465,8 @@ const loadAllProductsPage = async (req, res) => {
     else if (sort === "nameDesc") sortOption.productName = -1;
 
     let products = await Product.find(query)
-      .populate({path:"category",match:{isListed:true}})
-      .populate({path:"brand",match:{isBlocked:false}})
+      .populate({ path: "category", match: { isListed: true } })
+      .populate({ path: "brand", match: { isBlocked: false } })
       .sort(sortOption)
       .skip(skip)
       .limit(limit)
@@ -474,7 +486,7 @@ const loadAllProductsPage = async (req, res) => {
       }
     }
 
-    products = products.filter(p=>p.category?.isListed&&p.brand)
+    products = products.filter((p) => p.category?.isListed && p.brand);
 
     const categories = await Category.find({ isListed: true });
     const matchedProducts = await Product.countDocuments(query);
@@ -496,7 +508,7 @@ const loadAllProductsPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Cannot render all products page", error.message);
-    res.redirect("/pageNotFound");  
+    res.redirect("/pageNotFound");
   }
 };
 
@@ -610,8 +622,8 @@ const postReview = async (req, res) => {
       product: updatedProduct,
       reviews: updateReview,
       relatedProducts,
-      user:userData,
-      cssFile:"productdetails.css"
+      user: userData,
+      cssFile: "productdetails.css",
     });
   } catch (error) {
     res.redirect("/pageNotFound");
@@ -634,5 +646,5 @@ module.exports = {
   loadAllProductsPage,
   getProductDetails,
   postReview,
-  deleteAccount
+  deleteAccount,
 };

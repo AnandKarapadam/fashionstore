@@ -1,29 +1,71 @@
 <%- include("../partials/admin/header") %>
-<%- include("../partials/admin/sidebar") %>
+    <%- include("../partials/admin/sidebar") %>
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-header bg-warning text-white">
-                    Edit Category
-                </div>
-                <div class="card-body">
-                    <form action="/admin/category/edit/<%= category._id %>" method="POST">
-                        <div class="mb-3">
-                            <label class="form-label">Category Name</label>
-                            <input type="text" class="form-control" name="name" value="<%= category.name %>" required>
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card shadow">
+                        <div class="card-header bg-warning text-white">
+                            Edit Category
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Description</label>
-                            <textarea class="form-control" name="description" required><%= category.description %></textarea>
+                        <div class="card-body">
+                            <% if (typeof message !=="undefined" && message) { %>
+                                <div class="alert alert-danger">
+                                    <%= message %>
+                                </div>
+                                <% } %>
+                                    <form action="/admin/category/edit/<%= category._id %>" id="categoryForm" method="POST">
+                                        <div class="mb-3">
+                                            <label class="form-label">Category Name</label>
+                                            <input type="text" class="form-control" name="name"
+                                                value="<%= category.name %>" >
+                                                <p class="text-danger" style="font-size: 12px;" id="nameError"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Description</label>
+                                            <textarea class="form-control" name="description"
+                                                ><%= category.description %></textarea>
+                                                <p class="text-danger" style="font-size: 12px;" id="descriptionError"></p>
+                                        </div>
+                                        <button type="submit" class="btn btn-success w-100">Update</button>
+                                    </form>
                         </div>
-                        <button type="submit" class="btn btn-success w-100">Update</button>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
-<%- include("../partials/admin/footer") %>
+        <script>
+            const categoryForm = document.getElementById("categoryForm");
+            let nameError = document.getElementById("nameError");
+            let descriptionError = document.getElementById("descriptionError");
+            
+
+            categoryForm.addEventListener("submit",function(e){
+                let hasError = false;
+            let nameInput = document.querySelector("input[name='name']").value.trim();
+            let descInput = document.querySelector("textarea[name='description']").value.trim();
+
+             if (nameInput.length < 3) {
+        nameError.textContent = "Category name must be at least 3 characters long.";
+        hasError = true;
+    } else {
+        nameError.textContent = "";
+    }
+
+    // Description validation
+    if (descInput.length < 1) {
+        descriptionError.textContent = "Description must be at least 3 characters long.";
+        hasError = true;
+    } else {
+        descriptionError.textContent = "";
+    }
+
+    // Prevent form submission if there are errors
+    if (hasError) {
+        e.preventDefault();
+    }
+
+            })
+        </script>
+        <%- include("../partials/admin/footer") %>

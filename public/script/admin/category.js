@@ -6,11 +6,31 @@ function clearSearch() {
 
 function handleFormSubmit(event) {
   event.preventDefault();
-  if (!validateForm()) {
-    return;
+
+  const name = document.querySelector("input[name='name']").value.trim();
+  const description = document.getElementById("descriptionId").value.trim();
+
+  document.getElementById("name-error").innerText = "";
+  document.getElementById("description-error").innerText = "";
+   
+  let isValid = true;
+
+  if(!name){
+    document.getElementById("name-error").innerText = "Please enter a category name";
+    isValid = false;
+  }else if(!/^[a-zA-Z\s]+$/.test(name)){
+    document.getElementById("name-error").innerText = "Name should contain only letters and spaces";
+    isValid = false;
   }
-  const name = document.getElementsByName("name")[0].value;
-  const description = document.getElementById("descriptionId").value;
+
+  if(!description){
+    document.getElementById("description-error").innerText = "Please enter a description.";
+    isValid = false;
+  }
+
+  if(!isValid) return false;
+
+
   if (name && description) {
     
     fetch("/admin/category/add", {
@@ -49,42 +69,7 @@ function handleFormSubmit(event) {
   }
 }
 
-function validateForm() {
-  clearErrorMessage();
-  const name = document.getElementsByName("name")[0].value.trim();
-  const description = document.getElementById("descriptionId").value.trim();
 
-  let isValid = true;
-
-  if (name === "") {
-    displayErrorMessage("name-error", "Please enter a name");
-    isValid = false;
-  } else if (!/^[a-zA-Z\s]+$/.test(name)) {
-    displayErrorMessage(
-      "name-error",
-      "Category name should contain only alphabetic characters"
-    );
-    isValid = false;
-  }
-  if (description === "") {
-    displayErrorMessage("description-error", "Please enter a description");
-    isValid = false;
-  }
-  return isValid;
-}
-function displayErrorMessage(elementId, message) {
-  var errorElement = document.getElementById(elementId);
-  errorElement.innerText = message;
-  errorElement.style.display = "block";
-}
-
-function clearErrorMessage() {
-  const errorElements = document.getElementsByClassName("error-message");
-  Array.from(errorElements).forEach((element) => {
-    element.innerText = "";
-    element.style.display = "none";
-  });
-}
 
 
 function confirmDelete(event) {

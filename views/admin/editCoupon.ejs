@@ -6,26 +6,36 @@
     <div class="row mb-3 text-center">
         <h3>Edit Coupon</h3>
     </div>
- <form action="/admin/coupon/edit/<%= coupon._id %>" method="POST">
+    <% if(typeof message !== 'undefined' && message){%>
+        <div class="alert alert-danger text-center shadow-sm">
+          <%= message %>
+         </div>
+        <%}%>
+ <form action="/admin/coupon/edit/<%= coupon._id %>" method="POST" novalidate>
      <div class="mb-3">
          <label class="form-label fw-bold">Coupon Name</label>
-         <input type="text" class="form-control shadow-sm" name="name" value="<%= coupon.name %>" required />
+         <input type="text" class="form-control shadow-sm" name="name" value="<%= coupon.name %>"  />
+         <p class="text-danger" style="font-size: 12px;" id="nameError"></p>
      </div>
      <div class="mb-3">
          <label class="form-label fw-bold">Start Date</label>
-         <input type="date" class="form-control shadow-sm" name="startdate" value="<%= coupon.createOn.toISOString().split('T')[0] %>" required />
+         <input type="date" class="form-control shadow-sm" name="startdate" value="<%= coupon.createOn.toISOString().split('T')[0] %>" />
+         <p class="text-danger" style="font-size: 12px;" id="startDateError"></p>
      </div>
      <div class="mb-3">
          <label class="form-label fw-bold">End Date</label>
-         <input type="date" class="form-control shadow-sm" name="enddate" value="<%= coupon.expireOn.toISOString().split('T')[0] %>" required />
+         <input type="date" class="form-control shadow-sm" name="enddate" value="<%= coupon.expireOn.toISOString().split('T')[0] %>" />
+         <p class="text-danger" style="font-size: 12px;" id="endDateError"></p>
      </div>
      <div class="mb-3">
          <label class="form-label fw-bold">Offer Price</label>
-         <input type="text" class="form-control shadow-sm" name="offerprice" value="<%= coupon.offerPrice %>" required />
+         <input type="text" class="form-control shadow-sm" name="offerprice" value="<%= coupon.offerPrice %>" />
+         <p class="text-danger" style="font-size: 12px;" id="priceError"></p>
      </div>
      <div class="mb-3">
          <label class="form-label fw-bold">Minimum Price</label>
-         <input type="text" class="form-control shadow-sm" name="minimumprice" value="<%= coupon.minimumPrice %>" required />
+         <input type="text" class="form-control shadow-sm" name="minimumprice" value="<%= coupon.minimumPrice %>" />
+         <p class="text-danger" style="font-size: 12px;" id="minPriceError"></p>
      </div>
      <div class="row d-flex justify-content-center">
      <button type="submit" class="btn btn-success w-25 shadow-sm">Edit Coupon</button>
@@ -33,5 +43,92 @@
  </form> 
 </div>
 </div>
+<script>
+window.addEventListener("DOMContentLoaded", () => {
+  // Set min dates to prevent selecting past dates
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, "0");
+  const dd = String(today.getDate()).padStart(2, "0");
+  const formattedDate = `${yyyy}-${mm}-${dd}`;
+
+  const startDateInput = document.querySelector('input[name="startdate"]');
+  const endDateInput = document.querySelector('input[name="enddate"]');
+
+  if (startDateInput) startDateInput.min = formattedDate;
+  if (endDateInput) endDateInput.min = formattedDate;
+
+  const couponForm = document.querySelector('form[action^="/admin/coupon/edit/"]');
+  const nameInput = couponForm.querySelector('input[name="name"]');
+  const offerInput = couponForm.querySelector('input[name="offerprice"]');
+  const minInput = couponForm.querySelector('input[name="minimumprice"]');
+
+  const nameError = document.getElementById("nameError");
+  const startDateError = document.getElementById("startDateError");
+  const endDateError = document.getElementById("endDateError");
+  const priceError = document.getElementById("priceError");
+  const minPriceError = document.getElementById("minPriceError");
+
+  couponForm.addEventListener("submit", (e) => {
+    let hasError = false;
+
+    const name = nameInput.value.trim();
+    const startDate = new Date(startDateInput.value);
+    const endDate = new Date(endDateInput.value);
+    const offerPrice = parseFloat(offerInput.value);
+    const minPrice = parseFloat(minInput.value);
+
+    // Name validation
+    if (name.length < 3) {
+      nameError.textContent = "Coupon name must be at least 3 characters long.";
+      hasError = true;
+    } else if (/\s/.test(name)) {
+      nameError.textContent = "Coupon name cannot contain spaces.";
+      hasError = true;
+    } else {
+      nameError.textContent = "";
+    }
+
+    // Date validation
+    if (startDateInput.value === "") {
+      startDateError.textContent = "Start date is required.";
+      hasError = true;
+    } else {
+      startDateError.textContent = "";
+    }
+
+    if (endDateInput.value === "") {
+      endDateError.textContent = "End date is required.";
+      hasError = true;
+    } else if (endDate < startDate) {
+      endDateError.textContent = "End date cannot be earlier than start date.";
+      hasError = true;
+    } else {
+      endDateError.textContent = "";
+    }
+
+    // Offer price validation
+    if (isNaN(offerPrice) || offerPrice <= 0) {
+      priceError.textContent = "Offer price must be a number greater than 0.";
+      hasError = true;
+    } else {
+      priceError.textContent = "";
+    }
+
+    // Minimum price validation
+    if (isNaN(minPrice) || minPrice <= 0) {
+      minPriceError.textContent = "Minimum price must be a number greater than 0.";
+      hasError = true;
+    } else if (minPrice < offerPrice) {
+      minPriceError.textContent = "Minimum price must be greater than or equal to offer price.";
+      hasError = true;
+    } else {
+      minPriceError.textContent = "";
+    }
+
+    if (hasError) e.preventDefault(); // prevent form submission if any validation fails
+  });
+});
+</script>
 
 <%- include("../partials/admin/footer.ejs") %>

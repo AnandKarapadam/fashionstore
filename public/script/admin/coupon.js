@@ -18,6 +18,65 @@ window.addEventListener("DOMContentLoaded", () => {
   if (endDateInput) {
     endDateInput.min = formattedDate;
   }
+
+  const couponForm = document.querySelector('form[action="/admin/coupon/createCoupon"]');
+  const nameInput = couponForm.querySelector('input[name="name"]');
+  const offerInput = couponForm.querySelector('input[name="offerprice"]');
+  const minInput = couponForm.querySelector('input[name="minimumprice"]');
+
+  const nameError = document.getElementById("nameError");
+  const dateError = document.getElementById("dateError");
+  const priceError = document.getElementById("priceError");
+  const minPriceError = document.getElementById("minPriceError");
+
+  couponForm.addEventListener("submit",function(e){
+    let hasError = false;
+
+    const name = nameInput.value.trim();
+    if(name.length<3){
+      nameError.textContent = "Coupon name must be atleast 3 characters long."
+      hasError = true;
+    }else if(/\s/.test(name)){
+      nameError.textContent = "Coupon name cannot contain spaces.";
+      hasError = true;
+    }
+    else {
+      nameError = "";
+    }
+    const startDate = new Date(startDateInput.value);
+    const endDate = new Date(endDateInput.value);
+    if (endDate < startDate) {
+      dateError.textContent = "End date cannot be earlier than start date.";
+      hasError = true;
+    } else {
+      dateError.textContent = "";
+    }
+
+    // Offer price validation
+    const offerPrice = parseFloat(offerInput.value);
+    if (isNaN(offerPrice) || offerPrice <= 0) {
+      priceError.textContent = "Offer price must be greater than 0.";
+      hasError = true;
+    } else {
+      priceError.textContent = "";
+    }
+
+    // Minimum price validation
+    const minPrice = parseFloat(minInput.value);
+    if (isNaN(minPrice) || minPrice <= 0) {
+      minPriceError.textContent = "Minimum price must be greater than 0.";
+      hasError = true;
+    } else if (minPrice < offerPrice) {
+      minPriceError.textContent = "Minimum price must be greater than or equal to offer price.";
+      hasError = true;
+    } else {
+      minPriceError.textContent = "";
+    }
+
+    if (hasError) e.preventDefault(); 
+
+  })
+
 });
 function clearSearch() {
   document.querySelector('input[name="search"]').value = "";
