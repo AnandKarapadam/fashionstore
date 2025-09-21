@@ -18,6 +18,8 @@ router.post("/checkout/confirm",userAuth,cartController.postConfirmation);
 router.get("/order-success",userAuth,cartController.loadSuccessPage);
 router.get("/order-failed",userAuth,cartController.loadFailedPage);
 router.post("/apply-coupon",userAuth,cartController.applyCoupon);
+router.post("/check-stock",userAuth,cartController.checkStock);
+router.get("/payment/check-stock",userAuth,cartController.checkPaymentStock);
 
 router.get("/checkout/razorpay",userAuth,cartController.getRazorpayOrder);
 router.post("/checkout/razorpay/verify",userAuth,cartController.verifyRazorPayment);

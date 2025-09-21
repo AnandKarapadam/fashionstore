@@ -176,7 +176,7 @@
     </div>
 
     <!-- 6. Continue Button -->
-    <a href="/cart/select-address" class="btn btn-dark w-100 fw-semibold">Select Address</a>
+    <a href="#" id="select-address-btn" class="btn btn-dark w-100 fw-semibold">Select Address</a>
   </div>
 </div> 
     </div>
@@ -188,6 +188,35 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
  <script>
+
+  document.getElementById("select-address-btn").addEventListener("click",function(e){
+    e.preventDefault();
+
+    fetch(`/cart/check-stock`,{method:"POST"})
+    .then(res=>res.json())
+    .then(data=>{
+      if(data.success){
+        if(data.message){
+          Swal.fire({
+            icon:"info",
+            title:"Notice",
+            html:data.message,
+            confirmButtonColor:'#3085d6'
+          }).then(()=>{
+            window.location.href='/cart/select-address';
+          })
+        }else{
+          window.location.href = "/cart/select-address"
+        }
+      }else{
+        Swal.fire('Error',data.message||'Cannot proceed','error');
+      }
+    }).catch(err=>{
+      console.error(err);
+      Swal.fire("Error","Could not vefify stock.Try again later.",'error')
+    })
+
+  })
   function changeQty(btn, delta) {
     const parent = btn.closest(".input-group");
     const productId = btn.getAttribute("data-product-id");
@@ -197,7 +226,16 @@
     let newQty = parseInt(input.value) +delta;
 
     if (newQty < 1) newQty = 1;
-    if(newQty>maxQty)newQty = maxQty;
+    if(newQty>maxQty){
+      newQty = maxQty;
+      Swal.fire({
+      icon: 'info',
+      title: 'Maximum Quantity Reached',
+      text: `You can only order up to ${maxQty} items of this product.`,
+      timer: 1500,
+      showConfirmButton: false
+    });
+    }
     
     fetch('/cart/update-quantity',{
       method:"Post",
