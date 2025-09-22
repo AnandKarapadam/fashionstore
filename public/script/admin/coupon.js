@@ -41,16 +41,33 @@ window.addEventListener("DOMContentLoaded", () => {
       hasError = true;
     }
     else {
-      nameError = "";
+      nameError.textContent = "";
     }
-    const startDate = new Date(startDateInput.value);
-    const endDate = new Date(endDateInput.value);
-    if (endDate < startDate) {
-      dateError.textContent = "End date cannot be earlier than start date.";
-      hasError = true;
-    } else {
-      dateError.textContent = "";
-    }
+
+   const startDateVal = startDateInput ? startDateInput.value : "";
+const endDateVal = endDateInput ? endDateInput.value : "";
+
+if (!startDateVal) {
+  dateError.textContent = "Start date is required";
+  hasError = true;
+} else if (!endDateVal) {
+  dateError.textContent = "End date is required";
+  hasError = true;
+} else {
+  const startDate = new Date(startDateVal);
+  const endDate = new Date(endDateVal);
+
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+    dateError.textContent = "Please enter valid dates.";
+    hasError = true;
+  } else if (endDate < startDate) {
+    dateError.textContent = "End date cannot be earlier than start date.";
+    hasError = true;
+  } else {
+    dateError.textContent = "";
+  }
+}
+
 
     // Offer price validation
     const offerPrice = parseFloat(offerInput.value);

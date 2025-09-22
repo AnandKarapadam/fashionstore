@@ -934,6 +934,13 @@ const applyCoupon = async (req, res) => {
 
     const coupon = await Coupon.findOne({ name: couponCode, isList: true });
 
+    if (req.session.couponData && req.session.couponData.couponApplied) {
+      return res.json({
+        success: false,
+        message: "A coupon is already applied to this order.",
+      });
+    }
+
     if (!coupon) {
       return res.json({ success: false, message: "Invalid Coupon Code" });
     }

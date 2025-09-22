@@ -16,11 +16,13 @@
                             <form action="/admin/brands/add" method="POST" enctype="multipart/form-data">
                                 <div class="mb-3">
                                     <label class="form-label">Brand Name</label>
-                                    <input type="text" class="form-control" name="name" required />
+                                    <input type="text" class="form-control" name="name" id="newBrandName"/>
+                                    <p class="text-danger" style="font-size: 12px;" id="newNameError"></p>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Logo</label>
-                                    <input type="file" class="form-control" name="logo" accept="image/*" />
+                                    <input type="file" class="form-control" name="logo" id="newBrandLogo" accept="image/*" />
+                                    <p class="text-danger" style="font-size: 12px;" id="logoError"></p>
                                 </div>
                                 <button type="submit" class="btn btn-success w-100">Add Brand</button>
                             </form>

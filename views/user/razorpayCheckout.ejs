@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Razorpay Checkout</title>
@@ -8,14 +9,16 @@
     body {
       background-color: #f8f9fa;
     }
+
     .payment-card {
       max-width: 500px;
       margin: 80px auto;
       border-radius: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       background: #fff;
       padding: 2rem;
     }
+
     .btn-pay {
       width: 100%;
       padding: 12px;
@@ -25,6 +28,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="container pt-5">
     <div class="payment-card text-center">
@@ -60,39 +64,50 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(response)
         }).then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            window.location.href = "/cart/order-success";
-          } else {
-            window.location.href = "/cart/order-failed"
-          }
-        });
+          .then(data => {
+            if (data.success) {
+              window.location.href = "/cart/order-success";
+            } else {
+              window.location.href = "/cart/order-failed"
+            }
+          });
       },
       "theme": {
         "color": "#000cc"
       }
     };
 
-   if (selectedMethod === "card") {
-  options.method = {
-    card: true,
-    upi: false,
-    netbanking: false,
-    wallet: false
-  };
-} else if (selectedMethod === "upi") {
-  options.method = {
-    card: false,
-    upi: true,
-    netbanking: false,
-    wallet: false
-  };
-}
-    document.getElementById("rzp-button").onclick = function(e) {
+    if (selectedMethod === "card") {
+      options.method = {
+        card: true,
+        upi: false,
+        netbanking: false,
+        wallet: false
+      };
+    } else if (selectedMethod === "upi") {
+      options.method = {
+        card: false,
+        upi: true,
+        netbanking: false,
+        wallet: false
+      };
+    }
+    document.getElementById("rzp-button").onclick = function (e) {
       e.preventDefault();
       const rzp1 = new Razorpay(options);
+
+      rzp1.on('payment.failed', function (response) {
+        console.log(response.error);
+        window.location.href = "/cart/order-failed";
+      });
+
+      rzp1.on('checkout.dismiss', function () {
+        window.location.href = "/cart/order-failed";
+      });
+
       rzp1.open();
     }
   </script>
 </body>
+
 </html>

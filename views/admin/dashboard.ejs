@@ -235,11 +235,11 @@ const borderColor = palette.map(c=>c.replace("0.6","1"));
       ticks: {
         autoSkip: true,
         maxTicksLimit:10,
-        maxRotation: 0, // keep labels straight
-        minRotation: 0 , // prevent tilt
+        maxRotation: 0, 
+        minRotation: 0 , 
         callback: function(value, index, ticks) {
           let label = this.getLabelForValue(value);
-          return label.length > 10 ? label.substring(0, 10) + "…" : label;
+          return label.length > 10 ? label.substring(0, 9) + "…" : label;
         }
       }
     },
@@ -267,7 +267,7 @@ function toggleCustomDate() {
       customFields.forEach(el => el.classList.add("d-none"));
     }
   }
-  // Call once on page load
+  
   toggleCustomDate();
 </script>
 

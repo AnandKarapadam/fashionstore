@@ -258,7 +258,9 @@
                 icon: "success",
                 title: "Product added successfully",
                 text: data.message,
-                timer: 1000
+                timer: 1000,
+                showConfirmButton: false,
+                showCancelButton: false
               }).then(() => location.reload());
             }
             else {

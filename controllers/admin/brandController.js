@@ -2,127 +2,140 @@ const Brand = require("../../models/brandSchema");
 const Product = require("../../models/productSchema");
 const { findById } = require("../../models/userSchema");
 
-const getBrandPage = async(req,res)=>{
-    try {
-        const search = req.query.search || "";
-        const page = parseInt(req.query.page)||1;
-        const limit = 4;
-        const skip = (page-1)*limit;
+const getBrandPage = async (req, res) => {
+  try {
+    const search = req.query.search || "";
+    const page = parseInt(req.query.page) || 1;
+    const limit = 4;
+    const skip = (page - 1) * limit;
 
-        const query = search?{brandName:{$regex:search,$options:"i"}}:{};
+    const query = search
+      ? { brandName: { $regex: search, $options: "i" } }
+      : {};
 
-        const brandData = await Brand.find(query).sort({createdAt:-1}).skip(skip).limit(limit);
-        const totalBrands = await Brand.countDocuments(query);
-        const totalPages = Math.ceil(totalBrands/limit);
-        const reverseBrands  = brandData.reverse();
+    const brandData = await Brand.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    const totalBrands = await Brand.countDocuments(query);
+    const totalPages = Math.ceil(totalBrands / limit);
+    const reverseBrands = brandData.reverse();
 
-        res.render("admin/brands",{
-            search,
-            data:reverseBrands,
-            totalPages:totalPages,
-            totalBrands:totalBrands,
-            currentPage:page,
-            brands:reverseBrands,
-            cssFile:"admin/dashboard"
+    res.render("admin/brands", {
+      search,
+      data: reverseBrands,
+      totalPages: totalPages,
+      totalBrands: totalBrands,
+      currentPage: page,
+      brands: reverseBrands,
+      cssFile: "admin/dashboard",
+    });
+  } catch (error) {
+    res.redirect("/admin/pageerror");
+    console.error("Error", error.message);
+  }
+};
 
-        })
+let addNewBrand = async (req, res) => {
+  try {
+    const brand = req.body.name;
+    const findBrand = await Brand.findOne({ brandName: brand });
+    if (!findBrand) {
+      const image = req.file.filename;
+      const newBrand = new Brand({
+        brandName: brand,
+        brandImage: image,
+      });
 
-    } catch (error) {
-        res.redirect("/admin/pageerror");
-        console.error("Error",error.message);
+      await newBrand.save();
+      res.redirect("/admin/brands");
     }
-}
+  } catch (error) {
+    res.redirect("/admin/pageerror");
+  }
+};
 
-let addNewBrand = async(req,res)=>{
-    try {
-        const brand = req.body.name;
-        const findBrand = await Brand.findOne({brandName:brand});
-        if(!findBrand){
-            const image = req.file.filename;
-            const newBrand = new Brand({
-                brandName:brand,
-                brandImage:image
-            })
+const toggleBrandStatus = async (req, res) => {
+  try {
+    const id = req.params.id;
 
-            await newBrand.save();
-            res.redirect("/admin/brands");
-        }
-        
-
-    } catch (error) {
-        res.redirect("/admin/pageerror")
+    const findBrand = await Brand.findById(id);
+    if (!findBrand) {
+      res.redirect("/admin/brands");
     }
-}
 
-const toggleBrandStatus = async(req,res)=>{
-    try {
-        const id = req.params.id;
+    findBrand.isBlocked = !findBrand.isBlocked;
+    await findBrand.save();
 
-        const findBrand = await Brand.findById(id);
-        if(!findBrand){
-            res.redirect("/admin/brands");
-        }
+    await Product.updateMany(
+      { brand: id },
+      { $set: { isBlocked: findBrand.isBlocked } }
+    );
 
-        findBrand.isBlocked = !findBrand.isBlocked;
-        await findBrand.save();
-        res.redirect("/admin/brands");
+    res.redirect("/admin/brands");
+  } catch (error) {
+    res.redirect("/admin/pageerror");
+  }
+};
 
-    } catch (error) {
-        res.redirect("/admin/pageerror");
+const loadeditBrand = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const brand = await Brand.findById(id);
+    if (!id) {
+      return res.redirect("/amdin/brands");
     }
-}
+    res.render("admin/editBrand", { brand });
+  } catch (error) {
+    res.redirect("/admin/pageerror");
+  }
+};
+const editBrand = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const name = req.body.name;
+    const updateData = { brandName: name };
 
-const loadeditBrand = async(req,res)=>{
-    try {
-        const id = req.params.id;
-        const brand = await Brand.findById(id);
-        if(!id){
-            return res.redirect("/amdin/brands");
-        }
-        res.render("admin/editBrand",{brand});
-
-    } catch (error) {
-        res.redirect("/admin/pageerror");
+    if (req.file) {
+      updateData.brandImage = req.file.filename;
     }
-}
-const editBrand = async(req,res)=>{
-    try {
-        const id = req.params.id;
-        const name = req.body.name;
-        const updateData = {brandName:name};
 
-        if(req.file){
-            updateData.brandImage = req.file.filename;
-        }
-        
-        await Brand.findByIdAndUpdate(id,updateData);
+    const existingBrand = await Brand.findOne({
+      brandName: { $regex: new RegExp("^" + name + "$", "i") },
+      _id: { $ne: id },
+    });
 
-        res.redirect("/admin/brands");
-        
-    } catch (error) {
-
-        console.error(error);
-        res.redirect("/admin/pageerror");
-        
+    if (existingBrand) {
+      const brand = await Brand.findById(id);
+      return res.render("admin/editBrand", {
+        brand,
+        error: "Brand name already exists!",
+      });
     }
-}
 
-const deleteBrand = async(req,res)=>{
-    try {
-        const id = req.params.id;
+    await Brand.findByIdAndUpdate(id, updateData);
 
-        await Brand.findByIdAndDelete(id);
+    res.redirect("/admin/brands");
+  } catch (error) {
+    console.error(error);
+    res.redirect("/admin/pageerror");
+  }
+};
 
-        res.redirect("/admin/brands");
-    } catch (error) {
-        
-    }
-}
+const deleteBrand = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    await Brand.findByIdAndDelete(id);
+
+    res.redirect("/admin/brands");
+  } catch (error) {}
+};
 module.exports = {
-    getBrandPage,
-    addNewBrand,
-    toggleBrandStatus,
-    editBrand,
-    loadeditBrand,
-    deleteBrand
-}
+  getBrandPage,
+  addNewBrand,
+  toggleBrandStatus,
+  editBrand,
+  loadeditBrand,
+  deleteBrand,
+};
