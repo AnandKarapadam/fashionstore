@@ -38,9 +38,9 @@
         </div>
         <div class="d-flex align-items-center justify-content-center">
             <% if(transaction.type==="CREDIT") {%>
-          <p class="my-auto text-success fw-bold">+₹<%= transaction.amount %></p>
+          <p class="my-auto text-success fw-bold">+₹<%= Number(transaction.amount).toFixed(2) %></p>
           <%}else {%>
-             <p class="my-auto text-danger fw-bold">-₹<%= transaction.amount %></p>
+             <p class="my-auto text-danger fw-bold">-₹<%= Number(transaction.amount).toFixed(2) %></p>
             <%}%>
         </div>
       </div>

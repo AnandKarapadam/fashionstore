@@ -333,7 +333,7 @@ const postOrderItemStatus = async(req,res)=>{
           item => item.status === "Returned"
         );
 
-        if (allReturned) {
+        if (allReturned||updatedOrder.orderedItems.length===1) {
           await Order.updateOne(
             { orderId: orderId },
             { $set: { overAllStatus: "Returned" } }
@@ -375,10 +375,53 @@ const loadItemDetailsPage = async(req,res)=>{
     console.log("error:",error.message);
   }
 }
+const loadReturnRequestPage = async (req,res)=>{
+  try {
+    const { page = 1, search = "",status = "",sort = ""} = req.query;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    
+    let query = {
+      $or: [
+        { overAllStatus: "Return Request" },
+        { "orderedItems.status": "Return Request" }
+      ]
+    };
+
+    if (search) {
+      query.orderId = { $regex: new RegExp(search, "i") };
+    }
+
+    const totalOrders = await Order.countDocuments(query);
+    const orders = await Order.find(query)
+      .populate("userId", "name email")
+      .sort({ createOn: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    const totalPages = Math.ceil(totalOrders / limit);
+
+    res.render("admin/orderreturnpage",{
+      orders,
+      currentPage: parseInt(page),
+      totalPages,
+      search,
+      status,
+      sort
+    });
+
+    
+  } catch (error) {
+    console.log("error:",error.message);
+  }
+}
 module.exports = {
     loadOrderPage,
     updateOverallStatus,
     loadOrderDetailsPage,
     postOrderItemStatus,
-    loadItemDetailsPage
+    loadItemDetailsPage,
+    loadReturnRequestPage
 }
