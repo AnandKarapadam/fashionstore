@@ -44,8 +44,7 @@
           <!-- Move to Cart Form -->
           
           <form action="/wishlist/move-to-cart/<%= item.product._id %>" method="POST">
-            <button <%= (item.product.quantity<=0 || item.product.status=='out of stock') ? "disabled title='Out Of Stock'" : "" %>
-               class="btn btn-sm btn-success text-truncate" type="submit">Move to Cart</button>
+            <button type="button" class="btn btn-sm btn-success text-truncate" onclick="moveToCart('<%= item.product._id %>')" <%= (item.product.quantity<=0 || item.product.status=='out of stock') ? "disabled title='Out Of Stock'" : "" %>>Move to Cart</button>
           </form>
          
           <!-- Remove Button -->
@@ -147,6 +146,63 @@
             }
         })
     }
+    async function moveToCart(productId) {
+  try {
+    // Fetch product details to get available sizes
+    const res = await fetch(`/wishlist/product-sizes/${productId}`);
+    const data = await res.json();
+
+    if (!data.success) {
+      Swal.fire("Error", data.message, "error");
+      return;
+    }
+
+    const sizes = data.sizes; // array of { size, quantity }
+    if (sizes.length === 0) {
+      Swal.fire("Out of Stock", "This product has no available sizes.", "warning");
+      return;
+    }
+
+    // If only 1 size available, add directly
+    if (sizes.length === 1) {
+      await addToCart(productId, sizes[0].size);
+      return;
+    }
+
+    // Show Swal for size selection
+    const { value: selectedSize } = await Swal.fire({
+      title: 'Select Size',
+      input: 'select',
+      inputOptions: sizes.reduce((obj, s) => { obj[s.size] = `${s.size} (${s.quantity} available)`; return obj; }, {}),
+      inputPlaceholder: 'Select a size',
+      showCancelButton: true
+    });
+
+    if (selectedSize) {
+      await addToCart(productId, selectedSize);
+    }
+
+  } catch (err) {
+    console.error(err);
+    Swal.fire("Error", "Something went wrong.", "error");
+  }
+}
+
+// Helper to call server to add to cart
+async function addToCart(productId, size) {
+  const res = await fetch(`/wishlist/move-to-cart/${productId}?size=${size}`, {
+    method: 'POST',
+  });
+  const data = await res.json();
+
+  if (data.success) {
+    Swal.fire("Added!", "Product has been moved to your cart.", "success").then(() => {
+      location.reload();
+    });
+  } else {
+    Swal.fire("Error", data.message, "error");
+  }
+}
 </script>
 
   </body>

@@ -415,7 +415,7 @@ const loadAllProductsPage = async (req, res) => {
     );
 
     let page = parseInt(req.query.page) || 1;
-    let limit = 12;
+    let limit = 4;
     let skip = (page - 1) * limit;
     const userId = req.session.user;
     let user;
@@ -478,7 +478,7 @@ const loadAllProductsPage = async (req, res) => {
     let products = await Product.find(query)
       .populate({ path: "category", match: { isListed: true } })
       .populate({ path: "brand", match: { isBlocked: false } })
-      .sort(sortOption)
+      .sort(sortOption) 
       .skip(skip)
       .limit(limit)
       .lean();
@@ -545,11 +545,13 @@ const getProductDetails = async (req, res) => {
     })
       .populate("category")
       .populate("brand")
-      .lean();
+      
 
     if (!product) {
       return res.redirect("/pageNotFound");
     }
+
+   
 
     const reviews = await Review.find({ product: id })
       .populate("user", "name")
@@ -563,6 +565,14 @@ const getProductDetails = async (req, res) => {
     })
       .populate("category")
       .lean();
+
+      const totalQuantity = product.sizes.reduce((sum, s) => sum + s.quantity, 0);
+
+    product.quantity = totalQuantity;
+    if(product.quantity>0){
+      product.status = "Available"
+    }
+    await product.save();
 
     res.render("user/product_details", {
       product,

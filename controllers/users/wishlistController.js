@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const Product = require("../../models/productSchema");
 const User = require("../../models/userSchema");
 const logger = require("../../utils/logger");
+const e = require("express");
 
 const loadWishlistPage = async(req,res)=>{
   try {
@@ -63,7 +64,7 @@ const addToWishlist = async(req,res)=>{
     const userId = req.session.user;
 
     if(!userId){
-      logger.warn("Wishlist add attempt without login");
+     
       return res.status(401).json({message:"Please login to your account"})
     }
 
@@ -85,7 +86,7 @@ const addToWishlist = async(req,res)=>{
         return item.productId.toString() === productId;
       })
       if(alreadyExists){
-        logger.error("product is already in wishlist.")
+     
       return res.status(409).json({message:"Product is already in wishlist."});
     }
       wishlist.products.push({productId});
@@ -106,51 +107,46 @@ const addToWishlist = async(req,res)=>{
 const moveToCart = async(req,res)=>{
   try {
 
-    const userId = req.session.user;
+     const userId = req.session.user;
     const productId = req.params.id;
+    const size = req.query.size;
 
-    await Wishlist.updateOne(
-      {userId},
-      {$pull:{products:{productId}}}
-    )
+    if (!size) {
+      return res.json({ success: false, message: "Size is required" });
+    }
 
     const product = await Product.findById(productId);
+    if (!product) return res.json({ success: false, message: "Product not found" });
+
+    const sizeObj = product.sizes.find(s => s.size === size && s.quantity > 0);
+    if (!sizeObj) return res.json({ success: false, message: "Selected size unavailable" });
+
+    await Wishlist.updateOne({userId}, {$pull:{products:{productId}}});
 
     const price = product.salePrice;
     const totalPrice = price;
 
     let usercart = await Cart.findOne({userId});
-
     if(!usercart){
-      usercart = new Cart({
-        userId,
-        items:[{productId,quantity:1,price,totalPrice}]
-      })
-    }else{
-
-      if (!Array.isArray(usercart.items)) {
-        usercart.items = [];
-      }
-      const existingProduct = usercart.items.find(p=>p.productId.equals(productId));
-
+      usercart = new Cart({ userId, items:[{productId, quantity:1, price, totalPrice, size}] });
+    } else {
+      if (!Array.isArray(usercart.items)) usercart.items = [];
+      const existingProduct = usercart.items.find(p=>p.productId.equals(productId) && p.size === size);
 
       if(existingProduct){
-        existingProduct.quantity+=1;
-        existingProduct.totalPrice = existingProduct.quantity*existingProduct.price;
+        existingProduct.quantity += 1;
+        existingProduct.totalPrice = existingProduct.quantity * existingProduct.price;
         usercart.markModified("items");
-      }
-      else{
-        usercart.items.push({productId,quantity:1,price,totalPrice})
+      } else {
+        usercart.items.push({productId, quantity:1, price, totalPrice, size});
       }
     }
 
     await usercart.save();
-
-    res.redirect("/wishlist");
-
-    
+    res.json({ success: true });
   } catch (error) {
     console.error("Error",error.message);
+    res.json({ success: false, message: "Failed to move product to cart" });
   }
 }
 
@@ -227,11 +223,29 @@ const toggleRemoveFromWishlist = async (req,res)=>{
     console.log("Error:",error.message);
   }
 }
+
+const getProductSizes = async(req,res)=>{
+  
+
+    try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.json({ success: false, message: "Product not found" });
+
+    const sizes = product.sizes.filter(s => s.quantity > 0); 
+    return res.json({ success: true, sizes });
+  } catch (error) {
+    console.error(error);
+    return res.json({ success: false, message: "Failed to fetch sizes" });
+  }
+    
+ 
+}
 module.exports = {
     loadWishlistPage,
     addToWishlist,
     moveToCart,
     removeWishlistItem,
     toggleAddToWishlist,
-    toggleRemoveFromWishlist
+    toggleRemoveFromWishlist,
+    getProductSizes
 }

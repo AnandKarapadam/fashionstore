@@ -6,7 +6,7 @@ const {userAuth,cartAuth} = require("../../middlewares/auth");
 
 router.get("/",userAuth,cartController.loadCartPage);
 router.post("/add/:id",cartAuth,cartController.addToCart);
-router.get("/buy-now/:id",userAuth,cartController.buyNowSingleProduct);
+router.get("/buy-now/:id/:size",userAuth,cartController.buyNowSingleProduct);
 router.delete("/remove/:cartItemId",userAuth,cartController.removeCartItem);
 router.post("/update-quantity",userAuth,cartController.updateCartQuantity);
 router.get("/select-address",cartController.loadSelectAddress);
@@ -21,7 +21,10 @@ router.post("/apply-coupon",userAuth,cartController.applyCoupon);
 router.post("/check-stock",userAuth,cartController.checkStock);
 router.get("/payment/check-stock",userAuth,cartController.checkPaymentStock);
 
+
 router.get("/checkout/razorpay",userAuth,cartController.getRazorpayOrder);
+router.post("/checkout/validate",userAuth,cartController.cartCheckoutValidate);
+router.post("/checkout/validate-stock", userAuth, cartController.validateStock);
 router.post("/checkout/razorpay/verify",userAuth,cartController.verifyRazorPayment);
 router.get("/checkout/wallet",userAuth,cartController.loadWalletPayment);
 router.post("/checkout/wallet",userAuth,cartController.postWalletPayment);

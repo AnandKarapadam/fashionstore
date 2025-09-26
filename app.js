@@ -26,7 +26,7 @@ const adminDeliveryRouter = require("./routes/admin/deliveryRouter");
 
 const Cart = require("./models/cartSchema");
 
-db();
+
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
@@ -99,6 +99,7 @@ app.use((req, res, next) => {
   res.status(404).render("user/pageNotFound");
 });
 
+db();
 app.listen(process.env.PORT,(err)=>{
     console.log("Server running port:",process.env.PORT);
 })

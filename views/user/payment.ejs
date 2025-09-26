@@ -222,6 +222,7 @@
       <script>
         const type = "<%= typeof type !== 'undefined' ? type : '' %>";
         const productId = "<%= typeof productId !== 'undefined' ? productId : '' %>";
+        const size = "<%= typeof size !== 'undefined'?size:'' %>"
 
         document.querySelectorAll(' .address-card input[type="radio" ]').forEach(radio => {
           radio.addEventListener('change', function () {
@@ -300,7 +301,7 @@
               headers: {
                 "Content-Type": "application/json"
               },
-              body: JSON.stringify({ paymentMethod: selectedMethod.value, type, productId })
+              body: JSON.stringify({ paymentMethod: selectedMethod.value, type, productId,size })
             })
 
             const data = await res.json();

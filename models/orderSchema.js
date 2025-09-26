@@ -19,6 +19,9 @@ let orderSchema = new Schema({
         ref: "Product",
         required: true,
       },
+      size:{
+        type:String
+      },
       orderItemId: {
         type: String,
         required: true,

@@ -48,12 +48,15 @@
 
     <div class="bg-light p-2 rounded-3">
     <!-- 1. Product Summary -->
-     <% cartItems.forEach((item)=>{ %>
-    <div class="d-flex justify-content-between mb-2">
-      <div><span class="fw-semibold"><%= item.quantity %> × <%= item.productId.productName %></span></div>
-      <div><span class="fw-semibold text-success <%= item.productId.isBlocked? 'text-decoration-line-through text-danger':'' %> ">₹ <%= item.quantity * item.productId.salePrice %> </span></div>
-    </div>
-    <% }) %>
+     <% cartItems.forEach((item)=>{ 
+     const price = item.productId.salePrice || item.productId.price;
+%>
+  <div class="d-flex justify-content-between mb-2">
+    <div class="fw-semibold"><%= item.quantity %> × <%= item.productId.productName %> <% if(item.size){ %>(<%= item.size %>)<% } %></div>
+    <div class="text-success fw-semibold">₹ <%= price * item.quantity %></div>
+  </div>
+<% }) %>
+
 
 
     <!-- 3. Platform Fee -->
@@ -90,6 +93,7 @@
 <script>
   const type = "<%= typeof type !== 'undefined' ? type : '' %>";
   const productId = "<%= typeof productId !== 'undefined' ? productId : '' %>";
+  const size = "<%= typeof size !== 'undefined'? size : '' %>";
   function selectAddress(card) {
   document.querySelectorAll(".address-card").forEach(c => {
     c.classList.remove("selected");
@@ -119,7 +123,7 @@
       headers:{
         'Content-Type':'application/json'
       },
-      body:JSON.stringify({selectedAddress:selected.value,type,productId})
+      body:JSON.stringify({selectedAddress:selected.value,type,productId,size})
     })
 
     if(res.ok){

@@ -32,6 +32,10 @@ let cartSchema = new Schema({
         cancellationReason:{
             type:String,
             default:"none"
+        },
+        size:{
+            type:String,
+            
         }
     }]
 })

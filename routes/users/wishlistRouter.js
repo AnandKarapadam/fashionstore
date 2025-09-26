@@ -9,7 +9,7 @@ router.post("/move-to-cart/:id",userAuth,wishlistController.moveToCart);
 router.delete("/remove-from-wishlist/:id",userAuth,wishlistController.removeWishlistItem);
 router.post("/add",wishlistController.toggleAddToWishlist);
 router.post("/remove",wishlistController.toggleRemoveFromWishlist);
-
+router.get("/product-sizes/:id",wishlistController.getProductSizes);
 
 
 
