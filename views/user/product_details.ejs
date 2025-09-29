@@ -260,6 +260,22 @@
           });
         });
 
+        document.addEventListener("DOMContentLoaded", () => {
+          const firstAvailable = document.querySelector('input[name="size"]:not([disabled])');
+
+          if (firstAvailable) {
+            firstAvailable.checked = true;
+
+          
+            const label = document.querySelector(`label[for="${firstAvailable.id}"]`);
+            if (label) label.classList.add("active");
+
+   
+            firstAvailable.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+        });
+
+
         const qtyInput = document.getElementById("quantity");
 
 
@@ -473,7 +489,7 @@
                 showConfirmButton: false,
                 timer: 1500,
                 position: "top-end",
-                toast: true, 
+                toast: true,
                 timerProgressBar: true
               });
             }

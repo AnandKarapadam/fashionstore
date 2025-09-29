@@ -63,6 +63,7 @@
             <td>
               <form  class="update-status-form d-flex justify-content-center align-items-center gap-2" data-order-id="<%= order.orderId %>" data-item-id="<%= product.orderItemId %>">
                 <input type="hidden" name="order_id" value="<%= product.productId %>">
+                <input type="hidden" name="size" value="<% product.size %>">
                 <select name="status" class="form-select form-select-sm">
                   <option selected disabled><%= product.status %></option>
                   <option value="Shipped" <%= product.status ==="Shipped"?'selected':''%>>Shipped</option>

@@ -99,6 +99,12 @@ app.use((req, res, next) => {
   res.status(404).render("user/pageNotFound");
 });
 
+app.use((err, req, res, next) => {
+  console.error(err.stack); 
+
+  res.status(500).render("user/serverError");
+});
+
 db();
 app.listen(process.env.PORT,(err)=>{
     console.log("Server running port:",process.env.PORT);

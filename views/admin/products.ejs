@@ -96,7 +96,7 @@
         <tbody>
           <% products.forEach(product => { %>
             <tr class="rounded-row">
-              <td><%= product.productName %></td>
+              <td><%= product.productName.split(" ").slice(0, 3).join(" ") %></td>
               <td><%= product.brand ? product.brand.brandName : "N/A" %></td>
               <td><%= product.category ? product.category.name   : "N/A" %></td>
               <td>₹<%= product.regularPrice %></td> 

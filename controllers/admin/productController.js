@@ -24,7 +24,7 @@ const addproduct = async (req, res) => {
   try {
     const products = req.body;
     const productExisting = await Product.find({
-      productName: products.productName,
+      productName: products.productName,color:products.color
     });
 
     const sizeArray = [
@@ -291,7 +291,7 @@ const editProduct = async (req, res) => {
       return res.redirect("/admin/pageerror");
     }
 
-    // ✅ Update basic fields
+  
     existingProduct.productName = req.body.name;
     existingProduct.description = req.body.description;
     existingProduct.brand = req.body.brand;
@@ -301,13 +301,29 @@ const editProduct = async (req, res) => {
     existingProduct.salePrice = req.body.discountPrice;
     existingProduct.quantity = req.body.quantity;
 
-    if (req.body.quantity == 0) {
-      existingProduct.status = "out of stock";
-    } else {
-      existingProduct.status = req.body.status;
-    }
+    const mQty = Number(req.body.mQuantity)||0;
+    const lQty = Number(req.body.lQuantity)||0;
+    const xlQty = Number(req.body.xlQuantity)||0;
 
-    // ✅ Handle deleted images (hidden input with names of deleted ones)
+    existingProduct.sizes= [
+      {size:"M",quantity:mQty},
+      {size:"L",quantity:lQty},
+      {size:"XL",quantity:xlQty}
+    ]
+
+    const totalQuantity = mQty+lQty+xlQty;
+    existingProduct.quantity = totalQuantity
+
+    if (totalQuantity === 0) {
+  existingProduct.status = "out of stock"; 
+} else if (req.body.status === "Discontinued") {
+  existingProduct.status = "Discontinued"; 
+} else {
+  existingProduct.status = "Available"; 
+}
+
+
+    
     if (req.body.deletedImages) {
       const deleted = req.body.deletedImages.split(",");
       existingProduct.productImage = existingProduct.productImage.filter(
@@ -319,15 +335,15 @@ const editProduct = async (req, res) => {
               "product-images",
               img
             );
-            if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath); // delete file
-            return false; // remove from DB array
+            if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath); 
+            return false;   
           }
           return true;
         }
       );
     }
 
-    // ✅ Process newly uploaded images
+    
     if (req.files && req.files.length > 0) {
       const uploadedImages = [];
 
@@ -348,15 +364,15 @@ const editProduct = async (req, res) => {
         uploadedImages.push(file.filename);
       }
 
-      // ✅ Fill empty slots first, then append
+      
       uploadedImages.forEach((img) => {
         const emptyIndex = existingProduct.productImage.findIndex(
           (x) => !x || x.trim() === ""
         );
         if (emptyIndex !== -1) {
-          existingProduct.productImage[emptyIndex] = img; // fill empty slot
+          existingProduct.productImage[emptyIndex] = img; 
         } else {
-          existingProduct.productImage.push(img); // append if no empty slot
+          existingProduct.productImage.push(img); 
         }
       });
     }

@@ -17,7 +17,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!file) return;
 
     currentInput = event.target;
-    currentPreview = currentInput.closest(".row").querySelector(".image-preview");
+    currentPreview = currentInput
+      .closest(".row")
+      .querySelector(".image-preview");
 
     const reader = new FileReader();
     reader.onload = function (e) {
@@ -47,40 +49,39 @@ document.addEventListener("DOMContentLoaded", function () {
     reader.readAsDataURL(file);
   }
 
- 
-  document.getElementById("cropImageBtn").addEventListener("click", function () {
-    if (!cropper || !currentInput || !currentPreview) return;
+  document
+    .getElementById("cropImageBtn")
+    .addEventListener("click", function () {
+      if (!cropper || !currentInput || !currentPreview) return;
 
-    const canvas = cropper.getCroppedCanvas();
-    canvas.toBlob((blob) => {
-      const fileName = currentInput.files[0]?.name || "cropped.jpg";
-      const file = new File([blob], fileName, { type: blob.type });
+      const canvas = cropper.getCroppedCanvas();
+      canvas.toBlob((blob) => {
+        const fileName = currentInput.files[0]?.name || "cropped.jpg";
+        const file = new File([blob], fileName, { type: blob.type });
 
-      const dataTransfer = new DataTransfer();
-      dataTransfer.items.add(file);
-      currentInput.files = dataTransfer.files;
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        currentInput.files = dataTransfer.files;
 
-     
-      const previewImg = document.createElement("img");
-      previewImg.src = URL.createObjectURL(blob);
-      previewImg.style.width = "100%";
-      previewImg.style.height = "100%";
-      previewImg.style.objectFit = "cover";
-      currentPreview.innerHTML = "";
-      currentPreview.appendChild(previewImg);
+        const previewImg = document.createElement("img");
+        previewImg.src = URL.createObjectURL(blob);
+        previewImg.style.width = "100%";
+        previewImg.style.height = "100%";
+        previewImg.style.objectFit = "cover";
+        currentPreview.innerHTML = "";
+        currentPreview.appendChild(previewImg);
 
-      croppedConfirmed = true;
-      cropperModal.hide();
+        croppedConfirmed = true;
+        cropperModal.hide();
+      });
     });
-  });
 
- 
   cropperModalEl.addEventListener("hidden.bs.modal", function () {
     if (cropper) {
       cropper.destroy();
       cropper = null;
     }
-    
+
     if (!croppedConfirmed && currentInput) {
       currentInput.value = "";
     }
@@ -88,24 +89,21 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-
-
 document.addEventListener("DOMContentLoaded", function () {
-  document.querySelectorAll(".delete-image-btn").forEach(btn => {
+  document.querySelectorAll(".delete-image-btn").forEach((btn) => {
     btn.addEventListener("click", async function () {
       const img = this.dataset.image;
-      const productId = this.dataset.product; 
+      const productId = this.dataset.product;
 
       const result = await Swal.fire({
         title: "Are you sure?",
         text: "This image will be deleted",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "Yes, delete it!"
+        confirmButtonText: "Yes, delete it!",
       });
 
       if (result.isConfirmed) {
-        // Remove from UI
         const preview = this.closest(".image-preview");
         if (preview) {
           const imgEl = preview.querySelector("img");
@@ -113,21 +111,27 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         try {
-          // Send DELETE request to server
-          const response = await fetch(`/admin/products/${productId}/delete-image`, {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ image: img })
-          });
+          const response = await fetch(
+            `/admin/products/${productId}/delete-image`,
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ image: img }),
+            }
+          );
 
           const data = await response.json();
 
           if (data.success) {
             Swal.fire("Deleted!", "Image has been deleted.", "success");
           } else {
-            Swal.fire("Error!", data.message || "Failed to delete image.", "error");
+            Swal.fire(
+              "Error!",
+              data.message || "Failed to delete image.",
+              "error"
+            );
           }
         } catch (err) {
           console.error(err);
@@ -138,12 +142,11 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-
-
-
 function validateForm() {
   let isValid = true;
-  document.querySelectorAll(".text-danger").forEach((text) => (text.innerHTML = ""));
+  document
+    .querySelectorAll(".text-danger")
+    .forEach((text) => (text.innerHTML = ""));
 
   const name = document.getElementById("nameinput").value.trim();
   const desc = document.getElementById("description").value.trim();
@@ -151,8 +154,10 @@ function validateForm() {
   const category = document.getElementById("category").value;
   const color = document.getElementById("color").value;
   const actualPrice = document.querySelector("input[name='actualPrice']").value;
-  const discountPrice = document.querySelector("input[name='discountPrice']").value;
-  const quantity = document.querySelector("input[name='quantity']").value;
+  const discountPrice = document.querySelector(
+    "input[name='discountPrice']"
+  ).value;
+  
 
   const imageInputs = document.querySelectorAll(".crop-image-input");
   let newImageCount = 0;
@@ -163,8 +168,8 @@ function validateForm() {
     }
   });
 
-  // count existing previews that are still in DOM (not deleted)
-  const existingImagesCount = document.querySelectorAll(".image-preview img").length;
+  const existingImagesCount =
+    document.querySelectorAll(".image-preview img").length;
 
   const totalImages = existingImagesCount + newImageCount;
 
@@ -173,7 +178,8 @@ function validateForm() {
     isValid = false;
   }
   if (!desc) {
-    document.getElementById("descriptionerror").innerText = "Description is needed";
+    document.getElementById("descriptionerror").innerText =
+      "Description is needed";
     isValid = false;
   }
   if (!brand) {
@@ -189,25 +195,34 @@ function validateForm() {
     isValid = false;
   }
   if (!parseFloat(actualPrice) || parseFloat(actualPrice) <= 0) {
-    document.getElementById("acpriceerror").innerText = "Enter a valid Actual Price!";
+    document.getElementById("acpriceerror").innerText =
+      "Enter a valid Actual Price!";
     isValid = false;
   }
   if (!parseFloat(discountPrice) || parseFloat(discountPrice) <= 0) {
-    document.getElementById("dcpriceerror").innerText = "Enter a valid Discount Price!";
+    document.getElementById("dcpriceerror").innerText =
+      "Enter a valid Discount Price!";
     isValid = false;
   } else if (parseFloat(discountPrice) >= parseFloat(actualPrice)) {
-    document.getElementById("dcpriceerror").innerText = "Discount Price must be lesser than actual price";
+    document.getElementById("dcpriceerror").innerText =
+      "Discount Price must be lesser than actual price";
     isValid = false;
   }
 
-  if (!quantity || quantity < 0) {
-    document.getElementById("quantityerror").innerText = "Enter a valid quantity!";
-    isValid = false;
-  }
+const mQty = Number(document.getElementById("mQty").value) || 0;
+const lQty = Number(document.getElementById("lQty").value) || 0;
+const xlQty = Number(document.getElementById("xlQty").value) || 0;
 
-  // ✅ Check minimum 3 images (existing + new)
+if (mQty < 0 || lQty < 0 || xlQty < 0) {
+  document.getElementById("quantityerror").innerText =
+    "Enter at least one valid quantity (M, L, or XL)";
+  isValid = false;
+}
+
+
   if (totalImages < 3) {
-    document.getElementById("imageerror").innerText = "At least three images are required.";
+    document.getElementById("imageerror").innerText =
+      "At least three images are required.";
     isValid = false;
   }
 

@@ -136,9 +136,18 @@ const updateOverallStatus = async(req,res)=>{
       for(let item of order.orderedItems){
         if(item.product&&item.quantity>0){
           await Product.updateOne(
-            {_id:item.product},
-            {$inc:{quantity:item.quantity}}
+            {_id:item.product,"sizes.size":item.size},
+            {$inc:{"sizes.$.quantity":item.quantity}}
           )
+
+          const productDoc = await Product.findById(item.product);
+          const totalQuantity = productDoc.sizes.reduce((acc,s)=>acc+s.quantity,0);
+
+          await Product.updateOne(
+            {_id:item.product},
+            {$set:{quantity:totalQuantity}}
+          )
+
         }
       }
     }
@@ -193,7 +202,8 @@ const loadOrderDetailsPage = async(req,res)=>{
         orderId: order.orderId,
         orderDate: order.createOn,
         user: order.userId,
-        address: order.address
+        address: order.address,
+        size:item.size
       }
     })
 
@@ -239,7 +249,7 @@ const loadOrderDetailsPage = async(req,res)=>{
 const postOrderItemStatus = async(req,res)=>{
   try {
 
-    const {orderItemId,status} = req.body;
+    const {orderItemId,status,size} = req.body;
     const {orderId} = req.params;
 
     if(!orderItemId||!status){
@@ -283,8 +293,18 @@ const postOrderItemStatus = async(req,res)=>{
           }
 
           await Product.updateOne(
+            {_id:returnedItem.product,"sizes.size":size},
+            {$inc:{"sizes.$.quantity":returnedItem.quantity}}
+          )
+
+
+          const productDoc = await Product.findById(returnedItem.product);
+          const totalQuantity = productDoc.sizes.reduce((acc,s)=>acc+s.quantity,0);
+          const newStatus = totalQuantity===0?"out of stock":productDoc.status;
+
+          await Product.updateOne(
             {_id:returnedItem.product},
-            {$inc:{quantity:returnedItem.quantity}}
+            {$set:{quantity:totalQuantity,status:newStatus}}
           )
 
         }

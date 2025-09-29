@@ -16,7 +16,7 @@
       <li class="breadcrumb-item active" aria-current="page"><%= categoryName %></li>
     <% } else if (search) { %>
       <li class="breadcrumb-item"><a href="/product/all">All Products</a></li>
-      <li class="breadcrumb-item active" aria-current="page">Search:"<%= search %>"</li>
+      <li class="breadcrumb-item active" aria-current="page"><%= search %></li>
     <% } else { %>
       <li class="breadcrumb-item active" aria-current="page">All Products</li>
     <% } %>
@@ -38,10 +38,12 @@
           <div class="sticky-sidebar">
             <div class="d-flex justify-content-between align-items-center mb-2">          
               <h5>Filter&Sort</h5>
-              <a href="/product/all" class="text-decoration-none text-secondary " >Clear All</a>
+              <a href="<%= search ? `/product/all?search=${search}` : '/product/all' %>" class="text-decoration-none text-secondary " >Clear All</a>
               </div>
           <form method="get" action="/product/all"  class="d-flex flex-column gap-3">
             <input type="hidden" name="search" value="<%= typeof search !== 'undefined' ? search : '' %>">
+            <input type="hidden" name="page" value="<%= typeof currentPage !== 'undefined' ? currentPage:'' %>">
+
             <!-- Sort -->
             <div>
               <label class="form-label">Sort By</label>

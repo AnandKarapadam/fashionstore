@@ -58,8 +58,7 @@
               <select name="status" id="statusupdate"
                 class="form-select border w-50 border-1 rounded-3 border-secondary">
                 <option value="Available" <%=product.status==='Available' ? 'selected' : '' %>>Available</option>
-                <option value="out of stock" <%=product.status=== 'out of stock' ? 'selected' : '' %>>Out-Of-Stock
-                </option>
+                
                 <option value="Discontinued" <%=product.status==='Discontinued' ? 'selected' : '' %>>Discontinued
                 </option>
               </select>
@@ -111,21 +110,39 @@
           <div class="row gap-3 mb-2">
             <div class="row col-4">
               <label class="col-12 mb-2 fw-semibold" for="actualprice">Actual Price</label>
-              <input class="col-12 border border-1 border-secondary rounded-3 mb-3 p-2" name="actualPrice" type="number"
+              <input class="col-12 border border-1 border-secondary rounded-2 mb-3 " name="actualPrice" type="number"
                 value="<%= product.regularPrice %>" placeholder="₹">
               <div id="acpriceerror" class="text-danger small"></div>
             </div>
             <div class="row col-4">
               <label class="col-12 mb-2 fw-semibold" for="discountprice">Discount Price</label>
-              <input class="col-12 border border-1 border-secondary rounded-3 mb-3 p-2" name="discountPrice"
-                type="number" value="<%= product.salePrice %>" placeholder="₹">
+              <input class="col-12 border border-1 border-secondary rounded-3 mb-3 " name="discountPrice" type="number"
+                value="<%= product.salePrice %>" placeholder="₹">
               <div id="dcpriceerror" class="text-danger small"></div>
             </div>
-            <div class="row col-3">
+            <div class="row col-4">
               <label class="col-12 mb-2 fw-semibold" for="quantity">Quantity</label>
-              <input class="col-12 border border-1 border-secondary rounded-3 mb-3 p-2" name="quantity" type="number"
-                value="<%= product.quantity %>" placeholder="Quantity">
-              <div id="quantityerror" class="text-danger small"></div>
+              <div class="row">
+                <div class="col-md-4 d-flex align-items-center gap-1">
+                  <label for="mQty" class="mb-0">M:</label>
+                  <input type="number" name="mQuantity" class="form-control" id="mQty"
+                    value="<%= product.sizes.find(s=>s.size==='M')?.quantity || '' %>"  min="0"  placeholder="M">
+                </div>
+
+                <div class="col-md-4 d-flex align-items-center gap-1">
+                  <label for="lQty" class="mb-0">L:</label>
+                  <input type="number" name="lQuantity" class="form-control" id="lQty"
+                    value="<%= product.sizes.find(s=>s.size==='L')?.quantity || '' %>" min="0" placeholder="L">
+                </div>
+
+                <div class="col-md-4 d-flex align-items-center gap-1">
+                  <label for="xlQty" class="mb-0">XL:</label>
+                  <input type="number" name="xlQuantity" class="form-control" id="xlQty"
+                    value="<%= product.sizes.find(s=>s.size==='XL')?.quantity || '' %>" min="0" placeholder="XL">
+                </div>
+              </div>
+
+              <div id="quantityerror" style="font-size: 12px;" class="text-danger small"></div>
             </div>
           </div>
 
@@ -138,22 +155,21 @@
                     <img src="/uploads/product-images/<%= product.productImage[i] %>" class="img-thumbnail w-50"
                       alt="Product Image <%= i + 1 %>">
 
-                      
 
-                      <button type="button" 
-                         class="btn btn-sm btn-danger delete-image-btn position-absolute top-0 end-0"
-                         data-image="<%= product.productImage[i] %>" data-product="<%= product._id %>">
-                         &times;
-                     </button>
+
+                    <button type="button" class="btn btn-sm btn-danger delete-image-btn position-absolute top-0 end-0"
+                      data-image="<%= product.productImage[i] %>" data-product="<%= product._id %>">
+                      &times;
+                    </button>
                     <% } %>
-                    
+
                 </div>
                 <label class="form-label text-muted mb-2 col-12">Leave Blank to keep current Image</label>
                 <input class="crop-image-input form-control col-12 border border-1 border-secondary rounded-3 mb-3"
                   name="images" type="file">
               </div>
               <% } %>
-              <input type="hidden" name="deletedImages" id="deletedImages">
+                <input type="hidden" name="deletedImages" id="deletedImages">
                 <div id="imageerror" class="text-danger small text-center"></div>
           </div>
 

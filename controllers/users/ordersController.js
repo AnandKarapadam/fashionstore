@@ -62,7 +62,7 @@ const loadOrderPage = async (req, res) => {
 const loadOrderDetails = async (req, res) => {
   try {
     const { orderId } = req.params;
-    const { productId } = req.query;
+    const { productId, size } = req.query;
     const userId = req.session.user;
     let user;
     if (userId) {
@@ -78,7 +78,7 @@ const loadOrderDetails = async (req, res) => {
     }
 
     const orderItem = order.orderedItems.find(
-      (item) => item.product._id.toString() === productId
+      (item) => item.product._id.toString() === productId && item.size === size
     );
 
     if (!orderItem) {
@@ -104,6 +104,7 @@ const loadOrderDetails = async (req, res) => {
       address,
       discount: order.discount,
       deliveryCharge: order.deliveryCharge,
+      size:orderItem.size
     };
 
     res.render("user/orderDetails", {
@@ -190,19 +191,20 @@ const invoiceDownload = async (req, res) => {
 
         {
           table: {
-            widths: ["*", "auto", "auto", "auto", "auto"],
+            widths: ["*", "auto", "auto","auto", "auto", "auto"],
             body: [
               [
                 "Product Name",
                 "Brand",
                 "Quantity",
+                "Size",
                 "Actual Price",
                 "Offer Price",
               ],
               ...order.orderedItems.map((item) => [
                 item.product.productName,
                 item.product.brand?.brandName || "N/A",
-                item.quantity,
+                item.quantity,item.size,
                 `₹${item.product.regularPrice}`,
                 `₹${item.product.salePrice}`,
               ]),
@@ -236,10 +238,10 @@ const invoiceDownload = async (req, res) => {
 
 const postReturnRequest = async (req, res) => {
   try {
-    const { orderId, productId, returnReason } = req.body;
+    const { orderId, productId, returnReason ,size} = req.body;
     const userId = req.session.user;
 
-    if (!orderId || !productId || !returnReason) {
+    if (!orderId || !productId||!size || !returnReason) {
       return res
         .status(400)
         .json({ success: false, message: "All fields are required" });
@@ -255,7 +257,7 @@ const postReturnRequest = async (req, res) => {
     }
 
     const item = order.orderedItems.find(
-      (i) => i.product._id.toString() === productId
+      (i) => i.product._id.toString() === productId&&i.size===size
     );
     if (!item) {
       return res
@@ -286,9 +288,10 @@ const postReturnRequest = async (req, res) => {
       }
     }
 
-    await Product.findByIdAndUpdate(productId, {
-      $inc: { quantity: item.quantity },
-    });
+    await Product.updateOne(
+      {_id:productId,"sizes.size":size},
+      {$inc:{"sizes.$.quantity":item.quantity}}
+    )
 
     await order.save();
 
@@ -306,7 +309,7 @@ const postReturnRequest = async (req, res) => {
 
 const postCancelOrder = async (req, res) => {
   try {
-    const { orderId, productId, reason } = req.body;
+    const { orderId, productId, reason ,size } = req.body;
     const userId = req.session.user;
 
     const order = await Order.findOne({ orderId, userId });
@@ -318,7 +321,7 @@ const postCancelOrder = async (req, res) => {
     }
 
     const item = order.orderedItems.find(
-      (i) => i.product._id.toString() === productId
+      (i) => i.product._id.toString() === productId && i.size === size
     );
 
     if (!item) {
@@ -351,9 +354,12 @@ const postCancelOrder = async (req, res) => {
 
     await order.save();
 
-    await Product.findByIdAndUpdate(productId, {
-      $inc: { quantity: item.quantity },
-    });
+ 
+    await Product.updateOne(
+  { _id: productId, "sizes.size": size },
+  { $inc: { "sizes.$.quantity": item.quantity } }
+);
+
 
     if (order.paymentMethod !== "cod") {
       const totalOrderAmount = order.totalPrice;
@@ -426,9 +432,10 @@ const postCancelWholeOrder = async (req, res) => {
         item.status = "Cancelled";
         item.cancelReason = cancelReason;
 
-        await Product.findByIdAndUpdate(item.product, {
-          $inc: { quantity: item.quantity },
-        });
+        await Product.updateOne(
+          { _id: item.product, "sizes.size": item.size },
+          { $inc: { "sizes.$.quantity": item.quantity } }
+        );
 
         const itemTotal = item.price * item.quantity;
         const discountShare = (itemTotal / totalOrderAmount) * totalDiscount;
