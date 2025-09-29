@@ -1,0 +1,64 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.page {
+    max-width: 1080px;
+}
+
+.brand {
+    font-weight: 800;
+    letter-spacing: .2px;
+}
+
+.hero {
+    background: linear-gradient(135deg, #111319 0%, #2b2f3a 100%);
+    color: #fff;
+    border-radius: .75rem;
+}
+
+.iconic {
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.badge-pill {
+    border-radius: 50rem;
+}
+
+.section+.section {
+    margin-top: 3rem;
+}
+
+.values .card {
+    height: 100%;
+}
+
+.grid-illustration {
+    aspect-ratio: 16/9;
+    background: repeating-linear-gradient(45deg, #e9ecef 0 14px, #f8f9fa 14px 28px);
+    border-radius: .5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #ffffff;
+        color: #525252;
+    }
+
+    .hero {
+        background: linear-gradient(135deg, #0e1117 0%, #1b1f2a 100%);
+    }
+
+    .card {
+        background: #f1f1f1;
+        border-color: #1b1f2a;
+    }
+
+    .grid-illustration {
+        background: repeating-linear-gradient(45deg, #1b1f2a 0 14px, #0e1117 14px 28px);
+    }
+
+    a {
+        color: #80bfff;
+    }
+}

@@ -155,7 +155,7 @@
       </div>
 
       <hr class="my-4">
-
+      <% if( relatedProducts && relatedProducts.length>0){ %>
       <div class="container mt-5">
         <div>
           <h3>Peoples also like</h3>
@@ -170,7 +170,7 @@
         <div class="scroll-container d-flex justify-content-center" id="cardRow">
           <% if (typeof relatedProducts !=="undefined" ){ %>
             <% relatedProducts.forEach(product=> { %>
-              <div class="col-6 col-md-4 col-lg-3">
+              
                 <div class="product-card shadow-sm position-relative">
                   <a href="/product/details/<%= product._id %>" class="text-decoration-none text-dark">
                     <img class="product-img" src="/uploads/re-image/<%= product.productImage[0] %>"
@@ -197,12 +197,12 @@
                               </div>
                   </a>
                 </div>
-              </div>
+              
               <% }) %>
                 <%}%>
         </div>
       </div>
-
+      <%}%>
       <div class="mt-5" id="review-section">
         <h5>Add Your Review</h5>
         <form action="/product/<%= product._id %>/review" method="POST" class="mt-3">

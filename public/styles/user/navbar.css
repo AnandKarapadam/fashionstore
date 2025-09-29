@@ -1,50 +1,52 @@
-body{
-      overflow-x: hidden;
-      box-sizing: content-box;
-    }
-    .navbar-brand{
-      font-size: 40px;
-      font-family:'Times New Roman', Times, serif;
-      color: rgb(74, 74, 74);
-    }
-    
-    
-    .footer-hr {
-    border: none;
-    height: 2px;
-    background-color: black;
-    width: 100vw;
-    margin-left: calc(-50vw + 50%);
-  }
-  .navbar .dropdown:hover .dropdown-menu {
-      display: block;
-      margin-top: 0;
-    }
+body {
+  overflow-x: hidden;
+  box-sizing: content-box;
+}
 
-    /* Add arrow manually */
-    .navbar .dropdown-toggle::after {
-      display: inline-block;
-      margin-left: 0.3em;
-      vertical-align: middle;
-      transition: transform 0.3s ease;
-      content: "";
-      border-top: 0.4em solid;
-      border-right: 0.4em solid transparent;
-      border-left: 0.4em solid transparent;
-    }
+.navbar-brand {
+  font-size: 40px;
+  font-family: 'Times New Roman', Times, serif;
+  color: rgb(74, 74, 74);
+}
 
-    /* Rotate arrow on hover */
-    .navbar .dropdown:hover .dropdown-toggle::after {
-      transform: rotate(180deg);
-    }
-    .nav-link{
-      font-weight: 500;
-      font-size: 17px;
-    }
-    .nav-icon{
-      font-size: 23px;
-      font-weight: 700;
-      color: black;
-    }
-    
-   
+
+.footer-hr {
+  border: none;
+  height: 2px;
+  background-color: black;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+}
+
+.navbar .dropdown:hover .dropdown-menu {
+  display: block;
+  margin-top: 0;
+}
+
+/* Add arrow manually */
+.navbar .dropdown-toggle::after {
+  display: inline-block;
+  margin-left: 0.3em;
+  vertical-align: middle;
+  transition: transform 0.3s ease;
+  content: "";
+  border-top: 0.4em solid;
+  border-right: 0.4em solid transparent;
+  border-left: 0.4em solid transparent;
+}
+
+/* Rotate arrow on hover */
+.navbar .dropdown:hover .dropdown-toggle::after {
+  transform: rotate(180deg);
+}
+
+.nav-link {
+  font-weight: 500;
+  font-size: 17px;
+}
+
+.nav-icon {
+  font-size: 23px;
+  font-weight: 700;
+  color: black;
+}

@@ -1,0 +1,39 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.page {
+    max-width: 860px;
+}
+
+.page h1 {
+    letter-spacing: .3px;
+}
+
+.section+.section {
+    margin-top: 2rem;
+}
+
+.muted {
+    color: #6c757d;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #ededed;
+        color: #e6e6e6;
+    }
+
+    .card {
+        background: #ffffff;
+        border-color: #cbcbcb;
+    }
+
+    a {
+        color: #80bfff;
+    }
+
+    .muted {
+        color: #9aa4b2;
+    }
+}

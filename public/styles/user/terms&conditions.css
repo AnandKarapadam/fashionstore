@@ -1,0 +1,44 @@
+body {
+    background: #f7f7f7;
+    color: #222;
+}
+
+.page-title {
+    font-weight: 700;
+    letter-spacing: .03em;
+}
+
+.content-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, .06);
+}
+
+.content-card h6 {
+    font-weight: 700;
+}
+
+.content-card p,
+.content-card li {
+    color: #4e4e4e;
+}
+
+.footer-muted {
+    color: #6c757d;
+    font-size: .95rem;
+}
+
+.footer-brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: .06em;
+}
+
+.copyright {
+    font-size: .85rem;
+    color: #8a8a8a;
+}
+
+.bullet-tight li {
+    margin-bottom: .35rem;
+}

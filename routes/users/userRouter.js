@@ -57,6 +57,7 @@ router.get("/auth/google/callback", passport.authenticate("google", { failureRed
 
 router.get("/pageNotFound",userController.loadPageNotFound);
 router.get("/logout",userController.logout);
+router.get("/delete-account",userController.loadDeleteAccount);
 router.post("/delete-account",userController.deleteAccount);
 
 //Profile Management
@@ -87,6 +88,11 @@ router.get("/profile/wallet/transactions",userAuth,walletController.loadTransact
 router.get("/profile/wallet/add",userAuth,walletController.loadWalletAddMoney);
 router.post("/profile/wallet/pay",userAuth,walletController.createWalletOrder);
 router.post('/profile/wallet/verify',userAuth,walletController.verifyWalletPayment);
+
+router.get("/terms&conditions",userController.loadTermsAndConditions);
+router.get("/privacy-policy",userController.loadPrivacyPolicy);
+router.get("/return-policy",userController.loadReturnPolicy);
+router.get("/about-us",userController.loadAboutUs);
 
 
 module.exports = router

@@ -1,0 +1,48 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.policy-page {
+    max-width: 860px;
+}
+
+.policy-title {
+    letter-spacing: .3px;
+}
+
+.policy-section+.policy-section {
+    margin-top: 2.25rem;
+}
+
+.policy-section h2 {
+    font-size: 1.25rem;
+}
+
+.policy-section h3 {
+    font-size: 1.1rem;
+}
+
+.small-muted {
+    font-size: .95rem;
+    color: #929292;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #efefef;
+        color: #e6e6e6;
+    }
+
+    .card {
+        background: #ffffff;
+        border-color: #bebebe;
+    }
+
+    .small-muted {
+        color: #9aa4b2;
+    }
+
+    a {
+        color: #80bfff;
+    }
+}

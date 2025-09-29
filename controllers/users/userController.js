@@ -389,6 +389,18 @@ const logout = async (req, res) => {
   }
 };
 
+const loadDeleteAccount = async(req,res)=>{
+  try {
+    
+    const user = await User.findById(req.session.user);
+
+    res.render("user/deleteAccount",{user});
+
+  } catch (error) {
+    console.log("Error:",error.message);
+  }
+}
+
 const deleteAccount = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -659,6 +671,46 @@ const postReview = async (req, res) => {
   }
 };
 
+const loadTermsAndConditions = async(req,res)=>{
+  try {
+
+    res.render("user/terms&conditions",{cssFile:"terms&conditions.css"});
+    
+  } catch (error) {
+    console.log("Error:",error.message);
+  }
+}
+
+const loadPrivacyPolicy = async(req,res)=>{
+  try {
+
+    res.render("user/privacyPolicy",{cssFile:"privacyPolicy.css"});
+    
+  } catch (error) {
+    console.log("Error;",error.message);
+  }
+}
+
+const loadReturnPolicy = async(req,res)=>{
+  try {
+
+    res.render("user/returnPolicy",{cssFile:"returnPolicy.css"});
+    
+  } catch (error) {
+    console.log("Error:",error.message);
+  }
+}
+
+const loadAboutUs = async(req,res)=>{
+  try {
+
+    res.render("user/aboutUs",{cssFile:"aboutUs.css"});
+    
+  } catch (error) {
+    console.log("Error:",error.message)
+  }
+}
+
 module.exports = {
   loadHomepage,
   loadLogin,
@@ -675,4 +727,9 @@ module.exports = {
   getProductDetails,
   postReview,
   deleteAccount,
+  loadTermsAndConditions,
+  loadPrivacyPolicy,
+  loadReturnPolicy,
+  loadAboutUs,
+  loadDeleteAccount
 };

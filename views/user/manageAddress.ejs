@@ -5,7 +5,7 @@
         <div class="col-md-3 mt-5 d-none d-lg-block">
     <div class="sidebar-content ms-5 w-100" style="position: sticky;top: 100px;">
         <div class="bg-dark rounded-3 mb-4">
-            <h6 class="text-white d-flex align-items-center py-3 ps-2 text-truncate"><i class="bi bi-person-circle fs-4 me-2"></i>Hello Anand KV</h6>
+            <h6 class="text-white d-flex align-items-center py-3 ps-2 text-truncate"><i class="bi bi-person-circle fs-4 me-2"></i>Hello <%= user.name?user.name.toUpperCase():User %></h6>
         </div>
         <ul class="nav flex-column ">
           <li class="nav-item"><a class="nav-link text-dark border" href="/profile"><i class="bi bi-person-circle me-2"></i> Profile</a></li>
