@@ -468,6 +468,7 @@ const postPaymentMethod = async (req, res) => {
     const userId = req.session.user;
     const { paymentMethod } = req.body;
     const method = paymentMethod.toLowerCase();
+   
 
     const validateMethods = ["cod", "razorpay", "upi", "card", "wallet"];
     if (!validateMethods.includes(method)) {
@@ -696,6 +697,7 @@ const getRazorpayOrder = async (req, res) => {
     ) {
       selectedMethod = orderData.paymentMethod;
     }
+   
     res.render("user/razorpayCheckout", {
       key: process.env.RAZORPAY_KEY_ID,
       order,
@@ -855,10 +857,11 @@ const verifyRazorPayment = async (req, res) => {
       req.session.orderData.razorpayOrderId = razorpay_order_id;
       req.session.orderData.razorpayPaymentId = razorpay_payment_id;
       const order = await updateOrder(req.session.orderData, userId);
-      delete req.session.orderData;
+      
       if (req.session.couponData) {
         delete req.session.couponData;
       }
+      delete req.session.orderData;
 
       return res.json({ success: true, orderId: order._id });
     } else {
@@ -1640,7 +1643,7 @@ const checkStock = async (req, res) => {
         continue;
       }
 
-      // Find size object for THIS item
+     
       const sizeObj = product.sizes.find((s) => s.size === item.size);
 
       if (!sizeObj || sizeObj.quantity < 1) {
@@ -1775,6 +1778,7 @@ const cartCheckoutValidate = async (req, res) => {
   try {
     const userId = req.session.user;
     const { type, product, size } = req.body;
+    const {paymentMethod} = req.session.orderData;
 
     let cart = await Cart.findOne({ userId }).populate("items.productId");
 
@@ -1790,7 +1794,7 @@ const cartCheckoutValidate = async (req, res) => {
     let itemsToKeep = [];
     let redirectCart = false;
 
-    // --- SINGLE PRODUCT CHECKOUT ---
+
     if (type === "single" && product && size) {
       const item = cart.items.find(
         (i) => i.productId._id.toString() === product && i.size === size
@@ -1845,7 +1849,7 @@ const cartCheckoutValidate = async (req, res) => {
       });
     }
 
-    // --- FULL CART CHECKOUT ---
+   
     else {
       for (let item of cart.items) {
         const product = item.productId;
@@ -1878,7 +1882,7 @@ const cartCheckoutValidate = async (req, res) => {
       }
     }
 
-    // Save the updated cart items
+  
     cart.items = itemsToKeep;
     await cart.save();
 
@@ -1891,20 +1895,19 @@ const cartCheckoutValidate = async (req, res) => {
       });
     }
 
-    // 🔄 Re-fetch updated cart to calculate correct total
+   
     cart = await Cart.findOne({ userId }).populate("items.productId");
     itemsToKeep = cart.items;
 
-    // ✅ Calculate totals from updated cart
     const totalAmount = itemsToKeep.reduce(
       (sum, item) => sum + (item.totalPrice || item.price * item.quantity),
       0
     );
 
-    // Get coupon discount from session (if valid)
+  
     let discount = req.session.couponData?.discount || 0;
 
-    // Optional: re-validate coupon minimum amount
+    
     if (
       req.session.couponData?.minAmount &&
       totalAmount < req.session.couponData.minAmount
@@ -1916,7 +1919,7 @@ const cartCheckoutValidate = async (req, res) => {
       req.session.couponData = null;
     }
 
-    const deliveryCharge = 50; // example static charge
+    const deliveryCharge = req.session.orderData.deliveryCharge||0;  
     const finalAmount = Math.max(totalAmount + deliveryCharge - discount, 0);
 
     const selectedAddressId = req.session.selectedAddress;
@@ -1928,7 +1931,7 @@ const cartCheckoutValidate = async (req, res) => {
       });
     }
 
-    // Fetch address
+    
     const addressDoc = await Address.findOne({
       "address._id": selectedAddressId,
     });
@@ -1966,6 +1969,7 @@ const cartCheckoutValidate = async (req, res) => {
       deliveryCharge,
       finalAmount,
       address: selectedAddress,
+      paymentMethod:paymentMethod
     };
 
     return res.json({ success: true, warnings: messages, redirectCart });
