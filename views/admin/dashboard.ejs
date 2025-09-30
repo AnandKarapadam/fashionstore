@@ -15,13 +15,13 @@
 
   <div class="row">
     <div class="col-md-4">
-      <canvas id="topProductsChart" style="width: 420px;height: 300px;"></canvas>
+      <canvas id="topProductsChart" width="420" height="300"></canvas>
     </div>
     <div class="col-md-4">
-      <canvas id="topCategoriesChart" style="width: 420px;height: 300px;" ></canvas>
+      <canvas id="topCategoriesChart" width="420" height="300" ></canvas>
     </div>
     <div class="col-md-4">
-      <canvas id="topBrandsChart" style="width: 420px;height: 300px;" ></canvas>
+      <canvas id="topBrandsChart" width="420" height="300" ></canvas>
     </div>
   </div>
 
@@ -160,12 +160,22 @@
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script id="topProductsData" type="application/json">
+  <%- JSON.stringify(topProducts || []) %>
+</script>
+<script id="topCategoriesData" type="application/json" >
+  <%- JSON.stringify(topCategories || []) %>
+</script>
+<script id="topBrandsData" type="application/json" >
+  <%- JSON.stringify(topBrands || []) %>
+</script>
 <script>
 
 
-const topProducts = JSON.parse('<%- JSON.stringify(topProducts || []) %>');
-const topCategories= JSON.parse('<%- JSON.stringify(topCategories || []) %>');
-const topBrands = JSON.parse('<%- JSON.stringify(topBrands || []) %>');
+const topProducts = JSON.parse(document.getElementById("topProductsData").textContent);
+const topCategories = JSON.parse(document.getElementById("topCategoriesData").textContent);
+const topBrands = JSON.parse(document.getElementById("topBrandsData").textContent);
+
 
 
 function createBarChart(ctxId,dataArr,labelText){

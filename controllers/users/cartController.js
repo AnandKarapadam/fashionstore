@@ -1493,11 +1493,15 @@ const postConfirmation = async (req, res) => {
     delete req.session.orderData;
     delete req.session.couponData;
 
-    const actualProduct = await Product.findById(req.session.user);
-    actualProduct.quantity = actualProduct.sizes.reduce(
-      (sum, s) => sum + s.quantity,
-      0
-    );
+    for (const item of orderedItems) {
+  const actualProduct = await Product.findById(item.product); 
+  if (actualProduct && actualProduct.sizes && actualProduct.sizes.length > 0) {
+    
+    actualProduct.quantity = actualProduct.sizes.reduce((sum, s) => sum + s.quantity, 0);
+    await actualProduct.save();
+  }
+}
+
 
     res.status(200).json({
       message: "Order placed successfully",
