@@ -383,13 +383,14 @@ const loadItemDetailsPage = async(req,res)=>{
 
     const orderItem = order.orderedItems.find(item=>item.orderItemId === itemId);
     const addressDoc = await Address.findOne({ userId: order.userId._id });
+    const paymentMethod = order.paymentMethod;
    
 
     const orderAddress = addressDoc.address.find(
        (addr) => addr._id.toString() === order.address.toString()
     );
 
-    res.render("admin/orderitemdetails",{order,orderItem,address:orderAddress});
+    res.render("admin/orderitemdetails",{order,orderItem,address:orderAddress,paymentMethod});
     
   } catch (error) {
     console.log("error:",error.message);

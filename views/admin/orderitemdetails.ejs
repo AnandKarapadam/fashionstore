@@ -17,13 +17,14 @@
         <div class="col-6 px-5 py-2 border">
           <h5 class="text-center">Details</h5>
           <hr>
-          <p class="d-flex mb-1 fw-bold">Product Id: <span class="text-muted ms-auto fw-normal"><%= orderItem.orderItemId %></span> </p>
           <p class="d-flex mb-1 fw-bold">Product Name <span class="text-muted  fw-normal ms-auto"><%= orderItem.product.productName %></span> </p>
+          <p class="d-flex mb-1 fw-bold">Size: <span class="text-muted fw-normal ms-auto"><%= orderItem.size %></span> </p>
           <p class="d-flex mb-1 fw-bold">Quantity <span class="text-muted fw-normal ms-auto"><%= orderItem.quantity %></span> </p>
           <p class="d-flex mb-1 fw-bold">product status <span class="text-muted fw-normal  ms-auto"><%= orderItem.status %></span> </p>
           <p class="d-flex mb-1 fw-bold">Product Price <span class="text-muted fw-normal ms-auto">₹<%= orderItem.price %></span> </p>
           <p class="d-flex mb-1 fw-bold">User Name:<span class="text-muted fw-semibold ms-auto"><%= order.userId.name %></span> </p>
           <p class="d-flex mb-1 fw-bold">Email: <span class="text-muted fw-normal ms-auto"><%= order.userId.email %></span> </p>
+          <p class="d-flex mb-1 fw-bold">Payment Method: <span class="text-muted fw-normal ms-auto"><%= typeof paymentMethod!=="undefined"? paymentMethod.toUpperCase():"N/A" %></span> </p>
         </div>
         <div class="col-6 px-5 border py-2"  >
           <h5 class="text-center">Address</h5>
