@@ -73,9 +73,12 @@ const loadOrderDetails = async (req, res) => {
       "orderedItems.product"
     );
 
+    
     if (!order) {
       console.log("order not found");
     }
+
+    const paymentMethod = order.paymentMethod||"N|A";
 
     const orderItem = order.orderedItems.find(
       (item) => item.product._id.toString() === productId && item.size === size
@@ -111,6 +114,7 @@ const loadOrderDetails = async (req, res) => {
       orderItem: itemDetails,
       user,
       cssFile: "orderdetails.css",
+      paymentMethod
     });
   } catch (error) {
     console.log(error.message);
