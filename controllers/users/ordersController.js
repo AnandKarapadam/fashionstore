@@ -191,13 +191,14 @@ const invoiceDownload = async (req, res) => {
 
         {
           table: {
-            widths: ["*", "auto", "auto","auto", "auto", "auto"],
+            widths: ["*", "auto", "auto","auto", "auto","auto", "auto"],
             body: [
               [
                 "Product Name",
                 "Brand",
                 "Quantity",
                 "Size",
+                "Status",
                 "Actual Price",
                 "Offer Price",
               ],
@@ -205,6 +206,7 @@ const invoiceDownload = async (req, res) => {
                 item.product.productName,
                 item.product.brand?.brandName || "N/A",
                 item.quantity,item.size,
+                item.status,
                 `₹${item.product.regularPrice}`,
                 `₹${item.product.salePrice}`,
               ]),
