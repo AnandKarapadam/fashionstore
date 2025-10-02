@@ -1,5 +1,5 @@
 <%- include("../partials/user/header.ejs") %>
-<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-white px-3 mb-4">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-white px-3 mb-4">
     <a class="navbar-brand" href="/">RORITO</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -16,10 +16,10 @@
           <a class="nav-link" href="/product/all">All products</a>
         </li>
         <% if(user && user.name) {%>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-            aria-expanded="false">
-            <%= user.name.split(' ')[0] %>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              <%= user.name.split(' ')[0] %>
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
             <li><a class="dropdown-item" href="/profile">Profile</a></li>
@@ -76,7 +76,11 @@
             <div class="card-body">
               <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
                 <h6 class="card-title">Order ID: <span class="text-muted"><%= order.orderId %></span></h6>
-                <span class="badge bg-primary"><%= order.overAllStatus || "Pending" %></span>
+                <% if(order.overAllStatus&&order.overAllStatus!=="Pending"){ %>
+                  <span class="badge bg-primary"><%= order.overAllStatus %></span>
+                <%}else if(order.overAllStatus === "Pending"){%>
+                    <span class="badge bg-danger"><%= order.overAllStatus %></span>
+                <%}%>    
               </div>
              
               <% order.orderedItems.forEach(item=> { %>
@@ -148,9 +152,11 @@
               <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap">
                   <% if(order.overAllStatus === "Delivered") {%>
                     <button data-order-id="<%= order.orderId %>" class="btn btn-outline-dark btn-sm mb-2 mb-md-0 order-return-btn">Return Order</button>
-                  <% } else if(order.overAllStatus === "Processing" || order.overAllStatus === "Pending") {%>
+                  <% } else if(order.overAllStatus === "Processing") {%>
                     <button data-order-id="<%= order.orderId %>" class="btn btn-outline-dark btn-sm mb-2 mb-md-0 order-cancel-btn">Cancel order</button>
-                  <%} else{ %>  
+                  <%}else if(order.overAllStatus === "Pending"){%>
+                    <button class="btn btn-sm btn-outline-danger retry-payment-btn" data-order-id="<%= order.orderId %>" >Retry Payment</button>
+                    <%} else{ %>  
                     <a href="/product/all" class="btn btn-outline-dark btn-sm mb-2 mb-md-0">Shop</a>
                     <%}%>
                   <span class="fw-bold text-end ms-auto d-flex flex-column">Total: ₹<%= order.finalAmount %> <%if(order.discount>0){%> <span style="font-size: 12px;" class="text-muted fw-semibold ">Saved:-₹<%= order.discount %></span> <%}%></span>
@@ -173,73 +179,74 @@
               %>
 
               <!-- Previous Button -->
-              <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+              <li class="page-item <%= currentPage == 1 ? ' disabled' : '' %>">
                 <a class="page-link" href="?page=<%= parseInt(currentPage) - 1 %>&search=<%= search %>">&laquo;</a>
+          </li>
+
+          <!-- Page Numbers -->
+          <% for (let i=startPage; i <=endPage; i++) { %>
+            <li class="page-item <%= i == currentPage ? 'active' : '' %>">
+              <a class="page-link" href="?page=<%= i %>&search=<%= search %>">
+                <%= i %>
+              </a>
+            </li>
+            <% } %>
+
+              <!-- Next Button -->
+              <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+                <a class="page-link" href="?page=<%= parseInt(currentPage) + 1 %>&search=<%= search %>">&raquo;</a>
               </li>
-
-              <!-- Page Numbers -->
-              <% for (let i=startPage; i <=endPage; i++) { %>
-                <li class="page-item <%= i == currentPage ? 'active' : '' %>">
-                  <a class="page-link" href="?page=<%= i %>&search=<%= search %>">
-                    <%= i %>
-                  </a>
-                </li>
-                <% } %>
-
-                  <!-- Next Button -->
-                  <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
-                    <a class="page-link" href="?page=<%= parseInt(currentPage) + 1 %>&search=<%= search %>">&raquo;</a>
-                  </li>
-          </ul>
-        </nav>
-      </div>
-      </div>
-      <!-- Return Modal -->
-      <div class="modal fade" id="returnModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <form id="returnForm" method="POST">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Return Product</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" id="returnOrderId" name="orderId">
-          <input type="hidden" id="returnProductId" name="productId">
-          <input type="hidden" id="returnSize" name="size">
-
-
-          <div class="mb-3">
-            <label for="returnReason" class="form-label">Select Return Reason</label>
-            <select name="returnReason" id="returnReason" class="form-select" required>
-              <option value="">Select a reason</option>
-              <option value="Damaged Product">Damaged Product</option>
-              <option value="Wrong Item Delivered">Wrong Item Delivered</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-
-          <div class="mb-3" id="otherReasonDiv" style="display:none;">
-            <label for="otherReason" class="form-label">Describe the reason</label>
-            <textarea id="otherReason" class="form-control" rows="3" placeholder="Enter your reason"></textarea>
-          </div>
-
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-danger">Submit Return</button>
-        </div>
-      </div>
-    </form>
+      </ul>
+  </nav>
   </div>
-</div>
+  </div>
+  <!-- Return Modal -->
+  <div class="modal fade" id="returnModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="returnForm" method="POST">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Return Product</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="returnOrderId" name="orderId">
+            <input type="hidden" id="returnProductId" name="productId">
+            <input type="hidden" id="returnSize" name="size">
 
-    <% }else{ %>
-      <div class="container d-flex align-items-center my-5 justify-content-center pt-5 mx-5 bg-light" style="height: 65vh;">
-        <div class="row d-flex flex-column justify-content-center align-items-center">
-          <p class="text-muted">No Items found</p>
-          <a href="/product/all" class="btn btn-outline-secondary">Explore Products</a>
+
+            <div class="mb-3">
+              <label for="returnReason" class="form-label">Select Return Reason</label>
+              <select name="returnReason" id="returnReason" class="form-select" required>
+                <option value="">Select a reason</option>
+                <option value="Damaged Product">Damaged Product</option>
+                <option value="Wrong Item Delivered">Wrong Item Delivered</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="mb-3" id="otherReasonDiv" style="display:none;">
+              <label for="otherReason" class="form-label">Describe the reason</label>
+              <textarea id="otherReason" class="form-control" rows="3" placeholder="Enter your reason"></textarea>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-danger">Submit Return</button>
+          </div>
         </div>
+      </form>
+    </div>
+  </div>
+
+  <% }else{ %>
+    <div class="container d-flex align-items-center my-5 justify-content-center pt-5 mx-5 bg-light"
+      style="height: 65vh;">
+      <div class="row d-flex flex-column justify-content-center align-items-center">
+        <p class="text-muted">No Items found</p>
+        <a href="/product/all" class="btn btn-outline-secondary">Explore Products</a>
       </div>
+    </div>
     <% } %>
 
 
@@ -248,306 +255,355 @@
 
       <%- include("../partials/user/footer.ejs") %>
 
-      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-      <script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-document.addEventListener("DOMContentLoaded", function () {
-  const returnButtons = document.querySelectorAll(".order-return-btn");
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <script>
 
-  returnButtons.forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      const orderId = btn.getAttribute("data-order-id");
-
-      const { value: reason } = await Swal.fire({
-        title: "Return Order",
-        input: "select",
-        inputOptions: {
-          "Damaged Product": "Damaged Product",
-          "Wrong Item Delivered": "Wrong Item Delivered",
-          "Not as Described": "Not as Described",
-          "Other": "Other"
-        },
-        inputPlaceholder: "Select a reason",
-        showCancelButton: true,
-        inputValidator: (value) => {
-          if (!value) return "You need to select a reason";
-        }
-      });
-
-      if (reason) {
-        let finalReason = reason;
-
-        if (reason === "Other") {
-          const { value: otherReason } = await Swal.fire({
-            title: "Enter return reason",
-            input: "textarea",
-            inputPlaceholder: "Type your reason here...",
-            inputAttributes: {
-              'aria-label': "Type your reason here"
-            },
-            showCancelButton: true,
-            inputValidator: (value) => {
-              if (!value) return "You have to type a reason!";
-            }
-          });
-
-          if (!otherReason) return; // user canceled
-          finalReason = otherReason;
-        }
-
-        try{
-          const res = await fetch(`/orders/return/${orderId}`,{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({returnReason:finalReason})
-          })
-
-          const data = await res.json();
-
-          if(data.success){
-            Swal.fire("Returned",data.message,'success').then(()=>location.reload());
-          }
-          else{
-            Swal.fire("Error",data.message,"error");
-          }
-        }
-        catch(error){
-          console.log("Error",error.message);
-          Swal.fire("Error","Something Went Wrong","error");
-        }
-       
-      }
-    });
-  });
-});
-       
-document.addEventListener("DOMContentLoaded",function(){
-  const cancelButtons = document.querySelectorAll(".order-cancel-btn");
-
-  cancelButtons.forEach(btn=>{
-    btn.addEventListener("click",async()=>{
-      const orderId = btn.getAttribute("data-order-id");
-
-      const {value:reason} = await Swal.fire({
-        title:"Cancel Order",
-        input:'select',
-        inputOptions:{
-          "Changed my mind": "Changed my mind",
-          "Found a better price": "Found a better price",
-          "Ordered by mistake": "Ordered by mistake",
-          "Other": "Other"
-        },
-        inputPlaceholder:"Select a reason",
-        showCancelButton:true,
-        inputValidator:(value)=>{
-          if(!value)return "You need to select a reason!"
-        }
-      })
-
-      if(reason){
-        let finalReason = reason;
-        if(reason==="Other"){
-          const {value:otherReason} =await Swal.fire({
-            title:"Enter cancellation reason",
-            input:"textarea",
-            inputPlaceholder:"Type your reason here...",
-            inputAttributes:{
-              'aria-label':'Type your reason here'
-            },
-            showCancelButton:true,
-            inputValidator:(value)=>{
-              if(!value)return "Please enter a reason!"
-            }
-          });
-          if(!otherReason) return;
-          finalReason = otherReason
-        }
-
-        try {
-
-           const res = await fetch(`/orders/cancel/${orderId}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ cancelReason: finalReason })
-          });
-
-          const data = await res.json();
-
-          if (data.success) {
-            Swal.fire("Cancelled!", data.message, "success").then(() => location.reload());
-          } else {
-            Swal.fire("Error", data.message, "error");
-          }
-          
-        } catch (error) {
-          console.error(error.message);
-          Swal.fire("Error", "Something went wrong", "error");
-        }
-
-      }
-
-    })
-  })
-
-})
-
-
-
-
-       document.addEventListener("DOMContentLoaded", function () {
-  const returnModal = document.getElementById("returnModal");
-  const returnForm = document.getElementById("returnForm");
-  const returnReasonSelect = document.getElementById("returnReason");
-  const otherReasonDiv = document.getElementById("otherReasonDiv");
-  const otherReasonTextarea = document.getElementById("otherReason");
-
-  // Populate hidden fields when modal opens
-  returnModal.addEventListener("show.bs.modal", function (event) {
-    const button = event.relatedTarget;
-    const orderId = button.getAttribute("data-order-id");
-    const productId = button.getAttribute("data-product-id");
-    const size = button.getAttribute("data-size");
-    document.getElementById("returnOrderId").value = orderId;
-    document.getElementById("returnProductId").value = productId;
-    document.getElementById("returnSize").value = size;
-  });
-
-  // Show/hide textarea based on select
-  returnReasonSelect.addEventListener("change", () => {
-    if (returnReasonSelect.value === "Other") {
-      otherReasonDiv.style.display = "block";
-      otherReasonTextarea.required = true;
-    } else {
-      otherReasonDiv.style.display = "none";
-      otherReasonTextarea.required = false;
-    }
-  });
-
-  // Handle form submission via fetch (AJAX)
-  returnForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const orderId = document.getElementById("returnOrderId").value;
-    const productId = document.getElementById("returnProductId").value;
-    const size = document.getElementById("returnSize").value;
-    let returnReason = returnReasonSelect.value;
-
-    // If "Other" is selected, use textarea value
-    if (returnReason === "Other") {
-      returnReason = otherReasonTextarea.value.trim();
-      if (!returnReason) {
-        Swal.fire("Info", "Please describe the reason for return", "info");
-        return;
-      }
-    }
+          document.querySelectorAll(".retry-payment-btn").forEach(btn => {
+  btn.addEventListener("click", async () => {
+    const orderId = btn.dataset.orderId;
 
     try {
-      const res = await fetch("/orders/return/item", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderId, productId, returnReason ,size})
-      });
+      const res = await fetch(`/orders/payment/retry/prepare/${orderId}`, { method: "POST" });
       const data = await res.json();
 
-      if (data.success) {
-        Swal.fire("Success", data.message, "success").then(() => location.reload());
-      } else {
-        Swal.fire("Error", data.message, "error");
+      if (!data.success) return Swal.fire({ icon: "error", title: "Oops!", text: data.message });
+
+      if (data.warnings && data.warnings.length > 0) {
+        const result = await Swal.fire({
+          icon: "info",
+          title: "Stock/Coupon Adjusted",
+          html: data.warnings.join("<br>"),
+          showCancelButton: true,
+          confirmButtonText: "Proceed to Pay",
+          cancelButtonText: "Cancel"
+        });
+        if (!result.isConfirmed) return;
       }
-    } catch (err) {
+
+      // Add handler for successful payment
+      data.razorpayOptions.handler = function(response){
+        fetch(`/orders/payment/retry/verify/${orderId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(response)
+        })
+        .then(r => r.json())
+        .then(result => {
+          if(result.success) window.location.href = "/cart/order-success";
+          else window.location.href = "/cart/order-failed?orderId=" + orderId;
+        });
+      };
+
+      const rzp = new Razorpay(data.razorpayOptions);
+      rzp.on("payment.failed", () => window.location.href = "/cart/order-failed?orderId=" + orderId);
+      rzp.open();
+
+    } catch(err) {
       console.error(err);
-      Swal.fire("Error", "Something went wrong", "error");
+      Swal.fire({ icon: "error", title: "Error", text: "Something went wrong." });
     }
   });
 });
 
-        document.addEventListener("DOMContentLoaded", function () {
-          document.querySelectorAll(".cancel-orderitem-btn").forEach(btn => {
-            btn.addEventListener("click", async () => {
+          document.addEventListener("DOMContentLoaded", function () {
+            const returnButtons = document.querySelectorAll(".order-return-btn");
 
-              const orderId = btn.getAttribute("data-order-id");
-              const productId = btn.getAttribute("data-product-id");
-              const size = btn.getAttribute("data-size");
+            returnButtons.forEach((btn) => {
+              btn.addEventListener("click", async () => {
+                const orderId = btn.getAttribute("data-order-id");
 
-              const result = await Swal.fire({
-                title: "Are you sure?",
-                icon: "warning",
-                text: "This will cancel the product from your order.",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
-                confirmButtonText: "Yes, cancel it!",
-                cancelButtonText: "No, keep it"
-              })
-
-              if(!result.isConfirmed)return;
-
-              const {value:reason} = await Swal.fire({
-                title:"Select a reason for cancellation",
-                input:"select",
-                inputOptions:{
-                  'Changed my mind': 'Changed my mind',
-                  'Ordered by mistake': 'Ordered by mistake',
-                  'Found a better price': 'Found a better price',
-                  'Other': 'Other'
-                },
-                inputPlaceholder:"Select a reason",
-                showCancelButton:true
-              })
-
-              if(!reason){
-                Swal.fire({
-                  icon:"info",
-                  title:"Cancelled",
-                  text:"You need to select a reason to cancel",
-                })
-                return;
-              }
-
-              if (result.isConfirmed) {
-                try {
-
-                  const res = await fetch("/orders/cancel/item", {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ orderId, productId,reason,size})
-                  })
-
-                  const data = await res.json();
-
-                  if (data.success) {
-                    Swal.fire({
-                      icon: "success",
-                      title: "Cancelled",
-                      text: data.message
-                    }).then(() => location.reload());
+                const { value: reason } = await Swal.fire({
+                  title: "Return Order",
+                  input: "select",
+                  inputOptions: {
+                    "Damaged Product": "Damaged Product",
+                    "Wrong Item Delivered": "Wrong Item Delivered",
+                    "Not as Described": "Not as Described",
+                    "Other": "Other"
+                  },
+                  inputPlaceholder: "Select a reason",
+                  showCancelButton: true,
+                  inputValidator: (value) => {
+                    if (!value) return "You need to select a reason";
                   }
-                  else {
-                    Swal.fire({
-                      icon: "error",
-                      title: "OOPS...",
-                      text: data.message || "Failed to cancel order"
+                });
+
+                if (reason) {
+                  let finalReason = reason;
+
+                  if (reason === "Other") {
+                    const { value: otherReason } = await Swal.fire({
+                      title: "Enter return reason",
+                      input: "textarea",
+                      inputPlaceholder: "Type your reason here...",
+                      inputAttributes: {
+                        'aria-label': "Type your reason here"
+                      },
+                      showCancelButton: true,
+                      inputValidator: (value) => {
+                        if (!value) return "You have to type a reason!";
+                      }
+                    });
+
+                    if (!otherReason) return; // user canceled
+                    finalReason = otherReason;
+                  }
+
+                  try {
+                    const res = await fetch(`/orders/return/${orderId}`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ returnReason: finalReason })
                     })
+
+                    const data = await res.json();
+
+                    if (data.success) {
+                      Swal.fire("Returned", data.message, 'success').then(() => location.reload());
+                    }
+                    else {
+                      Swal.fire("Error", data.message, "error");
+                    }
+                  }
+                  catch (error) {
+                    console.log("Error", error.message);
+                    Swal.fire("Error", "Something Went Wrong", "error");
                   }
 
-                } catch (error) {
-                  console.log("Error:", error.message);
-                  Swal.fire({
-                    icon: "error",
-                    title: "Error",
-                    text: "Something went wrong"
-                  });
+                }
+              });
+            });
+          });
+
+          document.addEventListener("DOMContentLoaded", function () {
+            const cancelButtons = document.querySelectorAll(".order-cancel-btn");
+
+            cancelButtons.forEach(btn => {
+              btn.addEventListener("click", async () => {
+                const orderId = btn.getAttribute("data-order-id");
+
+                const { value: reason } = await Swal.fire({
+                  title: "Cancel Order",
+                  input: 'select',
+                  inputOptions: {
+                    "Changed my mind": "Changed my mind",
+                    "Found a better price": "Found a better price",
+                    "Ordered by mistake": "Ordered by mistake",
+                    "Other": "Other"
+                  },
+                  inputPlaceholder: "Select a reason",
+                  showCancelButton: true,
+                  inputValidator: (value) => {
+                    if (!value) return "You need to select a reason!"
+                  }
+                })
+
+                if (reason) {
+                  let finalReason = reason;
+                  if (reason === "Other") {
+                    const { value: otherReason } = await Swal.fire({
+                      title: "Enter cancellation reason",
+                      input: "textarea",
+                      inputPlaceholder: "Type your reason here...",
+                      inputAttributes: {
+                        'aria-label': 'Type your reason here'
+                      },
+                      showCancelButton: true,
+                      inputValidator: (value) => {
+                        if (!value) return "Please enter a reason!"
+                      }
+                    });
+                    if (!otherReason) return;
+                    finalReason = otherReason
+                  }
+
+                  try {
+
+                    const res = await fetch(`/orders/cancel/${orderId}`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ cancelReason: finalReason })
+                    });
+
+                    const data = await res.json();
+
+                    if (data.success) {
+                      Swal.fire("Cancelled!", data.message, "success").then(() => location.reload());
+                    } else {
+                      Swal.fire("Error", data.message, "error");
+                    }
+
+                  } catch (error) {
+                    console.error(error.message);
+                    Swal.fire("Error", "Something went wrong", "error");
+                  }
+
+                }
+
+              })
+            })
+
+          })
+
+
+
+
+          document.addEventListener("DOMContentLoaded", function () {
+            const returnModal = document.getElementById("returnModal");
+            const returnForm = document.getElementById("returnForm");
+            const returnReasonSelect = document.getElementById("returnReason");
+            const otherReasonDiv = document.getElementById("otherReasonDiv");
+            const otherReasonTextarea = document.getElementById("otherReason");
+
+            // Populate hidden fields when modal opens
+            returnModal.addEventListener("show.bs.modal", function (event) {
+              const button = event.relatedTarget;
+              const orderId = button.getAttribute("data-order-id");
+              const productId = button.getAttribute("data-product-id");
+              const size = button.getAttribute("data-size");
+              document.getElementById("returnOrderId").value = orderId;
+              document.getElementById("returnProductId").value = productId;
+              document.getElementById("returnSize").value = size;
+            });
+
+            // Show/hide textarea based on select
+            returnReasonSelect.addEventListener("change", () => {
+              if (returnReasonSelect.value === "Other") {
+                otherReasonDiv.style.display = "block";
+                otherReasonTextarea.required = true;
+              } else {
+                otherReasonDiv.style.display = "none";
+                otherReasonTextarea.required = false;
+              }
+            });
+
+            // Handle form submission via fetch (AJAX)
+            returnForm.addEventListener("submit", async (e) => {
+              e.preventDefault();
+              const orderId = document.getElementById("returnOrderId").value;
+              const productId = document.getElementById("returnProductId").value;
+              const size = document.getElementById("returnSize").value;
+              let returnReason = returnReasonSelect.value;
+
+              // If "Other" is selected, use textarea value
+              if (returnReason === "Other") {
+                returnReason = otherReasonTextarea.value.trim();
+                if (!returnReason) {
+                  Swal.fire("Info", "Please describe the reason for return", "info");
+                  return;
                 }
               }
 
+              try {
+                const res = await fetch("/orders/return/item", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ orderId, productId, returnReason, size })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                  Swal.fire("Success", data.message, "success").then(() => location.reload());
+                } else {
+                  Swal.fire("Error", data.message, "error");
+                }
+              } catch (err) {
+                console.error(err);
+                Swal.fire("Error", "Something went wrong", "error");
+              }
+            });
+          });
+
+          document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".cancel-orderitem-btn").forEach(btn => {
+              btn.addEventListener("click", async () => {
+
+                const orderId = btn.getAttribute("data-order-id");
+                const productId = btn.getAttribute("data-product-id");
+                const size = btn.getAttribute("data-size");
+
+                const result = await Swal.fire({
+                  title: "Are you sure?",
+                  icon: "warning",
+                  text: "This will cancel the product from your order.",
+                  showCancelButton: true,
+                  confirmButtonColor: "#d33",
+                  cancelButtonColor: "#3085d6",
+                  confirmButtonText: "Yes, cancel it!",
+                  cancelButtonText: "No, keep it"
+                })
+
+                if (!result.isConfirmed) return;
+
+                const { value: reason } = await Swal.fire({
+                  title: "Select a reason for cancellation",
+                  input: "select",
+                  inputOptions: {
+                    'Changed my mind': 'Changed my mind',
+                    'Ordered by mistake': 'Ordered by mistake',
+                    'Found a better price': 'Found a better price',
+                    'Other': 'Other'
+                  },
+                  inputPlaceholder: "Select a reason",
+                  showCancelButton: true
+                })
+
+                if (!reason) {
+                  Swal.fire({
+                    icon: "info",
+                    title: "Cancelled",
+                    text: "You need to select a reason to cancel",
+                  })
+                  return;
+                }
+
+                if (result.isConfirmed) {
+                  try {
+
+                    const res = await fetch("/orders/cancel/item", {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json"
+                      },
+                      body: JSON.stringify({ orderId, productId, reason, size })
+                    })
+
+                    const data = await res.json();
+
+                    if (data.success) {
+                      Swal.fire({
+                        icon: "success",
+                        title: "Cancelled",
+                        text: data.message
+                      }).then(() => location.reload());
+                    }
+                    else {
+                      Swal.fire({
+                        icon: "error",
+                        title: "OOPS...",
+                        text: data.message || "Failed to cancel order"
+                      })
+                    }
+
+                  } catch (error) {
+                    console.log("Error:", error.message);
+                    Swal.fire({
+                      icon: "error",
+                      title: "Error",
+                      text: "Something went wrong"
+                    });
+                  }
+                }
+
+              })
             })
           })
-        })
 
-      </script>
-</body>
+        </script>
+        </body>
 
-</html>
+        </html>

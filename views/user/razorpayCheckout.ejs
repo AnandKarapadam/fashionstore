@@ -85,14 +85,14 @@
 
             const data = await res.json();
 
-           
+
             if (!data.success && data.redirectCart) {
               await Swal.fire({ icon: "warning", title: "Stock Issue", text: data.message });
               window.location.href = "/cart";
               return;
             }
 
-   
+
             if (data.warnings && data.warnings.length > 0) {
               await Swal.fire({
                 icon: "info",
@@ -100,7 +100,7 @@
                 html: data.warnings.join("<br>")
               });
 
-              let addressId = "<%= selectedAddressId || '' %>"; 
+              let addressId = "<%= selectedAddressId || '' %>";
               let paymentUrl = `/cart/checkout/payment?addressId=${addressId}`;
 
               if (type === "single" && product && size) {
@@ -114,9 +114,35 @@
 
             const rzp1 = new Razorpay(options);
 
-            rzp1.on('payment.failed', function (response) {
-              console.log(response.error);
-              window.location.href = "/cart/order-failed";
+            rzp1.on('payment.failed', async function (response) {
+
+              try {
+
+                const queryParams = new URLSearchParams(window.location.search);
+                const type = queryParams.get("type") || "cart"; 
+                const product = queryParams.get("product") || null;
+                const size = queryParams.get("size") || null;
+
+                const res = await fetch("/cart/checkout/pending", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body:JSON.stringify({type,size,product})
+                })
+
+                const data = await res.json();
+
+                if (data.success) {
+                  window.location.href = "/cart/order-failed?orderId=" + data.orderId;
+                }
+                else {
+                  window.location.href = "/cart/order-failed";
+                }
+              } catch (error) {
+                console.log(response.error);
+                window.location.href = "/cart/order-failed";
+              }
+
+
             });
 
             rzp1.on('checkout.dismiss', function () {

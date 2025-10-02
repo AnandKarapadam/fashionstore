@@ -11,6 +11,7 @@ const razorpay = require("../../config/razorpay");
 const crypto = require("crypto");
 const Wallet = require("../../models/walletSchema");
 const Delivery = require("../../models/deliverySchema");
+const { checkout } = require("../../routes/users/cartRouter");
 
 const loadCartPage = async (req, res) => {
   try {
@@ -1184,6 +1185,7 @@ const applyCoupon = async (req, res) => {
     await coupon.save();
 
     req.session.couponData = {
+      couponName:coupon.name,
       totalAmount: subtotal,
       discount,
       finalAmount,
@@ -2105,6 +2107,131 @@ const validateStock = async (req, res) => {
   }
 };
 
+const checkoutPending = async (req,res)=>{
+  try {
+
+    const {orderData} = req.session;
+    const userId = req.session.user;
+
+    if(!orderData){
+      return res.status(400).json({success:false,message:"No order data"});
+    }
+
+    let {type,product,size} = req.body;
+
+    type = type||"cart";
+    size = size|| "";
+
+    let products= [];
+    let subtotal = 0;
+
+    if(type==="single"&&product){
+      const cart = await Cart.findOne(
+        {userId},
+        {items:{$elemMatch:{productId:product,size}}}
+      ).populate("items.productId");
+      
+      if(!cart||cart.items.length === 0){
+        return res.status(400).json({success:false,message:"No such product in cart"})
+      }
+
+      const item = cart.items[0];
+
+      const sizeStock = item.productId.sizes.find((s)=>s.size === size);
+      if (!sizeStock || sizeStock.quantity < 1) {
+        return res.json({ success: false, message: "Selected size is out of stock" });
+      }
+      let finalQty = item.quantity;
+      if (item.quantity > sizeStock.quantity) {
+        finalQty = sizeStock.quantity;
+      }
+
+      item.quantity = finalQty;
+      item.totalPrice = finalQty * item.productId.salePrice;
+
+      products = [item];
+      subtotal = item.totalPrice;
+
+      await Cart.updateOne(
+        { userId },
+        { $pull: { items: { productId: product, size: size } } }
+      );
+
+    }
+    else{
+
+      const cart = await Cart.findOne({ userId }).populate("items.productId");
+      if (!cart || cart.items.length === 0) {
+        return res.status(400).json({ success: false, message: "Cart is empty" });
+      }
+
+      products = cart.items.filter(
+        (item) =>
+          item.productId &&
+          !item.productId.isBlocked &&
+          item.quantity > 0
+      );
+
+      subtotal = products.reduce((acc, item) => acc + item.totalPrice, 0);
+
+      await Cart.updateOne(
+    { userId },
+    { $set: { items: [] } }
+  );
+
+    }
+
+     const deliveryCharge = req.session.orderData?.deliveryCharge || 0;
+
+   
+    let discount = 0;
+    if (req.session.couponData && req.session.couponData.couponApplied) {
+      discount = req.session.couponData.discount;
+    }
+
+    const finalAmount = subtotal - discount + deliveryCharge;
+
+  
+    const orderedItems = products.map((item) => ({
+      product: item.productId._id,
+      size: item.size,
+      orderItemId: new Date().getTime().toString() + Math.floor(Math.random() * 1000),
+      quantity: item.quantity,
+      price: item.productId.salePrice,
+      totalPrice: item.totalPrice,
+      status: "Pending",
+    }));
+
+    const newOrder = new Order({
+      userId,
+      orderedItems,
+      totalPrice: subtotal,
+      discount,
+      finalAmount,
+      overAllStatus: "Pending",
+      deliveryCharge,
+      couponApplied: discount > 0,
+      address: req.session.selectedAddress,
+      paymentMethod: req.session.orderData?.paymentMethod || "razorpay",
+      couponName:req.session.couponData?.couponName||null
+    });
+
+    await newOrder.save();
+
+    req.session.orderData = null;
+    req.session.couponData = null;
+
+    return res.json({
+      success: true,
+      message: "Pending order created",
+      orderId: newOrder.orderId,
+    });
+    
+  } catch (error) {
+    console.log("Error:",error.message);
+  }
+}
+
 module.exports = {
   loadCartPage,
   addToCart,
@@ -2128,4 +2255,5 @@ module.exports = {
   checkPaymentStock,
   cartCheckoutValidate,
   validateStock,
+  checkoutPending
 };

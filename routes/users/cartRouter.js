@@ -29,6 +29,8 @@ router.post("/checkout/razorpay/verify",userAuth,cartController.verifyRazorPayme
 router.get("/checkout/wallet",userAuth,cartController.loadWalletPayment);
 router.post("/checkout/wallet",userAuth,cartController.postWalletPayment);
 
+router.post("/checkout/pending",userAuth,cartController.checkoutPending);
+
 
 
 

@@ -5,10 +5,12 @@ const mongoose = require("mongoose");
 const PdfPrinter = require("pdfmake");
 const path = require("path");
 const User = require("../../models/userSchema");
-const Wishlist = require("../../models/wishlistSchema");
+
 const Wallet = require("../../models/walletSchema");
-const Brand = require("../../models/brandSchema");
+
 const { text } = require("pdfkit");
+const razorpay = require("../../config/razorpay");
+const crypto = require("crypto");
 
 const loadOrderPage = async (req, res) => {
   try {
@@ -529,6 +531,101 @@ const postWholeReturnOrder = async (req, res) => {
     console.log("Error:", error.message);
   }
 };
+
+const getRetryPaymentPage = async (req,res)=>{
+ const { orderId } = req.params;
+  const userId = req.session.user;
+  const order = await Order.findOne({ orderId, userId }).populate("orderedItems.product");
+  
+  let finalAmount = order.finalAmount;
+  let warnings = [];
+
+  // Validate coupon
+  if(order.couponName){
+    const coupon = await Coupon.findOne({ name: order.couponName });
+    if(!coupon || !coupon.isList || new Date() > coupon.expireOn){
+      warnings.push(`Coupon "${order.couponName}" is invalid or expired. Discount removed.`);
+      finalAmount = order.totalPrice + order.deliveryCharge;
+      order.couponApplied = false;
+      order.couponName = null;
+      order.discount = 0;
+    }
+  }
+
+  // Validate stock
+  order.orderedItems.forEach(item => {
+    const sizeStock = item.product.sizes.find(s => s.size === item.size);
+    if(!sizeStock || sizeStock.quantity < item.quantity){
+      warnings.push(`Product "${item.product.productName}" (size ${item.size}) adjusted to stock.`);
+      item.quantity = sizeStock ? sizeStock.quantity : 0;
+      item.totalPrice = item.quantity * item.product.salePrice;
+      item.markModified("quantity");
+      item.markModified("totalPrice");
+    }
+    item.status = "Processing";
+    item.markModified("status");
+  });
+
+  finalAmount = order.orderedItems.reduce((sum,i)=>sum+i.totalPrice,0) + order.deliveryCharge;
+  order.finalAmount = finalAmount;
+  await order.save();
+
+  const razorpayOrder = await razorpay.orders.create({
+    amount: finalAmount*100,
+    currency: "INR",
+    receipt:`retry_rcpt_${Date.now()}`
+  });
+
+  res.json({
+    success:true,
+    warnings,
+    razorpayOptions:{
+      key: process.env.RAZORPAY_KEY_ID,
+      amount: razorpayOrder.amount,
+      currency: razorpayOrder.currency,
+      name: "Fashion Store",
+      description: "Retry Order Payment",
+      order_id: razorpayOrder.id,
+      prefill:{email:req.session.userEmail||""},
+      theme:{color:"#000cc"}
+    }
+  });
+}
+const validateRetryPayment = async (req,res)=>{
+
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+  const { orderId } = req.params;
+  const userId = req.session.user;
+
+  const order = await Order.findOne({ orderId, userId });
+
+  const hmac = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET);
+  hmac.update(`${razorpay_order_id}|${razorpay_payment_id}`);
+  const generated_signature = hmac.digest("hex");
+
+  if(generated_signature !== razorpay_signature){
+    return res.json({success:false,message:"Payment signature verification failed"});
+  }
+
+  order.paymentMethod = "razorpay";
+  order.overAllStatus = "Processing";
+  for (let item of order.orderedItems) {
+      item.status = "Processing";
+
+      const productDoc = await Product.findById(item.product._id);
+      const sizeIndex = productDoc.sizes.findIndex(s => s.size === item.size);
+
+      if (sizeIndex >= 0) {
+        productDoc.sizes[sizeIndex].quantity -= item.quantity;
+        if (productDoc.sizes[sizeIndex].quantity < 0) productDoc.sizes[sizeIndex].quantity = 0;
+      }
+
+      await productDoc.save(); 
+    }
+  await order.save();
+
+  res.json({success:true,message:"Payment verified successfully"});
+}
 module.exports = {
   loadOrderPage,
   loadOrderDetails,
@@ -537,4 +634,6 @@ module.exports = {
   postCancelOrder,
   postCancelWholeOrder,
   postWholeReturnOrder,
+  getRetryPaymentPage,
+  validateRetryPayment
 };

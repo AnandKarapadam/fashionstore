@@ -7,12 +7,86 @@
   <p class="text-muted">Something went wrong with your payment. Please try again.</p>
 
   <div class="mt-4">
-    <a href="/cart/checkout/razorpay" class="btn btn-dark  me-2">Retry Payment</a>
-
+    <a href="#" id="retryPaymentBtn" class="btn btn-dark me-2">Retry Payment</a>
+    <a  class="btn btn-outline-dark" href="/orders">Go to Orders</a>
   </div>
 </div>
 
 
-
-
 <%- include("../partials/user/footer.ejs") %>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  document.getElementById("retryPaymentBtn").addEventListener("click", async (e) => {
+  e.preventDefault();
+
+  const params = new URLSearchParams(window.location.search);
+  const orderId = params.get("orderId");
+
+  try {
+    const res = await fetch(`/orders/payment/retry/prepare/${orderId}`, { method: "POST" });
+    const data = await res.json();
+    console.log(data);
+
+    if (!data.success) {
+      return Swal.fire({ icon: "error", title: "Oops!", text: data.message });
+    }
+
+    if (data.warnings && data.warnings.length > 0) {
+      const result = await Swal.fire({
+        icon: "info",
+        title: "Stock/Coupon Adjusted",
+        html: data.warnings.join("<br>"),
+        showCancelButton: true,
+        confirmButtonText: "Proceed to Pay",
+        cancelButtonText: "Cancel"
+      });
+
+      if (!result.isConfirmed) return;
+    }
+
+    // ✅ Add payment success handler
+    data.razorpayOptions.handler = function (response) {
+      fetch(`/orders/payment/retry/verify/${orderId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(response)
+      })
+        .then(r => r.json())
+        .then(result => {
+          if (result.success) {
+            // Redirect to success page
+            window.location.href = "/cart/order-success";
+          } else {
+            // If verification failed, stay in failed page
+            window.location.href = `/cart/order-failed?orderId=${orderId}`;
+          }
+        })
+        .catch(err => {
+          console.error("Verification error:", err);
+          window.location.href = `/cart/order-failed?orderId=${orderId}`;
+        });
+    };
+
+    // Initialize Razorpay
+    const rzp = new Razorpay(data.razorpayOptions);
+
+    // Payment failed handler
+    rzp.on("payment.failed", () => {
+      window.location.href = `/cart/order-failed?orderId=${orderId}`;
+    });
+
+    rzp.open();
+
+  } catch (err) {
+    console.error(err);
+    Swal.fire({ icon: "error", title: "Error", text: "Something went wrong." });
+  }
+});
+
+</script>
+
+
+
+

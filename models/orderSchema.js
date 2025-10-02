@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { strike } = require("pdfkit");
 const Schema = mongoose.Schema;
 
 
@@ -114,6 +115,9 @@ let orderSchema = new Schema({
     type: String,
     enum: ["cod", "wallet", "razorpay", "card", "upi"],
   },
+  couponName:{
+    type:String
+  }
 });
 
 orderSchema.pre("save",async function (next) {

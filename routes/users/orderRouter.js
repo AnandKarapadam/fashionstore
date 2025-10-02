@@ -10,6 +10,8 @@ router.post("/return/item",userAuth,orderController.postReturnRequest);
 router.post("/cancel/item",userAuth,orderController.postCancelOrder);
 router.post("/cancel/:orderId",userAuth,orderController.postCancelWholeOrder);
 router.post("/return/:orderId",userAuth,orderController.postWholeReturnOrder);
+router.post("/payment/retry/prepare/:orderId",userAuth,orderController.getRetryPaymentPage);
+router.post("/payment/retry/verify/:orderId",userAuth,orderController.validateRetryPayment);
 
 
 
