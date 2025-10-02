@@ -83,6 +83,7 @@ const forgetEmailValid = async (req, res) => {
   try {
     const { email } = req.body;
     const findUser = await User.findOne({ email: email });
+    
     if (findUser) {
       const otp = generateOtp();
       const emailSent = await sendVerificationEmail(email, otp);
@@ -107,9 +108,9 @@ const forgetEmailValid = async (req, res) => {
 const verifyForgotPassOtp = async (req, res) => {
   try {
     const enteredOTP = req.body.otp;
-    console.log(req.session.userOtp);
 
     if (String(enteredOTP) === String(req.session.userOtp)) {
+      req.session.userOtp = null;
       res.json({ success: true, redirectUrl: "/reset-password" });
     } else {
       res.json({ success: false, message: "OTP Not Matching" });
@@ -137,20 +138,24 @@ const resendforgotOTP = async (req, res) => {
     const otp = generateOtp();
     req.session.userOtp = otp;
     const email = req.session.email;
-    console.log("Resending otp to email:", email);
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: "Session expired. Please try again." });
+    }
+
+    console.log("Resending OTP to email:", email);
+
     const emailSent = await sendVerificationEmail(email, otp);
 
     if (emailSent) {
       console.log("Resend OTP:", otp);
-      res.status(200).json({ success: true, message: "Resend OTP Successful" });
+      return res.status(200).json({ success: true, message: "Resend OTP Successful" });
     } else {
-      res
-        .status(500)
-        .json({ success: false, message: "Cannot send OTP to this email!" });
+      return res.status(500).json({ success: false, message: "Cannot send OTP to this email!" });
     }
   } catch (error) {
-    console.error("Error in resend OTP", error);
-    res.redirect("/pageNotFound");
+    console.error("Error in resend OTP:", error.message);
+    return res.status(500).json({ success: false, message: "Server error while resending OTP" });
   }
 };
 
@@ -293,6 +298,8 @@ const resendChangePassOTP = async (req, res) => {
     const otp = generateOtp();
 
     const email = req.session.email;
+
+    
 
     const emailSend = await sendVerificationEmail(email, otp);
 

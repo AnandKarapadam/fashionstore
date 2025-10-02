@@ -140,59 +140,60 @@
 <script>
  
 
-  document.getElementById("otp-form").addEventListener("submit",async function(e) {
-    
-    e.preventDefault();
-    const otpInput = document.querySelectorAll(".otp-input");
-    let otp="";
+  document.getElementById("otp-form").addEventListener("submit", async function(e) {
+  e.preventDefault();
 
-    for(let input of otpInput){
-      const val = input.value.trim();
-      if(val === ""||isNaN(val)){
-        Swal.fire({
-          icon:"warning",
-          title:"Invalid OTP",
-          text:"Please enter all 5 digits",
-          confirmButtonColor:'#3085d6',
-        })
-        input.focus();
-        return false;
-      }
-      otp+=val;
+  const otpInput = document.querySelectorAll(".otp-input");
+  let otp = "";
+
+  for (let input of otpInput) {
+    const val = input.value.trim();
+    if (val === "" || isNaN(val)) {
+      Swal.fire({
+        icon: "warning",
+        title: "Invalid OTP",
+        text: "Please enter all 5 digits",
+        confirmButtonColor: "#3085d6",
+      });
+      input.focus();
+      return;
     }
+    otp += val;
+  }
 
-       $.ajax({
-        type:"POST",
-        url:"/verify-passForgot-otp",
-        data:{otp:otp},
-        success:function(response){
-          if(response.success){
-            Swal.fire({
-            icon:"success",
-            title:"OTP Verified!",
-            showConfirmButton:false,
-            timer:1500
-          }).then(()=>{
-            window.location.href = response.redirectUrl;
-          })
-          }else{
-            Swal.fire({
-              icon:"error",
-              title:"Invalid OTP",
-              text:response.message,
-            })
-          }
-        },
-        error:function(){
-          Swal.fire({
-            icon:"error",
-            title:"Error",
-            text:"Failed to verify OTP. Please try again."
-          })
-        }
-       })
-    return false;
-  })
+  try {
+    const response = await fetch("/verify-passForgot-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ otp: otp })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      Swal.fire({
+        icon: "success",
+        title: "OTP Verified!",
+        showConfirmButton: false,
+        timer: 1500
+      }).then(() => {
+        window.location.href = data.redirectUrl;
+      });
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Invalid OTP",
+        text: data.message,
+      });
+    }
+  } catch (err) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Failed to verify OTP. Please try again."
+    });
+  }
+});
   
   let timeLeft = 60; // 60 seconds
   let otpTimeInterval;
