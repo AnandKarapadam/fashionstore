@@ -12,7 +12,29 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
   <style>
-    .custom-table {
+
+    /* Apply consistent base font */
+body, .container, .custom-table, .form-control, .btn {
+  font-size: 14px; /* smaller and uniform */
+}
+
+/* Table headers smaller */
+.custom-table thead th {
+  font-size: 13px;
+}
+
+/* Pagination smaller */
+.pagination .page-link {
+  font-size: 13px;
+}
+
+/* Buttons smaller */
+.custom-btn {
+  font-size: 12px;
+  padding: 2px 6px;
+}
+
+.custom-table {
       border-collapse: separate;
       border-spacing: 0 5px;
       width: 100%;

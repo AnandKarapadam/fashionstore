@@ -36,6 +36,17 @@
           max-height: 70vh;
           margin: 0 auto;
         }
+
+        /* Quantity inputs (M, L, XL) */
+        input[type="number"][name$="Quantity"] {
+          width: 60px;
+          /* small width */
+          height: 32px;
+          /* small height */
+          font-size: 14px;
+          /* smaller font */
+          padding: 2px 5px;
+        }
       </style>
     </head>
 
@@ -58,7 +69,7 @@
               <select name="status" id="statusupdate"
                 class="form-select border w-50 border-1 rounded-3 border-secondary">
                 <option value="Available" <%=product.status==='Available' ? 'selected' : '' %>>Available</option>
-                
+
                 <option value="Discontinued" <%=product.status==='Discontinued' ? 'selected' : '' %>>Discontinued
                 </option>
               </select>
@@ -126,7 +137,7 @@
                 <div class="col-md-4 d-flex align-items-center gap-1">
                   <label for="mQty" class="mb-0">M:</label>
                   <input type="number" name="mQuantity" class="form-control" id="mQty"
-                    value="<%= product.sizes.find(s=>s.size==='M')?.quantity || '' %>"  min="0"  placeholder="M">
+                    value="<%= product.sizes.find(s=>s.size==='M')?.quantity || '' %>" min="0" placeholder="M">
                 </div>
 
                 <div class="col-md-4 d-flex align-items-center gap-1">
