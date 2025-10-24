@@ -469,7 +469,6 @@ const postPaymentMethod = async (req, res) => {
     const userId = req.session.user;
     const { paymentMethod } = req.body;
     const method = paymentMethod.toLowerCase();
-   
 
     const validateMethods = ["cod", "razorpay", "upi", "card", "wallet"];
     if (!validateMethods.includes(method)) {
@@ -698,7 +697,7 @@ const getRazorpayOrder = async (req, res) => {
     ) {
       selectedMethod = orderData.paymentMethod;
     }
-   
+
     res.render("user/razorpayCheckout", {
       key: process.env.RAZORPAY_KEY_ID,
       order,
@@ -858,7 +857,7 @@ const verifyRazorPayment = async (req, res) => {
       req.session.orderData.razorpayOrderId = razorpay_order_id;
       req.session.orderData.razorpayPaymentId = razorpay_payment_id;
       const order = await updateOrder(req.session.orderData, userId);
-      
+
       if (req.session.couponData) {
         delete req.session.couponData;
       }
@@ -1185,7 +1184,7 @@ const applyCoupon = async (req, res) => {
     await coupon.save();
 
     req.session.couponData = {
-      couponName:coupon.name,
+      couponName: coupon.name,
       totalAmount: subtotal,
       discount,
       finalAmount,
@@ -1499,14 +1498,19 @@ const postConfirmation = async (req, res) => {
     delete req.session.couponData;
 
     for (const item of orderedItems) {
-  const actualProduct = await Product.findById(item.product); 
-  if (actualProduct && actualProduct.sizes && actualProduct.sizes.length > 0) {
-    
-    actualProduct.quantity = actualProduct.sizes.reduce((sum, s) => sum + s.quantity, 0);
-    await actualProduct.save();
-  }
-}
-
+      const actualProduct = await Product.findById(item.product);
+      if (
+        actualProduct &&
+        actualProduct.sizes &&
+        actualProduct.sizes.length > 0
+      ) {
+        actualProduct.quantity = actualProduct.sizes.reduce(
+          (sum, s) => sum + s.quantity,
+          0
+        );
+        await actualProduct.save();
+      }
+    }
 
     res.status(200).json({
       message: "Order placed successfully",
@@ -1645,7 +1649,6 @@ const checkStock = async (req, res) => {
         continue;
       }
 
-     
       const sizeObj = product.sizes.find((s) => s.size === item.size);
 
       if (!sizeObj || sizeObj.quantity < 1) {
@@ -1780,7 +1783,7 @@ const cartCheckoutValidate = async (req, res) => {
   try {
     const userId = req.session.user;
     const { type, product, size } = req.body;
-    const {paymentMethod} = req.session.orderData;
+    const { paymentMethod } = req.session.orderData;
 
     let cart = await Cart.findOne({ userId }).populate("items.productId");
 
@@ -1795,7 +1798,6 @@ const cartCheckoutValidate = async (req, res) => {
     let messages = [];
     let itemsToKeep = [];
     let redirectCart = false;
-
 
     if (type === "single" && product && size) {
       const item = cart.items.find(
@@ -1849,10 +1851,7 @@ const cartCheckoutValidate = async (req, res) => {
         quantity: finalQty,
         totalPrice: finalQty * item.price,
       });
-    }
-
-   
-    else {
+    } else {
       for (let item of cart.items) {
         const product = item.productId;
         const sizeObj = product?.sizes?.find((s) => s.size === item.size);
@@ -1884,7 +1883,6 @@ const cartCheckoutValidate = async (req, res) => {
       }
     }
 
-  
     cart.items = itemsToKeep;
     await cart.save();
 
@@ -1897,7 +1895,6 @@ const cartCheckoutValidate = async (req, res) => {
       });
     }
 
-   
     cart = await Cart.findOne({ userId }).populate("items.productId");
     itemsToKeep = cart.items;
 
@@ -1906,10 +1903,8 @@ const cartCheckoutValidate = async (req, res) => {
       0
     );
 
-  
     let discount = req.session.couponData?.discount || 0;
 
-    
     if (
       req.session.couponData?.minAmount &&
       totalAmount < req.session.couponData.minAmount
@@ -1921,7 +1916,7 @@ const cartCheckoutValidate = async (req, res) => {
       req.session.couponData = null;
     }
 
-    const deliveryCharge = req.session.orderData.deliveryCharge||0;  
+    const deliveryCharge = req.session.orderData.deliveryCharge || 0;
     const finalAmount = Math.max(totalAmount + deliveryCharge - discount, 0);
 
     const selectedAddressId = req.session.selectedAddress;
@@ -1933,7 +1928,6 @@ const cartCheckoutValidate = async (req, res) => {
       });
     }
 
-    
     const addressDoc = await Address.findOne({
       "address._id": selectedAddressId,
     });
@@ -1971,7 +1965,7 @@ const cartCheckoutValidate = async (req, res) => {
       deliveryCharge,
       finalAmount,
       address: selectedAddress,
-      paymentMethod:paymentMethod
+      paymentMethod: paymentMethod,
     };
 
     return res.json({ success: true, warnings: messages, redirectCart });
@@ -2107,39 +2101,43 @@ const validateStock = async (req, res) => {
   }
 };
 
-const checkoutPending = async (req,res)=>{
+const checkoutPending = async (req, res) => {
   try {
-
-    const {orderData} = req.session;
+    const { orderData } = req.session;
     const userId = req.session.user;
 
-    if(!orderData){
-      return res.status(400).json({success:false,message:"No order data"});
+    if (!orderData) {
+      return res.status(400).json({ success: false, message: "No order data" });
     }
 
-    let {type,product,size} = req.body;
+    let { type, product, size } = req.body;
 
-    type = type||"cart";
-    size = size|| "";
+    type = type || "cart";
+    size = size || "";
 
-    let products= [];
+    let products = [];
     let subtotal = 0;
 
-    if(type==="single"&&product){
+    if (type === "single" && product) {
       const cart = await Cart.findOne(
-        {userId},
-        {items:{$elemMatch:{productId:product,size}}}
+        { userId },
+        { items: { $elemMatch: { productId: product, size } } }
       ).populate("items.productId");
-      
-      if(!cart||cart.items.length === 0){
-        return res.status(400).json({success:false,message:"No such product in cart"})
+
+      if (!cart || cart.items.length === 0) {
+        return res
+          .status(400)
+          .json({ success: false, message: "No such product in cart" });
       }
 
       const item = cart.items[0];
 
-      const sizeStock = item.productId.sizes.find((s)=>s.size === size);
+      const sizeStock = item.productId.sizes.find((s) => s.size === size);
       if (!sizeStock || sizeStock.quantity < 1) {
-        return res.json({ success: false, message: "Selected size is out of stock" });
+        return res.json({
+          success: false,
+          message: "Selected size is out of stock",
+        });
       }
       let finalQty = item.quantity;
       if (item.quantity > sizeStock.quantity) {
@@ -2156,34 +2154,26 @@ const checkoutPending = async (req,res)=>{
         { userId },
         { $pull: { items: { productId: product, size: size } } }
       );
-
-    }
-    else{
-
+    } else {
       const cart = await Cart.findOne({ userId }).populate("items.productId");
       if (!cart || cart.items.length === 0) {
-        return res.status(400).json({ success: false, message: "Cart is empty" });
+        return res
+          .status(400)
+          .json({ success: false, message: "Cart is empty" });
       }
 
       products = cart.items.filter(
         (item) =>
-          item.productId &&
-          !item.productId.isBlocked &&
-          item.quantity > 0
+          item.productId && !item.productId.isBlocked && item.quantity > 0
       );
 
       subtotal = products.reduce((acc, item) => acc + item.totalPrice, 0);
 
-      await Cart.updateOne(
-    { userId },
-    { $set: { items: [] } }
-  );
-
+      await Cart.updateOne({ userId }, { $set: { items: [] } });
     }
 
-     const deliveryCharge = req.session.orderData?.deliveryCharge || 0;
+    const deliveryCharge = req.session.orderData?.deliveryCharge || 0;
 
-   
     let discount = 0;
     if (req.session.couponData && req.session.couponData.couponApplied) {
       discount = req.session.couponData.discount;
@@ -2191,11 +2181,14 @@ const checkoutPending = async (req,res)=>{
 
     const finalAmount = subtotal - discount + deliveryCharge;
 
-  
+    products.forEach((item) => {
+      item.status = "Pending";
+    });
     const orderedItems = products.map((item) => ({
       product: item.productId._id,
       size: item.size,
-      orderItemId: new Date().getTime().toString() + Math.floor(Math.random() * 1000),
+      orderItemId:
+        new Date().getTime().toString() + Math.floor(Math.random() * 1000),
       quantity: item.quantity,
       price: item.productId.salePrice,
       totalPrice: item.totalPrice,
@@ -2213,7 +2206,7 @@ const checkoutPending = async (req,res)=>{
       couponApplied: discount > 0,
       address: req.session.selectedAddress,
       paymentMethod: req.session.orderData?.paymentMethod || "razorpay",
-      couponName:req.session.couponData?.couponName||null
+      couponName: req.session.couponData?.couponName || null,
     });
 
     await newOrder.save();
@@ -2226,11 +2219,10 @@ const checkoutPending = async (req,res)=>{
       message: "Pending order created",
       orderId: newOrder.orderId,
     });
-    
   } catch (error) {
-    console.log("Error:",error.message);
+    console.log("Error:", error.message);
   }
-}
+};
 
 module.exports = {
   loadCartPage,
@@ -2255,5 +2247,5 @@ module.exports = {
   checkPaymentStock,
   cartCheckoutValidate,
   validateStock,
-  checkoutPending
+  checkoutPending,
 };
